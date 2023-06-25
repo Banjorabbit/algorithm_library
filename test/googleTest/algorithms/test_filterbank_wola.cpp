@@ -5,12 +5,12 @@ using namespace Eigen;
 
 // --------------------------------------------- TEST CASES ---------------------------------------------
 
-TEST(FilterbankAnalysisWOLA, Interface) 
+TEST(Filterbank, InterfaceAnalysis) 
 {
 	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<FilterbankAnalysisWOLA>());
 }
 
-TEST(FilterbankSynthesisWOLA, Interface)
+TEST(Filterbank, InterfaceSynthesis)
 {
 	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<FilterbankSynthesisWOLA>());
 }
