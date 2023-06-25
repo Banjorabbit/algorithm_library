@@ -125,15 +125,3 @@ inline Eigen::ArrayXf sinc(const int nSamples, const int zcr)
 		return output;
 	}
 }
-
-// Design prototype filter for DFT filterbank using a least squares iterative method
-//
-// filterLength - length of protoype filter (must be even)
-// fftSize - size of FFT
-// bufferSize - size of new buffer (hop size)
-// 
-// ref: Weiss, W., On Implementation and Design of Filter Banks for Subband Adaptive Systems
-//
-// author: Kristian Timm Andersen
-
-Eigen::ArrayXf IterativeLSPrototypeFilterDesign(int fftSize, int bufferSize, int nFold);
