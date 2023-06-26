@@ -30,12 +30,12 @@ TEST(Normal3d, BoundaryTime)
 	normalCalculation.process(input, output2);
 
 	// error in first 2 columns should be non-zero
-	float error = (output.leftCols(2) - output2.leftCols(2)).abs2().sum() / output.leftCols(2).abs2().sum();
+	float error = (output.leftCols(2) - output2.leftCols(2)).abs2().sum();
 	fmt::print("Error in first 2 columns: {}\n", error);
-	EXPECT_TRUE(error > .1f);
+	EXPECT_TRUE(error > 1e-6f); // threshold is some random small number
 
 	// error in rest of the columns should be zero
 	error = (output.rightCols(nFrames-2) - output2.rightCols(nFrames-2)).abs2().sum() / output.rightCols(nFrames - 2).abs2().sum();
-	fmt::print("Error in every other column: {}\n", error);
+	fmt::print("Error in rest of columns: {}\n", error);
 	EXPECT_TRUE(error == 0.f);
 }

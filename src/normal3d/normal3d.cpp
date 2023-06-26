@@ -2,4 +2,5 @@
 
 DEFINE_SOURCE_INTERFACE(Normal3dConfiguration, Normal3dDiff)
 
- Normal3d::Normal3d(const Coefficients& c) : Algorithm<Normal3dConfiguration>{c} {}
+Normal3d::Normal3d(const Coefficients& c) : Algorithm<Normal3dConfiguration>{c} {}
+Normal3d::Normal3d(const Setup& s) : Algorithm<Normal3dConfiguration>{s} {}

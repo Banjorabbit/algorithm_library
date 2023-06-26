@@ -4,11 +4,11 @@
 
 // Calculate the 3-dimensional normal vector of a plane for each point in the plane. 
 // The input is a 2-dimensional matrix containing the z-value of each point in a x/y grid
-// The output is a 2-dimensional matrix, where the first dimension is 3 times the size of the input to hold the interleaved 3-dimensional normal vector.
+// The output is a 2-dimensional matrix, where the 1st output dimension is 3 times the size of the 1st input dimension to hold the interleaved 3-dimensional normal vector.
 //
 // This method calculates the normal vector by the difference between the neighbour points. 
-// Along the first dimension, the boundary conditions are assumed to be symmetric so the normal is 0 at the edge.
-// Along the second dimension, the input is assumed to be streamed, so there is a 1 sample delay in the output.
+// Along the 1st dimension, the boundary conditions are assumed to be symmetric so the normal is 0 at the edge.
+// Along the 2nd dimension, the input is assumed to be streamed, so there is a 1 sample delay in the output.
 //
 // author: Kristian Timm Andersen
 
@@ -20,10 +20,13 @@ public:
     Normal3dDiff(Coefficients c = Coefficients()) :
         IAlgorithm<Normal3dConfiguration, Normal3dDiff> {c}
     {
-        valuesOld0.resize(C.nValuesX);
-        valuesOld1.resize(C.nValuesX);
+        initialize();
+    }
 
-        resetMembers();
+    Normal3dDiff(Setup s) :
+        IAlgorithm<Normal3dConfiguration, Normal3dDiff> {s}
+    {
+        initialize();
     }
 
 	inline void processOn(Input input, Output output)
@@ -31,8 +34,8 @@ public:
         for (auto frame = 0; frame < input.cols(); frame++)
         {
             Eigen::ArrayXXf normals(C.nValuesX, 3);
-            normals.col(0) << 0.f, input.col(frame).tail(C.nValuesX - 2) - input.col(frame).head(C.nValuesX - 2), 0.f; // X direction
-            normals.col(1) = input.col(frame) - valuesOld0; // Y direction
+            normals.col(0) << 0.f, den1 * (input.col(frame).tail(C.nValuesX - 2) - input.col(frame).head(C.nValuesX - 2)), 0.f; // 1st dimension
+            normals.col(1) = den2 * (input.col(frame) - valuesOld0); // 2nd dimension
             normals.col(2) = Eigen::ArrayXf::Ones(C.nValuesX); // Z direction
             Eigen::ArrayXf length = (normals.col(0).abs2() + normals.col(1).abs2() + Eigen::ArrayXf::Ones(C.nValuesX)).sqrt(); // calculate length
             normals.col(0) /= length; // normalize by length (profiled to be much faster than using .replicate())
@@ -48,6 +51,16 @@ public:
 	}
 
 private:
+
+    void initialize()
+    {
+        valuesOld0.resize(C.nValuesX);
+        valuesOld1.resize(C.nValuesX);
+        den1 = 1.f / (2.f * P.distance1);
+        den2 = 1.f / (2.f * P.distance2);
+        resetMembers();
+    }
+
     void resetMembers() final
     {
         valuesOld0.setZero();
@@ -63,5 +76,6 @@ private:
 
     Eigen::ArrayXf valuesOld0;
     Eigen::ArrayXf valuesOld1;
+    float den1, den2;
 };
 
