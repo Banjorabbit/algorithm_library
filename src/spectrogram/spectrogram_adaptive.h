@@ -12,16 +12,14 @@ public:
         filterbank2(convertCoefficientsToFilterbankSetup(c))
     { 
         // set windows
-        nBands = c.fftSize / 2 + 1;
-        Eigen::ArrayXf window(c.fftSize);
-        window = hann(c.fftSize);
-        Eigen::ArrayXf windowSmall(c.bufferSize);
-        windowSmall = hann(C.bufferSize);
+        nBands = C.fftSize / 2 + 1;
+        Eigen::ArrayXf window = hann(C.fftSize);
+        Eigen::ArrayXf windowSmall = hann(C.bufferSize);
 
         Eigen::ArrayXf windowNormalized = window / std::sqrt(window.abs2().sum());
         filterbank0.setWindow(windowNormalized);
 
-        window.segment(c.fftSize/2, C.bufferSize / 2) = windowSmall.tail(C.bufferSize / 2);
+        window.segment(C.fftSize/2, C.bufferSize / 2) = windowSmall.tail(C.bufferSize / 2);
         window.tail((C.fftSize - C.bufferSize) / 2).setZero();
         windowNormalized = window / std::sqrt(window.abs2().sum());
         filterbank1.setWindow(windowNormalized);
