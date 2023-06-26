@@ -5,6 +5,7 @@
 #include "solver_toeplitz/solver_toeplitz_system.h"
 #include "filterbank/filterbank_wola.h"
 #include "spectrogram/spectrogram_filterbank.h"
+#include "spectrogram/spectrogram_adaptive.h"
 #include "normal3d/normal3d_diff.h"
 
 // Macro for defining timing test using google benchmark framework
@@ -31,6 +32,7 @@ DEFINE_BENCHMARK_ALGORITHM(SolverToeplitzSystem)
 DEFINE_BENCHMARK_ALGORITHM(FilterbankAnalysisWOLA)
 DEFINE_BENCHMARK_ALGORITHM(FilterbankSynthesisWOLA)
 DEFINE_BENCHMARK_ALGORITHM(SpectrogramFilterbank)
+DEFINE_BENCHMARK_ALGORITHM(SpectrogramAdaptive)
 DEFINE_BENCHMARK_ALGORITHM(Normal3dDiff)
 
 // benchmark inverse FFT
