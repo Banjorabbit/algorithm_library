@@ -70,6 +70,11 @@ public:
 		}
 	}
 
+	Eigen::ArrayXf getWindow() const
+	{
+		return window;
+	}
+
 	void setStandardFilterbank(int bufferSize, int nChannels = 1)
 	{
 		auto s = getSetup();
