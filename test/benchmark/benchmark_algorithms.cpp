@@ -7,6 +7,7 @@
 #include "spectrogram/spectrogram_filterbank.h"
 #include "spectrogram/spectrogram_adaptive.h"
 #include "normal3d/normal3d_diff.h"
+#include "min_phase_spectrum/min_phase_spectrum_cepstrum.h"
 
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
@@ -34,6 +35,7 @@ DEFINE_BENCHMARK_ALGORITHM(FilterbankSynthesisWOLA)
 DEFINE_BENCHMARK_ALGORITHM(SpectrogramFilterbank)
 DEFINE_BENCHMARK_ALGORITHM(SpectrogramAdaptive)
 DEFINE_BENCHMARK_ALGORITHM(Normal3dDiff)
+DEFINE_BENCHMARK_ALGORITHM(MinPhaseSpectrumCepstrum)
 
 // benchmark inverse FFT
 static void FFTInverse_process(benchmark::State& state) {
