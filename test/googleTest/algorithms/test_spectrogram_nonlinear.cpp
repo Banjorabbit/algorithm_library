@@ -1,20 +1,20 @@
 #include "gtest/gtest.h"
 #include "framework/unit_test.h"
-#include "spectrogram/spectrogram_adaptive.h"
+#include "spectrogram/spectrogram_nonlinear.h"
 
 using namespace Eigen;
 
 // --------------------------------------------- TEST CASES ---------------------------------------------
 
-TEST(SpectrogramAdaptive, Interface)
+TEST(SpectrogramNonlinear, Interface)
 {
-	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<SpectrogramAdaptive>());
+	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<SpectrogramNonlinear>());
 }
 
 // description: test nFrames is a static function and that it returns correct number of frames.
-TEST(SpectrogramAdaptive, getNFrames)
+TEST(SpectrogramNonlinear, getNFrames)
 {
-	SpectrogramAdaptive spec;
+	SpectrogramNonlinear spec;
 	auto c = spec.getCoefficients();
 	const int bufferSize = c.bufferSize;
 	const int nSamples = 1e4;
@@ -33,10 +33,10 @@ TEST(SpectrogramAdaptive, getNFrames)
 }
 
 // description: process two spectrograms with the same input signal, set one of the spectrogram windows to a random window, and verify that the output spectrograms are different.
-TEST(SpectrogramAdaptive, setWindow)
+TEST(SpectrogramNonlinear, setWindow)
 {
-	SpectrogramAdaptive spec1;
-	SpectrogramAdaptive spec2;
+	SpectrogramNonlinear spec1;
+	SpectrogramNonlinear spec2;
 
 	auto c = spec2.getCoefficients();
 	ArrayXf window(c.fftSize);
@@ -59,9 +59,9 @@ TEST(SpectrogramAdaptive, setWindow)
 }
 
 // description: test that default window is equal to setWindows(hann window)
-TEST(SpectrogramAdaptive, setWindowsDefault)
+TEST(SpectrogramNonlinear, setWindowsDefault)
 {
-    SpectrogramAdaptive spec;
+    SpectrogramNonlinear spec;
     ArrayXf window0 = spec.filterbank0.getWindow();
     ArrayXf window1 = spec.filterbank1.getWindow();
     ArrayXf window2 = spec.filterbank2.getWindow();

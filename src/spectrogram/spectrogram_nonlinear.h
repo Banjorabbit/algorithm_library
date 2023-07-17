@@ -2,11 +2,11 @@
 #include "algorithm_library/spectrogram.h"
 #include "filterbank/filterbank_wola.h"
 
-class SpectrogramAdaptive: public IAlgorithm<SpectrogramConfiguration, SpectrogramAdaptive>
+class SpectrogramNonlinear: public IAlgorithm<SpectrogramConfiguration, SpectrogramNonlinear>
 {
 public:
-    SpectrogramAdaptive(Coefficients c = Coefficients()) : 
-        IAlgorithm<SpectrogramConfiguration, SpectrogramAdaptive>{c},
+    SpectrogramNonlinear(Coefficients c = Coefficients()) : 
+        IAlgorithm<SpectrogramConfiguration, SpectrogramNonlinear>{c},
         filterbank0(convertCoefficientsToFilterbankSetup(c)),
         filterbank1(convertCoefficientsToFilterbankSetup(c)),
         filterbank2(convertCoefficientsToFilterbankSetup(c))

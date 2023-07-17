@@ -5,7 +5,7 @@
 #include "solver_toeplitz/solver_toeplitz_system.h"
 #include "filterbank/filterbank_wola.h"
 #include "spectrogram/spectrogram_filterbank.h"
-#include "spectrogram/spectrogram_adaptive.h"
+#include "spectrogram/spectrogram_nonlinear.h"
 #include "normal3d/normal3d_diff.h"
 #include "min_phase_spectrum/min_phase_spectrum_cepstrum.h"
 #include "critical_bands/critical_bands_bark.h"
@@ -34,7 +34,7 @@ DEFINE_BENCHMARK_ALGORITHM(SolverToeplitzSystem)
 DEFINE_BENCHMARK_ALGORITHM(FilterbankAnalysisWOLA)
 DEFINE_BENCHMARK_ALGORITHM(FilterbankSynthesisWOLA)
 DEFINE_BENCHMARK_ALGORITHM(SpectrogramFilterbank)
-DEFINE_BENCHMARK_ALGORITHM(SpectrogramAdaptive)
+DEFINE_BENCHMARK_ALGORITHM(SpectrogramNonlinear)
 DEFINE_BENCHMARK_ALGORITHM(Normal3dDiff)
 DEFINE_BENCHMARK_ALGORITHM(MinPhaseSpectrumCepstrum)
 DEFINE_BENCHMARK_ALGORITHM(CriticalBandsBarkSum)
