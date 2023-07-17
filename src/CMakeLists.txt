@@ -8,15 +8,14 @@ project(DSP_Algorithms VERSION 0.0.1
 # If we want the library to be SHARED, aka a DLL, then we have to tell cmake to export symbols for the applications that are using the DLL. Therefore, uncomment this line if add_library is SHARED
 #set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-file(GLOB_RECURSE HEADER_LIST_ALGORITHMS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/algorithm_library/*.h")
-file(GLOB_RECURSE HEADER_LIST_INTERFACE CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/interface/*.h")
+file(GLOB_RECURSE HEADER_LIST_ALGORITHMS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/*.h")
 
 file(GLOB_RECURSE SOURCE_LIST_CPP CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/*.cpp")
 file(GLOB_RECURSE SOURCE_LIST_C CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/*.c")
 file(GLOB_RECURSE SOURCE_LIST_HEADERS CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/*.h")
 
 # add SHARED if a DLL is needed (see CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS comment above about exporting symbols)
-add_library(${PROJECT_NAME} ${HEADER_LIST_ALGORITHMS} ${HEADER_LIST_INTERFACE} ${SOURCE_LIST_C} ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS}
+add_library(${PROJECT_NAME} ${HEADER_LIST_ALGORITHMS} ${SOURCE_LIST_C} ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS}
 )
 
 # We enforce standards conformance on MSVC both compiler and  preprocessor: https://learn.microsoft.com/en-us/cpp/preprocessor/preprocessor-experimental-overview?view=msvc-160

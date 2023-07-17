@@ -1,6 +1,6 @@
 #pragma once
-#include "interface/macros_json.h"
-#include "interface/public_algorithm.h"
+#include "algorithm_library/interface/macros_json.h"
+#include "algorithm_library/interface/public_algorithm.h"
 
 template<typename Tconfiguration, typename Talgo>
 class IAlgorithm

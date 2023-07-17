@@ -1,5 +1,5 @@
 #pragma once
-#define EIGEN_DENSEBASE_PLUGIN "interface/get_dynamic_memory_size.h" //  member function added to Eigen DenseBase class to get dynamic memory size of array and matrices
+#define EIGEN_DENSEBASE_PLUGIN "algorithm_library/interface/get_dynamic_memory_size.h" //  member function added to Eigen DenseBase class to get dynamic memory size of array and matrices
 #define EIGEN_MPL2_ONLY // don't allow LGPL licensed code from Eigen
 #include <Eigen/Dense> // Eigen Library.
 
