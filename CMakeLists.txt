@@ -1,40 +1,15 @@
 cmake_minimum_required(VERSION 3.16)
 
 # set project name and version
-project(FrameworkDSP VERSION 0.0.1
+project(AlgorithmLibrary VERSION 0.0.1
 	DESCRIPTION "Library of DSP algorithms"
 	LANGUAGES CXX C)
 
-# ---- Include guards ----
-if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
-  message(FATAL_ERROR "builds are not allowed in this folder. Please make a new directory (called a build directory) and run CMake from there.")
-endif()
+# Let's ensure -std=c++xx instead of -std=g++xx
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-option(FrameworkDSP_BUILD_TESTING 0)
-
-# Only do these if this is the main project, and not if it is included through add_subdirectory
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME) 
-
-  # Optionally set things like CMAKE_CXX_STANDARD, CMAKE_POSITION_INDEPENDENT_CODE here
-  set(CMAKE_CXX_STANDARD 14)
-  
-  # Let's ensure -std=c++xx instead of -std=g++xx
-  set(CMAKE_CXX_EXTENSIONS OFF)
-
-  # Let's nicely support folders in IDEs
-  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-  # enable testing
-  set(BUILD_TESTING 1)
-
-    # # Docs only available if this is the main app
-  # find_package(Doxygen)
-  # if(Doxygen_FOUND)
-    # add_subdirectory(docs)
-  # else()
-    # message(STATUS "Doxygen not found, not building docs")
-  # endif()
-endif()
+# Let's nicely support folders in IDEs
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # ---- Add dependencies via CPM ----
 
@@ -49,7 +24,6 @@ CPMAddPackage(
   GITHUB_REPOSITORY nlohmann/json #ArthurSonzogni/nlohmann_json_cmake_fetchcontent
   OPTIONS "JSON_BuildTests OFF" "JSON_Install ON"
 )
-list(APPEND FRAMEWORKDSP_EXTRA_LIBS nlohmann_json::nlohmann_json) # link to library
 
 # add Eigen library
 CPMAddPackage(
@@ -60,7 +34,6 @@ CPMAddPackage(
 )
 add_library(Eigen INTERFACE IMPORTED)
 target_include_directories(Eigen INTERFACE ${Eigen_SOURCE_DIR})
-list(APPEND FRAMEWORKDSP_EXTRA_LIBS Eigen) # link to library
 
 # add format library
 CPMAddPackage(
@@ -69,12 +42,50 @@ CPMAddPackage(
   GITHUB_REPOSITORY fmtlib/fmt
   OPTIONS "FMT_INSTALL YES" # create an installable target
 )
-list(APPEND FRAMEWORKDSP_EXTRA_LIBS fmt::fmt) # link to library	
 
-add_subdirectory(src)
+# If we want the library to be SHARED, aka a DLL, then we have to tell cmake to export symbols for the applications that are using the DLL. Therefore, uncomment this line if add_library is SHARED
+#set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-# Testing only available if this is the main app or variable FrameworkDSP_BUILD_TESTING is set 
-if(BUILD_TESTING OR FrameworkDSP_BUILD_TESTING)
-  add_subdirectory(test)
+file(GLOB_RECURSE HEADER_LIST_ALGORITHMS CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/include/*.h")
+
+file(GLOB_RECURSE SOURCE_LIST_CPP CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE SOURCE_LIST_C CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*.c")
+file(GLOB_RECURSE SOURCE_LIST_HEADERS CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*.h")
+
+# add SHARED if a DLL is needed (see CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS comment above about exporting symbols)
+add_library(${PROJECT_NAME} ${HEADER_LIST_ALGORITHMS} ${SOURCE_LIST_C} ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS}
+)
+
+# We enforce standards conformance on MSVC both compiler and  preprocessor: https://learn.microsoft.com/en-us/cpp/preprocessor/preprocessor-experimental-overview?view=msvc-160
+# The preproccessor is needed for macros to be interpreted correctly. Older versions of MSVC might not support these flags. The solution should be to update MSVC (should we print error?)
+target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive-; /Zc:preprocessor>")
+
+#target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Release>:-DNDEBUG -O2 -ffast-math -fno-exceptions -s -ffunction-sections -fdata-sections -flto>)
+  
+# With MSVC, enable natvis files to improve debugging experience and increase warning level
+if(MSVC)
+    target_sources(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${Eigen_SOURCE_DIR}/debug/msvc/eigen.natvis>)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:fast /W4 -wd4127 -wd4100 -wd4459") # suppress warnings from 3rd party libraries - "C4100": unreferenced formal parameter, "C4127": conditional expression is constant, "C4459": Suppress 'declaration of 'var' hides global declaration'
+else() # on GCC increase warning level
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -Wno-unused-parameter -ffast-math") # "no-unused-parameter": suppress unused parameter warning from 3rd party libraries
 endif()
 
+# We need to include this path in our search path and users of this library also need it
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
+
+# The project depends on the following libraries. They are PUBLIC since they are used in the headers so anyone using this library needs them as well
+target_link_libraries(${PROJECT_NAME} PUBLIC Eigen nlohmann_json::nlohmann_json fmt::fmt)
+
+# All users of this library will need at least C++14
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
+
+# IDEs should put the files in a nice place
+source_group(
+  TREE "${PROJECT_SOURCE_DIR}/include"
+  PREFIX "Public Header Files"
+  FILES ${HEADER_LIST_ALGORITHMS})
+
+source_group(
+  TREE "${PROJECT_SOURCE_DIR}/src"
+  PREFIX "Internal Files"
+  FILES ${SOURCE_LIST_CPP} ${SOURCE_LIST_C} ${SOURCE_LIST_HEADERS})
