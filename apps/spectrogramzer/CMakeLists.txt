@@ -23,6 +23,22 @@ CPMAddPackage(
   OPTIONS "CXXOPTS_BUILD_EXAMPLES OFF" "CXXOPTS_BUILD_TESTS OFF" "CXXOPTS_ENABLE_INSTALL OFF"
 )  
 
+# add audio file library
+CPMAddPackage(
+  NAME AudioFile
+  GITHUB_REPOSITORY adamstark/AudioFile
+  GIT_TAG 1.1.1
+  OPTIONS "BUILD_TESTS OFF" "BUILD_EXAMPLES OFF"
+)
+
+# add Matplot++ library
+CPMAddPackage(
+  NAME matplot
+  GIT_TAG v1.1.0
+  GITHUB_REPOSITORY alandefreitas/matplotplusplus
+  OPTIONS "BUILD_TESTING OFF" "BUILD_EXAMPLES OFF"
+)
+
 # add algorithm_library
 CPMAddPackage(
   NAME AlgorithmLibrary 
@@ -35,5 +51,5 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/../../include ${PROJECT_SOURCE_DIR}/../../src)
 
 # The project depends on the following libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE AlgorithmLibrary cxxopts::cxxopts)
+target_link_libraries(${PROJECT_NAME} PRIVATE AlgorithmLibrary cxxopts::cxxopts AudioFile Matplot++::matplot)
 
