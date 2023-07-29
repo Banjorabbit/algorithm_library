@@ -6,7 +6,7 @@
 // author: Kristian Timm Andersen, 2019
 
 // Eigen inputs should be const Eigen::Ref<const T>& types: 
-struct I
+namespace I
 {
 	// define In type
 	template<typename T>
@@ -62,7 +62,7 @@ struct I
 };
 
 // Eigen outputs should be Eigen::Ref<T> types: 
-struct O
+namespace O
 {
 	// define Out type
 	template<typename T>
