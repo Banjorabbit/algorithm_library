@@ -26,13 +26,6 @@ CPMAddPackage(
   OPTIONS "INSTALL_GTEST OFF" "gtest_force_shared_crt"
 )  
 
-# add Matplot++ json library
-CPMAddPackage(
-  NAME matplot
-  GIT_TAG v1.1.0
-  GITHUB_REPOSITORY alandefreitas/matplotplusplus
-)
-
 # add algorithm_library
 CPMAddPackage(
   NAME AlgorithmLibrary 
@@ -47,7 +40,7 @@ add_executable(${PROJECT_NAME} ${SOURCE_LIST_TEST_CPP})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/../../include ${PROJECT_SOURCE_DIR}/../../src)
 
 # The project depends on the following libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE AlgorithmLibrary gtest gtest_main Matplot++::matplot)
+target_link_libraries(${PROJECT_NAME} PRIVATE AlgorithmLibrary gtest gtest_main)
 
 # All users of this library will need at least C++14
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_14)

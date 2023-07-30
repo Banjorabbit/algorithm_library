@@ -5,7 +5,6 @@
 #include "framework/framework.h"
 #include "fmt/core.h"
 #include <cmath>
-#include <matplot/matplot.h>
 
 namespace InterfaceTests // this namespace contains interface tests and should be used in any unit test of an algorithm
 {
