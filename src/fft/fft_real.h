@@ -86,7 +86,7 @@ private:
 	static void pffftSmartDestroy(PFFFT_Setup* s) { if (s != nullptr) { pffft_destroy_setup(s); } } // only call delete function if shared pointer is not nullptr
 	static PFFFT_Setup* pffftSmartCreate(int fftSize) 
 	{ 
-		if (fftSize % 32 == 0 && fftSize >= 32)  { return pffft_new_setup(fftSize, PFFFT_REAL);; } 
+		if (fftSize % 32 == 0 && fftSize >= 32)  { return pffft_new_setup(fftSize, PFFFT_REAL); } 
 		return nullptr;
 	} 
 
