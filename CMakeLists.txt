@@ -49,11 +49,13 @@ CPMAddPackage(
 file(GLOB_RECURSE HEADER_LIST_ALGORITHMS CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/include/*.h")
 
 file(GLOB_RECURSE SOURCE_LIST_CPP CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*.cpp")
-file(GLOB_RECURSE SOURCE_LIST_C CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*.c")
 file(GLOB_RECURSE SOURCE_LIST_HEADERS CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*.h")
+file(GLOB_RECURSE SOURCE_LIST_UTILITIES_C CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/utilities/*.c")
+file(GLOB_RECURSE SOURCE_LIST_UTILITIES_HEADERS CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/utilities/*.h")
+
 
 # add SHARED if a DLL is needed (see CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS comment above about exporting symbols)
-add_library(${PROJECT_NAME} ${HEADER_LIST_ALGORITHMS} ${SOURCE_LIST_C} ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS}
+add_library(${PROJECT_NAME} ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${HEADER_LIST_UTILITIES_HEADERS} ${HEADER_LIST_ALGORITHMS} 
 )
 
 # We enforce standards conformance on MSVC both compiler and  preprocessor: https://learn.microsoft.com/en-us/cpp/preprocessor/preprocessor-experimental-overview?view=msvc-160
@@ -71,7 +73,8 @@ else() # on GCC increase warning level
 endif()
 
 # We need to include this path in our search path and users of this library also need it
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 # The project depends on the following libraries. They are PUBLIC since they are used in the headers so anyone using this library needs them as well
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen nlohmann_json::nlohmann_json fmt::fmt)
@@ -88,4 +91,4 @@ source_group(
 source_group(
   TREE "${PROJECT_SOURCE_DIR}/src"
   PREFIX "Internal Files"
-  FILES ${SOURCE_LIST_CPP} ${SOURCE_LIST_C} ${SOURCE_LIST_HEADERS})
+  FILES ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${HEADER_LIST_UTILITIES_HEADERS})
