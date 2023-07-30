@@ -10,3 +10,4 @@ project(Build_All VERSION 0.0.1
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../benchmark ${CMAKE_BINARY_DIR}/benchmark)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../test ${CMAKE_BINARY_DIR}/test)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../spectrogramzer ${CMAKE_BINARY_DIR}/spectrogramzer)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../plot_examples ${CMAKE_BINARY_DIR}/plot_examples)

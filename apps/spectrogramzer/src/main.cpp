@@ -2,14 +2,12 @@
 #include "AudioFile.h"
 #include <iostream>
 #include <algorithm_library/spectrogram.h>
-#include <matplot/matplot.h>
+#include <pyplot_cpp/pyplot_cpp.h>
 
 using namespace Eigen;
-using namespace matplot;
+using namespace Pyplotcpp;
 
 // set constants
-constexpr int N_FRAMES_MAX = 4*560;
-constexpr int N_BINS_MAX = 4*420;
 constexpr int VERSION = 1;
 
 int main(int argc, char** argv)
@@ -54,7 +52,7 @@ int main(int argc, char** argv)
   c.bufferSize = static_cast<int>(hopSizeMilliseconds / 1000.f * audioFileInput.getSampleRate());
   std::cout << "Buffer size: " << c.bufferSize << "\n";
   float fftSize = spectrumSizeMilliseconds / 1000.f * audioFileInput.getSampleRate();
-  c.fftSize = static_cast<int>(std::pow(2, std::roundf(std::log2f(fftSize))));
+  c.fftSize = 3496;//Spectrogram::getValidFFTSize(fftSize);//<int>(std::pow(2, std::roundf(std::log2f(fftSize)))); 5⁵=3125, 3⁵ = 243, 184
   std::cout << "FFT size: " << c.fftSize << "\n";
   Spectrogram spectrogram(c);
   
@@ -68,32 +66,13 @@ int main(int argc, char** argv)
     ArrayXf frameIn = Map<ArrayXf>(&audioFileInput.samples[0][nFrame * c.bufferSize], c.bufferSize);
     spectrogram.process(frameIn, spec.col(nFrame));
   }
-  
-  int nFramesDecimate = std::max(nFrames / N_FRAMES_MAX, 1);
-  int nBinsDecimate = std::max(nBins / N_BINS_MAX, 1);
-  int nFramesPlot = nFrames / nFramesDecimate;
-  int nBinsPlot = nBins / nBinsDecimate;
 
-  std::vector<std::vector<float>> specVec(nBinsPlot, std::vector<float>(nFramesPlot));
-  float maxValue = -100;
-  for (auto i = 0; i < nBinsPlot; i++)
-  {
-    for (auto j = 0; j < nFramesPlot; j++)
-    {
-      
-      specVec[i][j] = 20.f * std::log10(spec.block(nBinsDecimate * i, nFramesDecimate * j, nBinsDecimate, nFramesDecimate).maxCoeff());
-      maxValue = std::max(maxValue, specVec[i][j]);
-    }
-  }
-  gca()->color_box_range(maxValue-90, maxValue - 10);
-  gcf()->height(nBinsPlot);
-  gcf()->width(nFramesPlot);
-  gca()->xlabel("Frame number");
-  gca()->ylabel("Frequency bin");
-
-  imagesc(specVec);
-  colorbar();
-  save(outputName); 
+  spec = 20.f * spec.max(1e-20).log10();
+  float maxValue = spec.maxCoeff();
+  imagesc(spec,{maxValue-90, maxValue-10});
+  xlabel("Frame Number");
+  ylabel("Frequency bin");
+  save(outputName,200);
 
   std::cout << "DONE!\n" << std::endl;
 

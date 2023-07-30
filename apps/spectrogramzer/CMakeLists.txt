@@ -31,12 +31,10 @@ CPMAddPackage(
   OPTIONS "BUILD_TESTS OFF" "BUILD_EXAMPLES OFF"
 )
 
-# add Matplot++ library
+# add PyPlotCPP
 CPMAddPackage(
-  NAME matplot
-  GIT_TAG v1.1.0
-  GITHUB_REPOSITORY alandefreitas/matplotplusplus
-  OPTIONS "BUILD_TESTING OFF" "BUILD_EXAMPLES OFF"
+  NAME PyPlotCPP
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../libs/pyplot_cpp
 )
 
 # add algorithm_library
@@ -51,5 +49,5 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/../../include ${PROJECT_SOURCE_DIR}/../../src)
 
 # The project depends on the following libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE AlgorithmLibrary cxxopts::cxxopts AudioFile Matplot++::matplot)
+target_link_libraries(${PROJECT_NAME} PRIVATE AlgorithmLibrary cxxopts::cxxopts AudioFile PyPlotCPP)
 
