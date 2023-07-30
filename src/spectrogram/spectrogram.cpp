@@ -13,3 +13,8 @@ int Spectrogram::getNFrames(int inputSize, int bufferSize)
 {
     return SpectrogramFilterbank::getNFrames(inputSize, bufferSize);
 }
+
+int Spectrogram::getValidFFTSize(int fftSize)
+{
+    return FFTReal::getValidFFTSize(fftSize);
+}

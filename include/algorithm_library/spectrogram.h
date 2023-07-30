@@ -42,4 +42,5 @@ public:
 
     void setWindow(I::Real window); // set FFT window
     static int getNFrames(int inputSize, int bufferSize); // get number of output frames given the size of the input signal and the bufferSize
+	static int getValidFFTSize(int fftSize); // return valid FFT size larger or equal to fftSize
 };
