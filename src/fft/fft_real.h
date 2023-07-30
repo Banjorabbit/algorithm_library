@@ -1,7 +1,7 @@
 #pragma once
 #include "framework/framework.h"
 #include "utilities/pffft.h"
-#include "algorithm_library//fft.h"
+#include "algorithm_library/fft.h"
 
 // Wrapper for real pffft. 
 //
@@ -54,13 +54,23 @@ public:
 		}
 	}
 
-	static inline bool isFFTSizeValid(const int fftSizeTest)
+	static inline bool isFFTSizeValid(const int fftSize)
 	{
-		if (fftSizeTest % 32 != 0 || fftSizeTest < 32) { return false; } // check size is multiple of 32
+		if (fftSize % 32 != 0 || fftSize < 32) { return false; } // first check size is integer factor of 32
+		PFFFT_Setup *setup = pffft_new_setup(fftSize, PFFFT_REAL);
+		if (!setup) { return false; }
+		pffft_destroy_setup(setup);
 		return true;
 	}
 
-	static int getValidFFTSize(int fftSize) { return std::max(static_cast<int>(std::ceil(static_cast<float>(fftSize) / 32) * 32), 32); }// round to nearest multiple of 32
+	static int getValidFFTSize(int fftSize) 
+	{ 
+		if (fftSize > validFFTSizes.back())
+		{
+			return std::pow(2, std::ceil(std::log2(fftSize))); // return power of 2
+		}
+		return *std::upper_bound(validFFTSizes.begin(), validFFTSizes.end(), fftSize);
+	}
 
 private:
 
@@ -74,5 +84,11 @@ private:
 	std::shared_ptr<PFFFT_Setup> setup;
 	
 	static void pffftSmartDestroy(PFFFT_Setup* s) { if (s != nullptr) { pffft_destroy_setup(s); } } // only call delete function if shared pointer is not nullptr
-	static PFFFT_Setup* pffftSmartCreate(int N) { if (isFFTSizeValid(N)) { return pffft_new_setup(N, PFFFT_REAL); } return nullptr;	} // only create new setup if N is a multiple of 32
+	static PFFFT_Setup* pffftSmartCreate(int fftSize) 
+	{ 
+		if (fftSize % 32 == 0 && fftSize >= 32)  { return pffft_new_setup(fftSize, PFFFT_REAL);; } 
+		return nullptr;
+	} 
+
+	static constexpr std::array<int,72> validFFTSizes = {32, 64, 96, 128, 160, 192, 256, 288, 320, 384, 480, 512, 576, 640, 768, 800, 864, 960, 1024, 1152, 1280, 1440, 1536, 1600, 1728, 1920, 2048, 2304, 2400, 2560, 2592, 2880, 3072, 3200, 3456, 3840, 4000, 4320, 4608, 4800, 5120, 5184, 5760, 6144, 6400, 6912, 7200, 7680, 7776, 8000, 8640, 9216, 9600, 10240, 10368, 11520, 12000, 12800, 12960, 13824, 14400, 15360, 15552, 16000, 17280, 18432, 19200, 20000, 20736, 21600, 23040, 23328};
 };
