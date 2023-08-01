@@ -86,6 +86,19 @@ TEST(FFTReal, InvalidFFTSize)
 	}
 	EXPECT_FALSE(validFFTSize);
 
+	// set fftSize to 1760 (invalid size)
+	validFFTSize = true;
+	try
+	{
+		c.fftSize = 1760;
+		fft.setCoefficients(c);
+	}
+	catch (FFTReal::Configuration::ExceptionFFT error) {
+		fmt::print("Caught exception: {}\n", error.what());
+		validFFTSize = false;
+	}
+	EXPECT_FALSE(validFFTSize);
+
 	// set fftSize to 16 (invalid size)
 	validFFTSize = true;
 	try
