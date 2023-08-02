@@ -16,6 +16,16 @@ endif()
 set(ENV{CPM_SOURCE_CACHE} ${PROJECT_SOURCE_DIR}/../../extern)
 include(../../cmake/CPM.cmake)
 
+# add matplotlib-cpp library (CMakeLists.txt in this project is not suitable for including as subdirectory, and it's a header-only project so only download it)
+CPMAddPackage(
+  NAME matplotlib-cpp
+  GITHUB_REPOSITORY lava/matplotlib-cpp
+  GIT_TAG origin/master
+  DOWNLOAD_ONLY YES
+)
+add_library(matplotlib-cpp INTERFACE IMPORTED)
+target_include_directories(matplotlib-cpp INTERFACE ${matplotlib-cpp_SOURCE_DIR})
+
 # add algorithm_library
 CPMAddPackage(
   NAME AlgorithmLibrary 
@@ -50,4 +60,5 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Python3::Module
   Python3::NumPy
   AlgorithmLibrary
+  matplotlib-cpp
 )
