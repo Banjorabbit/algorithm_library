@@ -25,7 +25,7 @@ CPMAddPackage(
   OPTIONS "JSON_BuildTests OFF" "JSON_Install ON"
 )
 
-# add Eigen library
+# add Eigen library (CMakeLists.txt in this project is not suitable for including as subdirectory, and it's a header-only project so only download it)
 CPMAddPackage(
     NAME Eigen
     URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip
