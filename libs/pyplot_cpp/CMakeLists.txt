@@ -35,7 +35,6 @@ CPMAddPackage(
 # library target
 add_library(${PROJECT_NAME} 
   "${PROJECT_SOURCE_DIR}/include/pyplot_cpp/pyplot_cpp.h" 
-  "${PROJECT_SOURCE_DIR}/src/matplotlibcpp.h"
   "${PROJECT_SOURCE_DIR}/src/pyplot_cpp.cpp"
 )
 
