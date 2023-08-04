@@ -18,7 +18,7 @@ namespace Pyplotcpp
     void ylim(float down, float up);
     void xlabel(const std::string& label);
     void ylabel(const std::string& label);
-    void colorbar(Figure *mat);
+    void colorbar(Figure *figure);
 
     void save(const std::string& filename, const int dpi = 0);
     void show(const bool block = true);

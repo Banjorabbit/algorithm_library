@@ -36,9 +36,9 @@ namespace Pyplotcpp
         const int nRows = x.rows();
         const int colors = 1;
         Eigen::ArrayXXf y = x.transpose(); // matplotlib assumes data is transposed
-        PyObject* mat;
-        matplotlibcpp::imshow(y.data(), nRows, nCols, colors, options, &mat);
-        return reinterpret_cast<Figure*>(mat);
+        PyObject* figure;
+        matplotlibcpp::imshow(y.data(), nRows, nCols, colors, options, &figure);
+        return reinterpret_cast<Figure*>(figure);
     }
     
     Figure* imagesc(I::Real2D x)
