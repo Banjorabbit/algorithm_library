@@ -30,24 +30,26 @@ namespace Pyplotcpp
     }
 
     // local function 
-    inline void imshow(I::Real2D x, const std::map<std::string, std::string> &options = {})
+    inline Figure* imshow(I::Real2D x, const std::map<std::string, std::string> &options = {})
     {
         const int nCols = x.cols();
         const int nRows = x.rows();
         const int colors = 1;
         Eigen::ArrayXXf y = x.transpose(); // matplotlib assumes data is transposed
-        matplotlibcpp::imshow(y.data(), nRows, nCols, colors, options);
+        PyObject* mat;
+        matplotlibcpp::imshow(y.data(), nRows, nCols, colors, options, &mat);
+        return reinterpret_cast<Figure*>(mat);
     }
     
-    void imagesc(I::Real2D x)
+    Figure* imagesc(I::Real2D x)
     {
-        imshow(x);
+        return imshow(x);
     }
 
-    void imagesc(I::Real2D x, std::array<float, 2> scaling)
+    Figure* imagesc(I::Real2D x, std::array<float, 2> scaling)
     {
         const std::map<std::string, std::string> sc{{"vmin", std::to_string(scaling[0])}, {"vmax", std::to_string(scaling[1])}};
-        imshow(x, sc);
+        return imshow(x, sc);
     }
 
     void title(const std::string& titlename)
@@ -75,6 +77,11 @@ namespace Pyplotcpp
         matplotlibcpp::ylabel(label);
     }
 
+    void colorbar(Figure* mat)
+    {
+        matplotlibcpp::colorbar(reinterpret_cast<PyObject*>(mat));
+    }
+    
     void save(const std::string& filename, const int dpi)
     {
         matplotlibcpp::save(filename, dpi);
