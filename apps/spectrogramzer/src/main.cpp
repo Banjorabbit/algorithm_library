@@ -52,7 +52,7 @@ int main(int argc, char** argv)
   c.bufferSize = static_cast<int>(hopSizeMilliseconds / 1000.f * audioFileInput.getSampleRate());
   std::cout << "Buffer size: " << c.bufferSize << "\n";
   float fftSize = spectrumSizeMilliseconds / 1000.f * audioFileInput.getSampleRate();
-  c.fftSize = 3496;//Spectrogram::getValidFFTSize(fftSize);//<int>(std::pow(2, std::roundf(std::log2f(fftSize)))); 5⁵=3125, 3⁵ = 243, 184
+  c.fftSize = Spectrogram::getValidFFTSize(fftSize);
   std::cout << "FFT size: " << c.fftSize << "\n";
   Spectrogram spectrogram(c);
   
@@ -69,10 +69,11 @@ int main(int argc, char** argv)
 
   spec = 20.f * spec.max(1e-20).log10();
   float maxValue = spec.maxCoeff();
-  imagesc(spec,{maxValue-90, maxValue-10});
+  auto figure = imagesc(spec,{maxValue-90, maxValue-10});
   xlabel("Frame Number");
   ylabel("Frequency bin");
-  save(outputName,200);
+  colorbar(figure);
+  save(outputName, 1000);
 
   std::cout << "DONE!\n" << std::endl;
 
