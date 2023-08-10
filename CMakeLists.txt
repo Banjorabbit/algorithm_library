@@ -20,7 +20,7 @@ include(cmake/CPM.cmake)
 # add nlohmann json library
 CPMAddPackage(
   NAME nlohmann_json
-  VERSION 3.10.5
+  VERSION 3.11.2
   GITHUB_REPOSITORY nlohmann/json #ArthurSonzogni/nlohmann_json_cmake_fetchcontent
   OPTIONS "JSON_BuildTests OFF" "JSON_Install ON"
 )
