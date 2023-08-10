@@ -5,8 +5,8 @@ namespace Pyplotcpp
 {
     void plot(I::Real2D x)
     {
-        const int nCols = x.cols();
-        const int nRows = x.rows();
+        const auto nCols = x.cols();
+        const auto nRows = x.rows();
         for (auto col = 0; col < nCols; col++)
         {
             const float *xPtr = x.col(col).data();
@@ -17,8 +17,8 @@ namespace Pyplotcpp
 
     void plot(I::Real2D x, I::Real2D y)
     {
-        const int nCols = std::min(x.cols(), y.cols());
-        const int nRows = std::min(x.rows(), y.rows());
+        const auto nCols = std::min(x.cols(), y.cols());
+        const auto nRows = std::min(x.rows(), y.rows());
         for (auto col = 0; col < nCols; col++)
         {
             const float *xPtr = x.col(col).data();
@@ -32,8 +32,8 @@ namespace Pyplotcpp
     // local function 
     inline Figure* imshow(I::Real2D x, const std::map<std::string, std::string> &options = {})
     {
-        const int nCols = x.cols();
-        const int nRows = x.rows();
+        const int nCols = static_cast<int>(x.cols());
+        const int nRows = static_cast<int>(x.rows());
         const int colors = 1;
         Eigen::ArrayXXf y = x.transpose(); // matplotlib assumes data is transposed
         PyObject* figure;

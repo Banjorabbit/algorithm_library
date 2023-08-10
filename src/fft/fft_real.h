@@ -67,7 +67,7 @@ public:
 	{ 
 		if (fftSize > validFFTSizes.back())
 		{
-			return std::pow(2, std::ceil(std::log2(fftSize))); // return power of 2
+			return static_cast<int>(std::pow(2, std::ceil(std::log2(fftSize)))); // return power of 2
 		}
 		return *std::upper_bound(validFFTSizes.begin(), validFFTSizes.end(), fftSize);
 	}

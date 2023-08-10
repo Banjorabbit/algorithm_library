@@ -17,7 +17,7 @@ public:
 
     void inline processOn(Input input, Output output)
     {
-        for (auto nFrame = 0; nFrame < getNFrames(input.size(), C.bufferSize); nFrame++)
+        for (auto nFrame = 0; nFrame < getNFrames(static_cast<int>(input.size()), C.bufferSize); nFrame++)
         {
             Eigen::ArrayXf frame = input.segment(nFrame * C.bufferSize, C.bufferSize);
             Eigen::ArrayXcf filterbankOut(nBands);
