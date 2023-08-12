@@ -8,6 +8,11 @@
 
 struct SpectrogramConfiguration : public Configuration<I::Real, O::Real2D>
 {
+
+	// choose algorithm to use for calculating spectrogram (set compile time)
+	enum SpectrogramType { FILTERBANK, NONLINEAR};
+	static constexpr SpectrogramType spectrogramType = FILTERBANK;
+
 	struct Coefficients
 	{
         int bufferSize = 128;
