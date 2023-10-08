@@ -15,6 +15,11 @@ struct SplineInput
 
 struct SplineConfiguration : public Configuration<SplineInput, O::Real2D>
 {
+	struct Coefficients
+	{
+		int nChannels = 2;
+		DEFINE_TUNABLE_COEFFICIENTS(nChannels)
+	};
 	struct Parameters
 	{
 		float sFactor = 0.f;
@@ -24,26 +29,24 @@ struct SplineConfiguration : public Configuration<SplineInput, O::Real2D>
 	template<typename Talgo>
 	struct Test
 	{
+		Talgo algo;
 		Eigen::ArrayXXf xGiven;
 		Eigen::ArrayXXf yGiven;
 		Eigen::ArrayXXf xDesired;
 		Eigen::ArrayXXf yDesired;
 
-		Test()
+		Test(const Coefficients& c = {}) : algo(c)
 		{
-			int n = 10;
-			int nOS = 100;
-			int nChannels = 2;
-			xGiven.resize(n, nChannels);
-			yGiven.resize(n, nChannels);
-			xDesired.resize(nOS, nChannels);
-			yDesired.resize(nOS, nChannels);
-			xGiven = Eigen::ArrayXf::LinSpaced(n, 0, n - 1).replicate(1, nChannels);
+			int n = 10; // number of input samples per channel
+			int nOS = 100; // number of output samples per channel
+			xGiven = Eigen::ArrayXf::LinSpaced(n, 0, n - 1).replicate(1, c.nChannels);
+			yGiven.resize(n, c.nChannels);
 			yGiven.setRandom();
-			xDesired = Eigen::ArrayXf::LinSpaced(nOS, 0, n - 1).replicate(1, nChannels);
+			xDesired = Eigen::ArrayXf::LinSpaced(nOS, 0, n - 1).replicate(1, c.nChannels);
+			yDesired.resize(nOS, c.nChannels);
 		}
 
-		inline void processAlgorithm(Talgo& algo) { algo.process({ xGiven, yGiven, xDesired }, yDesired); }
+		inline void processAlgorithm() { algo.process({ xGiven, yGiven, xDesired }, yDesired); }
 		bool isTestOutputFinite() const { return yDesired.allFinite(); }
 	};
 };
@@ -52,5 +55,6 @@ class Spline : public Algorithm<SplineConfiguration>
 { 
 public:
 	Spline() = default;
-	Spline(const Parameters& p);
+	Spline(const Setup& s);
+	Spline(const Coefficients& c);
 };

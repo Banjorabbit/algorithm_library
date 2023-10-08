@@ -10,12 +10,12 @@ class MinPhaseSpectrumCepstrum : public IAlgorithm<MinPhaseSpectrumConfiguration
 public:
 	MinPhaseSpectrumCepstrum(Coefficients c =  Coefficients()) :
 		IAlgorithm<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>{ c },
-		fft({ 2 * (C.nBands - 1) })
+		fft({ 2 * (C.nBands - 1), 1 })
 	{ }
 
 	MinPhaseSpectrumCepstrum(Setup s) : 
 	    IAlgorithm<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>{ s },
-		fft({ 2 * (C.nBands - 1) })
+		fft({ 2 * (C.nBands - 1), 1 })
 	{ }
 
 	FFTReal fft;
@@ -25,7 +25,7 @@ public:
 	{
         using namespace std::complex_literals;
 
-        for (auto channel = 0; channel < magnitude.cols(); channel++)
+        for (auto channel = 0; channel < C.nChannels; channel++)
         {
             // calculate cepstrum
             Eigen::ArrayXcf xLog = magnitude.col(channel).max(P.minMagnitude).log().cast<std::complex<float>>();

@@ -13,11 +13,10 @@
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
 static void algorithm##_process(benchmark::State& state) { \
-	algorithm algo; \
 	algorithm::Configuration::Test<algorithm> test; \
 	for (auto _ : state) \
     { \
-		test.processAlgorithm(algo); \
+		test.processAlgorithm(); \
 		benchmark::DoNotOptimize(test); \
 	} \
 } \

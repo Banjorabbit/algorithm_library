@@ -11,7 +11,8 @@ struct MinPhaseSpectrumConfiguration : public Configuration<I::Real2D, O::Comple
     struct Coefficients
     {
         int nBands = 257;
-        DEFINE_TUNABLE_COEFFICIENTS(nBands)
+        int nChannels = 2;
+        DEFINE_TUNABLE_COEFFICIENTS(nBands, nChannels)
     };
 
     struct Parameters
@@ -23,18 +24,17 @@ struct MinPhaseSpectrumConfiguration : public Configuration<I::Real2D, O::Comple
 	template<typename Talgo>
 	struct Test
 	{
+        Talgo algo;
 		Eigen::ArrayXXf input;
         Eigen::ArrayXXcf output;
 
-		Test()
+		Test(const Coefficients& c = {}) : algo(c)
 		{
-            int nChannels = 2;
-            auto c = Coefficients();
-            input = Eigen::ArrayXXf::Random(c.nBands, nChannels).abs2();
-            output.resize(c.nBands, nChannels);
+            input = Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2();
+            output.resize(c.nBands, c.nChannels);
 		}
 
-		void processAlgorithm(Talgo& algo) { algo.process(input, output); }
+		void processAlgorithm() { algo.process(input, output); }
 		bool isTestOutputFinite() const { return output.allFinite(); }
 	};
 };

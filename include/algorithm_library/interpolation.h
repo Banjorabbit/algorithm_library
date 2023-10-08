@@ -17,20 +17,32 @@ struct InterpolationSampleInput
 
 struct InterpolationSampleConfiguration : public Configuration<InterpolationSampleInput, O::Float>
 {
+	struct InputData { Eigen::Array4f samples; float fractionalDelay;};
+	using OutputData = float;
+
+	static auto initInput(const Coefficients& c) 
+	{ 	
+		return InputData();
+	}
+
+	static auto initOutput(const Coefficients& c) { return OutputData{}; }
+
 	template<typename Talgo>
 	struct Test
 	{
+		Talgo algo;
 		Eigen::Array4f samples;
 		float fractionalIndex; // index must be between 0.0 - 1.0
 		float output; // output has same size as fractionalIndices
 
-		Test()
+		Test(const Coefficients& c = {})
 		{
 			samples.setRandom();
 			fractionalIndex = 0.3f;
+			output = 0.f;
 		}
 
-		void processAlgorithm(Talgo& algo) { algo.process({ samples, fractionalIndex }, output); }
+		void processAlgorithm() { algo.process({ samples, fractionalIndex }, output); }
 		bool isTestOutputFinite() const { return std::isfinite(output); }
 	};
 };
@@ -56,22 +68,21 @@ struct InterpolationConfiguration : public Configuration<InterpolationInput, O::
 	template<typename Talgo>
 	struct Test
 	{
+		Talgo algo;
 		Eigen::ArrayXf samples;
 		Eigen::ArrayXf fractionalIndices; // indices must be between 1.0 and samples.size()-2.0 and in non-decreasing order
 		Eigen::ArrayXf output; // output has same size as fractionalIndices
 
-		Test()
+		Test(const Coefficients& c = {})
 		{
 			const int N = 256;
-			samples.resize(N);
-			samples.setRandom();
-			fractionalIndices.resize(N);
+			samples = Eigen::ArrayXf::Random(N);
 			fractionalIndices = Eigen::ArrayXf::Random(N).abs() * (N - 3.f) + 1.f; // indices must be between 1.0 and N-2.0
 			std::sort(&fractionalIndices(0), &fractionalIndices(0) + N - 1); // indices must be in increasing order
 			output.resize(N);
 		}
 
-		inline void processAlgorithm(Talgo& algo) { algo.process({ samples, fractionalIndices }, output); }
+		inline void processAlgorithm() { algo.process({ samples, fractionalIndices }, output); }
 		bool isTestOutputFinite() const { return output.isFinite().all(); }
 	};
 };
@@ -95,18 +106,18 @@ struct InterpolationConstantConfiguration : public Configuration<I::Real, O::Rea
 	template<typename Talgo>
 	struct Test
 	{
+		Talgo algo;
 		Eigen::ArrayXf samples;
 		Eigen::ArrayXf output;
 
-		Test()
+		Test(const Coefficients& c = {}) : algo(c)
 		{
 			const int N = 256;
-			samples.resize(N);
-			samples.setRandom();
-			output.setRandom(N - 3); // interpolation needs 4 values, so there will be 3 less outputs than inputs
+			samples = Eigen::ArrayXf::Random(N);
+			output.resize(N - 3); // interpolation needs 4 values, so there will be 3 less outputs than inputs
 		}
 
-		inline void processAlgorithm(Talgo& algo) { algo.process(samples, output); }
+		inline void processAlgorithm() { algo.process(samples, output); }
 		bool isTestOutputFinite() const { return output.allFinite(); }
 	};
 };

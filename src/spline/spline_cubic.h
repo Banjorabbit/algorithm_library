@@ -10,15 +10,18 @@
 class SplineCubic : public IAlgorithm<SplineConfiguration, SplineCubic>
 {
 public:
-	SplineCubic(Parameters p = Parameters()) :
-		IAlgorithm<SplineConfiguration, SplineCubic>{ p }
+	SplineCubic(Setup s = {}) :
+		IAlgorithm<SplineConfiguration, SplineCubic>{ s }
+	{ }
+	SplineCubic(Coefficients c) :
+		IAlgorithm<SplineConfiguration, SplineCubic>{ c }
 	{ }
 
 	inline void processOn(Input x, Output y)
 	{
 		using namespace Eigen;
 		// for each spline
-		for (auto channel = 0; channel < x.xGiven.cols(); channel++)
+		for (auto channel = 0; channel < C.nChannels; channel++)
 		{
 			Map<const ArrayXf> input(x.xGiven.col(channel).data(), x.xGiven.rows());
 			Map<const ArrayXf> output(x.yGiven.col(channel).data(), x.yGiven.rows());

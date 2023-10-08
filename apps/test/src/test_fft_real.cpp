@@ -15,10 +15,11 @@ TEST(FFTReal, Interface)
 // pass/fail: Reconstruction errror is below a threshold
 TEST(FFTReal, Reconstruction)
 {
-	FFTReal fft;
+	auto c = FFTReal::Coefficients();
+	c.nChannels = 1;
+	FFTReal fft(c);
 
 	// Run FFT and reconstruct at default FFT size
-	auto c = fft.getCoefficients();
 	int fftSize = c.fftSize;
 	ArrayXf input(fftSize);
 	input.setRandom();

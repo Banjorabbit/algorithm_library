@@ -20,23 +20,25 @@ struct FFTConfiguration : public Configuration<I::Real2D, O::Complex2D>
 	struct Coefficients
 	{
 		int fftSize = 512;
-		DEFINE_TUNABLE_COEFFICIENTS(fftSize)
+		int nChannels = 2;
+		DEFINE_TUNABLE_COEFFICIENTS(fftSize, nChannels)
 	};
+
+	static auto initInput(const Coefficients& c) { return Eigen::ArrayXXf(c.fftSize, c.nChannels); }
+	static auto initOutput(const Coefficients& c) { return Eigen::ArrayXXf(c.fftSize/2 +1, c.nChannels); }
 
 	template<typename Talgo>
 	struct Test
 	{
+		Talgo algo;
 		Eigen::ArrayXXf input;
 		Eigen::ArrayXXcf output;
-		Test()
+		Test(const Coefficients& c = {}) : algo(c), input(initInput(c)), output(initOutput(c))
 		{
-			Coefficients c;
-			input.resize(c.fftSize, 2);
 			input.setRandom();
-			output.resize(c.fftSize/2 + 1, 2);
 		}
 
-		inline void processAlgorithm(Talgo& algo) { algo.process(input, output); }
+		inline void processAlgorithm() { algo.process(input, output); }
 		bool isTestOutputFinite() const { return output.allFinite(); }
 	};
 };

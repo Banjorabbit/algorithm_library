@@ -2,4 +2,5 @@
 
 DEFINE_SOURCE_INTERFACE(SplineConfiguration, SplineCubic)
 
- Spline::Spline(const Parameters& p) : Algorithm<SplineConfiguration>{p} {}
+ Spline::Spline(const Setup& s) : Algorithm<SplineConfiguration>{s} {}
+ Spline::Spline(const Coefficients& c) : Algorithm<SplineConfiguration>{c} {}

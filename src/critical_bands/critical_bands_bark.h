@@ -44,11 +44,11 @@ public:
 		indexEnd = indexStart(nBandsCritical - 1) + nBandsSum(nBandsCritical - 1);
 	}
 
-	inline void inverse(I::Real2D xPower, O::Real2D yPower, int nBands)
+	inline void inverse(I::Real2D xPower, O::Real2D yPower, const int nBands, const int nChannels)
     {
 		assert(xPower.rows() == nBandsCritical);
 
-        for (auto channel = 0; channel < xPower.cols(); channel++)
+        for (auto channel = 0; channel < nChannels; channel++)
 		{
 			yPower.block(0, channel, indexStart(0), 1).setConstant(xPower(0, channel));
 			for (auto i = 0; i < nBandsCritical; i++)
@@ -84,7 +84,7 @@ public:
 
 	inline void processOn(Input xPower, Output yPower)
 	{
-       for (auto channel = 0; channel < xPower.cols(); channel++)
+       for (auto channel = 0; channel < C.nChannels; channel++)
 	    {
 		    for (auto i = 0; i < nBandsCritical; i++)
 		    {
@@ -94,7 +94,7 @@ public:
 	    }
 	}
 
-	inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
+	inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands, C.nChannels); }
 
 private:
 	size_t getMembersDynamicSize() const final { return CriticalBandsBark::getMembersDynamicSize(); }
@@ -113,7 +113,7 @@ public:
 
 	inline void processOn(Input xPower, Output yPower)
 	{
-       for (auto channel = 0; channel < xPower.cols(); channel++)
+       for (auto channel = 0; channel < C.nChannels; channel++)
 	    {
 		    for (auto i = 0; i < nBandsCritical; i++)
 		    {
@@ -123,7 +123,7 @@ public:
 	    }
 	}
 
-    inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
+    inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands, C.nChannels); }
 
 private:
 	size_t getMembersDynamicSize() const final { return CriticalBandsBark::getMembersDynamicSize(); }
@@ -142,7 +142,7 @@ public:
 
 	inline void processOn(Input xPower, Output yPower)
 	{
-       for (auto channel = 0; channel < xPower.cols(); channel++)
+       for (auto channel = 0; channel < C.nChannels; channel++)
 	    {
 		    for (auto i = 0; i < nBandsCritical; i++)
 		    {
@@ -152,7 +152,7 @@ public:
 	    }
 	}
 
-	inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
+	inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands, C.nChannels); }
 
 private:
 	size_t getMembersDynamicSize() const final { return CriticalBandsBark::getMembersDynamicSize(); }

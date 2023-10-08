@@ -15,7 +15,8 @@ struct Normal3dConfiguration : public Configuration<I::Real2D, O::Real2D>
 	struct Coefficients
 	{
         int nValuesX = 257;
-		DEFINE_TUNABLE_COEFFICIENTS(nValuesX)
+		int nChannels = 2;
+		DEFINE_TUNABLE_COEFFICIENTS(nValuesX, nChannels)
 	};
 
 	struct Parameters
@@ -28,20 +29,19 @@ struct Normal3dConfiguration : public Configuration<I::Real2D, O::Real2D>
 	template<typename Talgo>
 	struct Test
 	{
+		Talgo algo;
 		Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
         int nValuesY = 10;
 
-		Test()
+		Test(const Coefficients& c = {}) : algo(c)
 		{
-			Talgo algo;
-			auto c = algo.getCoefficients();
 			input.resize(c.nValuesX, nValuesY);
             output.resize(3 * c.nValuesX, nValuesY);
 			input.setRandom();
 		}
 	
-		inline void processAlgorithm(Talgo& algo) { algo.process(input, output); }
+		inline void processAlgorithm() { algo.process(input, output); }
 		bool isTestOutputFinite() const { return output.allFinite(); }
 	};
 };

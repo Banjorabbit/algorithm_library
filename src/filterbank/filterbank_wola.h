@@ -11,14 +11,14 @@ class FilterbankAnalysisWOLA : public IAlgorithm<FilterbankAnalysisConfiguration
 public:
 	FilterbankAnalysisWOLA(Coefficients c =  Coefficients()) :
 		IAlgorithm<FilterbankAnalysisConfiguration, FilterbankAnalysisWOLA>{ c },
-		fft({ C.fftSize })
+		fft({ C.fftSize, 1 })
 	{
 		initialize();
 	}
 
 	FilterbankAnalysisWOLA(Setup s) : 
 	IAlgorithm<FilterbankAnalysisConfiguration, FilterbankAnalysisWOLA>{ s },
-		fft({ C.fftSize })
+		fft({ C.fftSize, 1 })
 	{ 
 		initialize();
 	}
@@ -30,7 +30,7 @@ public:
 	{
 		timeBuffer.topRows(overlap) = timeBuffer.bottomRows(overlap);
 		timeBuffer.bottomRows(C.bufferSize) = xTime;
-		for (auto channel = 0; channel < xTime.cols(); channel++)
+		for (auto channel = 0; channel < C.nChannels; channel++)
 		{
 			fftBuffer.head(C.frameSize) = timeBuffer.col(channel) * window;
 			for (auto j = 1; j < nFolds; j++)
@@ -162,14 +162,14 @@ class FilterbankSynthesisWOLA : public IAlgorithm<FilterbankSynthesisConfigurati
 public:
 	FilterbankSynthesisWOLA(Coefficients c = Coefficients()) :
 		IAlgorithm<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>{ c },
-		fft({ C.fftSize })
+		fft({ C.fftSize, 1 })
 	{
 		initialize();
 	}
 
 		FilterbankSynthesisWOLA(Setup s) :
 		IAlgorithm<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>{ s },
-		fft({ C.fftSize })
+		fft({ C.fftSize, 1 })
 	{
 		initialize();
 	}
@@ -179,7 +179,7 @@ public:
 
 	inline void processOn(Input xFreq, Output yTime)
 	{
-		for (auto channel = 0; channel < xFreq.cols(); channel++)
+		for (auto channel = 0; channel < C.nChannels; channel++)
 		{
 			fft.inverse(xFreq.col(channel), fftBuffer.head(C.fftSize));
 			for (auto j = 1; j < nFolds; j++)

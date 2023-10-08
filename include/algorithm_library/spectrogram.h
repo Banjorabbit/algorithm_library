@@ -23,18 +23,18 @@ struct SpectrogramConfiguration : public Configuration<I::Real, O::Real2D>
 	template<typename Talgo>
 	struct Test
 	{
+		Talgo algo;
 		Eigen::ArrayXf input;
 		Eigen::ArrayXXf output;
-		Test()
+		Test(const Coefficients& c = {}) : algo(c)
 		{
             const int nFrames = 10;
-			Coefficients c;
 			input.resize(nFrames * c.bufferSize);
 			input.setRandom();
 			output.resize(c.fftSize / 2 + 1, nFrames);
 		}
 
-		inline void processAlgorithm(Talgo& algo) { algo.process(input, output); }
+		inline void processAlgorithm() { algo.process(input, output); }
 		bool isTestOutputFinite() const { return output.allFinite(); }
 	};
 };

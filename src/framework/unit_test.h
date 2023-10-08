@@ -138,10 +138,8 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 	template<typename Talgo>
 	bool processTest()
 	{
-		Talgo algo;
-
 		typename Talgo::Configuration::template Test<Talgo> test;
-		test.processAlgorithm(algo);
+		test.processAlgorithm();
 
 		double durationMin = 1e10;
 		double durationAvg = 0;
@@ -149,7 +147,7 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 		for (auto i = 0; i < 100; i++)
 		{
 			auto start = std::chrono::steady_clock::now();
-			test.processAlgorithm(algo);
+			test.processAlgorithm();
 			auto end = std::chrono::steady_clock::now();
 			auto time = std::chrono::duration<double, std::micro>(end - start).count();
 			durationMin = std::min(durationMin, time);

@@ -22,11 +22,12 @@ struct SolverToeplitzConfiguration : public Configuration<SolverToeplitzInput, O
 	template<typename Talgo>
 	struct Test
 	{
+		Talgo algo;
 		Eigen::ArrayXcf aToeplitz;
 		Eigen::ArrayXXcf BRighthand;
 		Eigen::ArrayXXcf output;
 
-		Test()
+		Test(const Coefficients& c = {})
 		{
 			aToeplitz.resize(8);
 			aToeplitz.setRandom();
@@ -36,7 +37,7 @@ struct SolverToeplitzConfiguration : public Configuration<SolverToeplitzInput, O
 			output.resize(8, 8);
 		}
 
-		inline void processAlgorithm(Talgo& algo) { algo.process({ aToeplitz, BRighthand }, output); }
+		inline void processAlgorithm() { algo.process({ aToeplitz, BRighthand }, output); }
 		bool isTestOutputFinite() const { return output.allFinite(); }
 	};
 };

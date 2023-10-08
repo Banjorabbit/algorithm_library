@@ -7,7 +7,7 @@
 
 // --------------------------------------------- Filterbank Analysis ----------------------------------------------------------------
 
-struct FilterbankAnalysisConfiguration : public Configuration<I::Real2D, O::Complex2D, I::Real>
+struct FilterbankAnalysisConfiguration : public Configuration<I::Real2D, O::Complex2D>
 {
 	struct Coefficients
 	{
@@ -26,22 +26,22 @@ struct FilterbankAnalysisConfiguration : public Configuration<I::Real2D, O::Comp
 		DEFINE_TUNABLE_PARAMETERS(windowType)
 	};
 
+	static auto initInput(const Coefficients& c) { return Eigen::ArrayXXf(c.bufferSize, c.nChannels); }
+	static auto initOutput(const Coefficients& c) { return Eigen::ArrayXXcf(c.fftSize/2 + 1, c.nChannels); }
+	
 	template<typename Talgo>
 	struct Test
 	{
+		Talgo algo;
 		Eigen::ArrayXXf input;
 		Eigen::ArrayXXcf output;
 
-		Test()
+		Test(const Coefficients& c = {}) : algo(c), input(initInput(c)), output(initOutput(c))
 		{
-			Talgo algo;
-			auto c = algo.getCoefficients();
-			input.resize(c.bufferSize, c.nChannels);
-			output.resize(c.fftSize/2 + 1, c.nChannels);
 			input.setRandom();
 		}
 	
-		inline void processAlgorithm(Talgo& algo) { algo.process(input, output); }
+		inline void processAlgorithm() { algo.process(input, output); }
 		bool isTestOutputFinite() const { return output.allFinite(); }
 	};
 };
@@ -54,7 +54,7 @@ public:
 	FilterbankAnalysis(const Coefficients& c);
 	FilterbankAnalysis(const Setup& s);
 
-	void setWindow(I::Real window); // requires P.windowType == USER_DEFINED
+	void setWindow(I::Real window); // To have any effect, this method requires P.windowType == USER_DEFINED
 	void setStandardFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);
 	void setLowDelayFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);
 	void setHighQualityFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);
@@ -81,22 +81,22 @@ struct FilterbankSynthesisConfiguration : public Configuration<I::Complex2D, O::
 		DEFINE_TUNABLE_PARAMETERS(windowType)
 	};
 
+	static auto initInput(const Coefficients& c) { return Eigen::ArrayXXcf(c.fftSize/2 + 1, c.nChannels); }
+	static auto initOutput(const Coefficients& c) { return Eigen::ArrayXXf(c.bufferSize, c.nChannels); }
+
 	template<typename Talgo>
 	struct Test
 	{
+		Talgo algo;
 		Eigen::ArrayXXcf input;
 		Eigen::ArrayXXf output;
 
-		Test()
+		Test(const Coefficients& c = {}) : algo(c), input(initInput(c)), output(initOutput(c))
 		{
-			Talgo algo;
-			auto c = algo.getCoefficients();
-			input.resize(c.fftSize / 2 + 1, c.nChannels);
-			output.resize(c.bufferSize, c.nChannels);
 			input.setRandom();
 		}
 
-		inline void processAlgorithm(Talgo& algo) { algo.process(input, output); }
+		inline void processAlgorithm() { algo.process(input, output); }
 		bool isTestOutputFinite() const { return output.allFinite(); }
 
 	};
@@ -109,7 +109,7 @@ public:
 	FilterbankSynthesis(const Coefficients& c);
 	FilterbankSynthesis(const Setup& s);
 
-	void setWindow(I::Real window); // requires P.windowType == USER_DEFINED
+	void setWindow(I::Real window); // To have any effect, this method requires P.windowType == USER_DEFINED
 	void setStandardFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);
 	void setLowDelayFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);
 	void setHighQualityFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);

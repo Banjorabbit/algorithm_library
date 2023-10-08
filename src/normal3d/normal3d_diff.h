@@ -31,7 +31,7 @@ public:
 
 	inline void processOn(Input input, Output output)
 	{
-        for (auto frame = 0; frame < input.cols(); frame++)
+        for (auto frame = 0; frame < C.nChannels; frame++)
         {
             Eigen::ArrayXXf normals(C.nValuesX, 3);
             normals.col(0) << 0.f, den1 * (input.col(frame).tail(C.nValuesX - 2) - input.col(frame).head(C.nValuesX - 2)), 0.f; // 1st dimension
