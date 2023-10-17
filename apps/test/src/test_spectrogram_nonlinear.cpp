@@ -53,9 +53,9 @@ TEST(SpectrogramNonlinear, setWindow)
 	spec1.process(input, output1);
 	spec2.process(input, output2);
 
-	float error = (output1 - output2).abs2().sum() / output1.abs2().sum();
-	fmt::print("Error: {}\n", error);
-	EXPECT_TRUE(error > 1e-3); // error must be larger than threshold to show window was changed in spec2
+	float diff = (output1 - output2).abs2().sum() / output1.abs2().sum();
+	fmt::print("Diff: {}\n", diff);
+	EXPECT_TRUE(diff > 1e-3); // error must be larger than threshold to show window was changed in spec2
 }
 
 // description: test that default window is equal to setWindows(hann window)
