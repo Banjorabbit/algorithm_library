@@ -201,7 +201,12 @@ template<> \
 void Algorithm<ConfigurationName>::setSetup(const Setup& s) \
 { \
 	pimpl->algo.setSetup(s); \
-}
+} \
+template<> \
+void Algorithm<ConfigurationName>::reset() \
+{ \
+	pimpl->algo.reset(); \
+} \
 
 #define DEFINE_MEMBER_ALGORITHMS(...) \
 	DEFINE_MEMBER_SET_GET_FUNCTIONS(Parameters, parameters, __VA_ARGS__) \

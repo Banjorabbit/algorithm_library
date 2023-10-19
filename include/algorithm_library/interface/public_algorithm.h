@@ -34,6 +34,7 @@ public:
 	Coefficients getCoefficients() const;
 	Parameters getParameters() const;
 	Setup getSetup() const;
+	void reset();
 	
 	void setCoefficients(const Coefficients& c);
 	void setParameters(const Parameters& p);
