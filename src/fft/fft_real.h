@@ -32,7 +32,7 @@ public:
 	inline void processOn(Input xTime, Output yFreq)
 	{
 		// After the first channel, yFreq is not 16 byte alligned due to FFTSize/2+1 size so we can't write output to it from FFT transform
-		for (auto channel = 0; channel < C.nChannels; channel++)
+		for (auto channel = 0; channel < xTime.cols(); channel++)
 		{
 			Eigen::ArrayXf out((int)C.fftSize);
 			pffft_transform_ordered(setup.get(), xTime.col(channel).data(), out.data(), nullptr, PFFFT_FORWARD);

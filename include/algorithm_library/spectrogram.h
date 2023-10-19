@@ -20,6 +20,12 @@ struct SpectrogramConfiguration : public Configuration<I::Real, O::Real2D>
 		DEFINE_TUNABLE_COEFFICIENTS(bufferSize, fftSize)
 	};
 
+	static auto validateInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == 1); }
+	static auto initOutput(const Input& input, const Coefficients& c)
+	{
+		return Eigen::ArrayXXf(c.fftSize / 2 + 1, input.rows() / c.bufferSize);
+	}
+
 	template<typename Talgo>
 	struct Test
 	{
@@ -31,7 +37,7 @@ struct SpectrogramConfiguration : public Configuration<I::Real, O::Real2D>
             const int nFrames = 10;
 			input.resize(nFrames * c.bufferSize);
 			input.setRandom();
-			output.resize(c.fftSize / 2 + 1, nFrames);
+			output = initOutput(input, c);
 		}
 
 		inline void processAlgorithm() { algo.process(input, output); }

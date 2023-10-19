@@ -15,8 +15,7 @@ struct Normal3dConfiguration : public Configuration<I::Real2D, O::Real2D>
 	struct Coefficients
 	{
         int nValuesX = 257;
-		int nChannels = 2;
-		DEFINE_TUNABLE_COEFFICIENTS(nValuesX, nChannels)
+		DEFINE_TUNABLE_COEFFICIENTS(nValuesX)
 	};
 
 	struct Parameters
@@ -25,6 +24,9 @@ struct Normal3dConfiguration : public Configuration<I::Real2D, O::Real2D>
 		float distance2 = 8.f; // distance between values along 2nd dimension
 		DEFINE_TUNABLE_PARAMETERS(distance1, distance2)
 	};
+
+	static auto validateInput(Input input, const Coefficients& c) { (input.rows() == c.nValuesX) && (input.cols() > 0); }
+	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(3 * c.nValuesX, input.cols()); }
 
 	template<typename Talgo>
 	struct Test
@@ -37,8 +39,8 @@ struct Normal3dConfiguration : public Configuration<I::Real2D, O::Real2D>
 		Test(const Coefficients& c = {}) : algo(c)
 		{
 			input.resize(c.nValuesX, nValuesY);
-            output.resize(3 * c.nValuesX, nValuesY);
 			input.setRandom();
+			output = initOutput(input, c);
 		}
 	
 		inline void processAlgorithm() { algo.process(input, output); }

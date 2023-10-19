@@ -26,8 +26,8 @@ struct FilterbankAnalysisConfiguration : public Configuration<I::Real2D, O::Comp
 		DEFINE_TUNABLE_PARAMETERS(windowType)
 	};
 
-	static auto initInput(const Coefficients& c) { return Eigen::ArrayXXf(c.bufferSize, c.nChannels); }
-	static auto initOutput(const Coefficients& c) { return Eigen::ArrayXXcf(c.fftSize/2 + 1, c.nChannels); }
+	static auto validateInput(Input input, const Coefficients& c) { return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels); }
+	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(c.fftSize/2 + 1, c.nChannels); }
 	
 	template<typename Talgo>
 	struct Test
@@ -36,9 +36,11 @@ struct FilterbankAnalysisConfiguration : public Configuration<I::Real2D, O::Comp
 		Eigen::ArrayXXf input;
 		Eigen::ArrayXXcf output;
 
-		Test(const Coefficients& c = {}) : algo(c), input(initInput(c)), output(initOutput(c))
+		Test(const Coefficients& c = {}) : algo(c)
 		{
+			input.resize(c.bufferSize, c.nChannels);
 			input.setRandom();
+			output = initOutput(input, c);
 		}
 	
 		inline void processAlgorithm() { algo.process(input, output); }
@@ -81,8 +83,8 @@ struct FilterbankSynthesisConfiguration : public Configuration<I::Complex2D, O::
 		DEFINE_TUNABLE_PARAMETERS(windowType)
 	};
 
-	static auto initInput(const Coefficients& c) { return Eigen::ArrayXXcf(c.fftSize/2 + 1, c.nChannels); }
-	static auto initOutput(const Coefficients& c) { return Eigen::ArrayXXf(c.bufferSize, c.nChannels); }
+	static auto validateInput(Input input, const Coefficients& c) { return (input.rows() == c.fftSize / 2 + 1) && (input.cols() == c.nChannels); }
+	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(c.bufferSize, c.nChannels); }
 
 	template<typename Talgo>
 	struct Test
@@ -91,14 +93,15 @@ struct FilterbankSynthesisConfiguration : public Configuration<I::Complex2D, O::
 		Eigen::ArrayXXcf input;
 		Eigen::ArrayXXf output;
 
-		Test(const Coefficients& c = {}) : algo(c), input(initInput(c)), output(initOutput(c))
+		Test(const Coefficients& c = {}) : algo(c)
 		{
+			input.resize(c.fftSize/2+1, c.nChannels);
 			input.setRandom();
+			output = initOutput(input, c);
 		}
 
 		inline void processAlgorithm() { algo.process(input, output); }
 		bool isTestOutputFinite() const { return output.allFinite(); }
-
 	};
 };
 

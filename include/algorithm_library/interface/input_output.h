@@ -40,16 +40,16 @@ namespace I
 
 	// extract type using partial template specialization: https://stackoverflow.com/questions/301203/extract-c-template-parameters
 	template<typename T>
-	struct getType { typedef T type; };
+	struct array { typedef T type; };
 
 	template<typename T>
-	struct getType<In<T>> { typedef T type; };
+	struct array<In<T>> { typedef T type; };
 
 	template<typename T>
-	struct getType<Eigen::Array<T, Eigen::Dynamic, 1>> { typedef T type; };
+	struct array<Eigen::Array<T, Eigen::Dynamic, 1>> { typedef T type; };
 
 	template<typename T>
-	struct getType<Eigen::Array<T, Eigen::Dynamic, Eigen::Dynamic>> { typedef T type; };
+	struct array<Eigen::Array<T, Eigen::Dynamic, Eigen::Dynamic>> { typedef T type; };
 
 	template<typename>
 	struct getScalarType;
@@ -90,6 +90,7 @@ namespace O
 	using Void = void*;
 
 	using Real2 = Out<Eigen::Array<float, 2, 1>>;
+
 
 	// extract type using partial template specialization: https://stackoverflow.com/questions/301203/extract-c-template-parameters
 	template<typename>

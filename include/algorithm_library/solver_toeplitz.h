@@ -19,6 +19,9 @@ struct SolverToeplitzInput
 
 struct SolverToeplitzConfiguration : public Configuration<SolverToeplitzInput, O::Complex2D>
 {
+	static auto validateInput(Input input, const Coefficients& c) { return (input.aToeplitz.size() > 0) && (input.aToeplitz.size() == input.BRighthand.rows()) && (input.BRighthand.rows() == input.BRighthand.cols()); }
+	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(input.BRighthand.rows(), input.BRighthand.cols()); }
+
 	template<typename Talgo>
 	struct Test
 	{
@@ -34,7 +37,7 @@ struct SolverToeplitzConfiguration : public Configuration<SolverToeplitzInput, O
 			aToeplitz(0) = 1;
 			BRighthand.resize(8, 8);
 			BRighthand.setRandom();
-			output.resize(8, 8);
+			output = initOutput({aToeplitz, BRighthand}, c);
 		}
 
 		inline void processAlgorithm() { algo.process({ aToeplitz, BRighthand }, output); }

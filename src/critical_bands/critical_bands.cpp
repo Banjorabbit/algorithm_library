@@ -1,5 +1,7 @@
 #include "critical_bands/critical_bands_bark.h"
 
+int CriticalBandsConfiguration::getNCriticalBands(float sampleRate) { return BarkScale::getNCriticalBands(sampleRate); }
+
 DEFINE_SOURCE_INTERFACE(CriticalBandsSumConfiguration, CriticalBandsBarkSum)
 DEFINE_SOURCE_INTERFACE(CriticalBandsMeanConfiguration, CriticalBandsBarkMean)
 DEFINE_SOURCE_INTERFACE(CriticalBandsMaxConfiguration, CriticalBandsBarkMax)

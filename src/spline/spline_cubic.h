@@ -21,7 +21,7 @@ public:
 	{
 		using namespace Eigen;
 		// for each spline
-		for (auto channel = 0; channel < C.nChannels; channel++)
+		for (auto channel = 0; channel < x.xGiven.cols(); channel++)
 		{
 			Map<const ArrayXf> input(x.xGiven.col(channel).data(), x.xGiven.rows());
 			Map<const ArrayXf> output(x.yGiven.col(channel).data(), x.yGiven.rows());

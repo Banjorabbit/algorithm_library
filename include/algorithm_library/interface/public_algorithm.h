@@ -40,6 +40,9 @@ public:
 	void setParameters(const Parameters& p);
 	void setSetup(const Setup& s);
 
+	auto validateInput(Input input) const { return Configuration::validateInput(input, getCoefficients()); }
+	auto initOutput(Input input) const { return Configuration::initOutput(input, getCoefficients()); }
+
 	static constexpr size_t ALGORITHM_VERSION_MAJOR = 1; // version changes in ABI
 
 protected:

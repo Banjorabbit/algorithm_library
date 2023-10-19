@@ -11,14 +11,14 @@ class FilterbankAnalysisWOLA : public IAlgorithm<FilterbankAnalysisConfiguration
 public:
 	FilterbankAnalysisWOLA(Coefficients c =  Coefficients()) :
 		IAlgorithm<FilterbankAnalysisConfiguration, FilterbankAnalysisWOLA>{ c },
-		fft({ C.fftSize, 1 })
+		fft({ C.fftSize })
 	{
 		initialize();
 	}
 
 	FilterbankAnalysisWOLA(Setup s) : 
 	IAlgorithm<FilterbankAnalysisConfiguration, FilterbankAnalysisWOLA>{ s },
-		fft({ C.fftSize, 1 })
+		fft({ C.fftSize })
 	{ 
 		initialize();
 	}
@@ -162,14 +162,14 @@ class FilterbankSynthesisWOLA : public IAlgorithm<FilterbankSynthesisConfigurati
 public:
 	FilterbankSynthesisWOLA(Coefficients c = Coefficients()) :
 		IAlgorithm<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>{ c },
-		fft({ C.fftSize, 1 })
+		fft({ C.fftSize })
 	{
 		initialize();
 	}
 
 		FilterbankSynthesisWOLA(Setup s) :
 		IAlgorithm<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>{ s },
-		fft({ C.fftSize, 1 })
+		fft({ C.fftSize })
 	{
 		initialize();
 	}

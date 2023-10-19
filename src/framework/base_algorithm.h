@@ -88,6 +88,9 @@ public:
 
 	void onParametersChanged() {} // hide in derived algorithm if desired
 
+	auto validateInput(Input input) const { return Configuration::validateInput(input, C); }
+	auto initOutput(Input input) const { return Configuration::initOutput(input, C); }
+
 protected:
 	// these functions will be overridden if defined in derived Talgo
 	virtual size_t getMembersDynamicSize() const { return 0; }

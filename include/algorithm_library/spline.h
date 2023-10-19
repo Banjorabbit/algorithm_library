@@ -15,16 +15,14 @@ struct SplineInput
 
 struct SplineConfiguration : public Configuration<SplineInput, O::Real2D>
 {
-	struct Coefficients
-	{
-		int nChannels = 2;
-		DEFINE_TUNABLE_COEFFICIENTS(nChannels)
-	};
 	struct Parameters
 	{
 		float sFactor = 0.f;
 		DEFINE_TUNABLE_PARAMETERS(sFactor)
 	};
+
+	static auto validateInput(Input input, const Coefficients& c) { return (input.xDesired.cols() == input.xGiven.cols()) && (input.xDesired.cols() == input.yGiven.cols()) && (input.xGiven.rows() == input.yGiven.rows()); }
+	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.xDesired.rows(), input.xDesired.cols()); }
 
 	template<typename Talgo>
 	struct Test
@@ -39,11 +37,12 @@ struct SplineConfiguration : public Configuration<SplineInput, O::Real2D>
 		{
 			int n = 10; // number of input samples per channel
 			int nOS = 100; // number of output samples per channel
-			xGiven = Eigen::ArrayXf::LinSpaced(n, 0, n - 1).replicate(1, c.nChannels);
-			yGiven.resize(n, c.nChannels);
+			int nChannels = 2;
+			xGiven = Eigen::ArrayXf::LinSpaced(n, 0, n - 1).replicate(1, nChannels);
+			yGiven.resize(n, nChannels);
 			yGiven.setRandom();
-			xDesired = Eigen::ArrayXf::LinSpaced(nOS, 0, n - 1).replicate(1, c.nChannels);
-			yDesired.resize(nOS, c.nChannels);
+			xDesired = Eigen::ArrayXf::LinSpaced(nOS, 0, n - 1).replicate(1, nChannels);
+			yDesired.resize(nOS, nChannels);
 		}
 
 		inline void processAlgorithm() { algo.process({ xGiven, yGiven, xDesired }, yDesired); }

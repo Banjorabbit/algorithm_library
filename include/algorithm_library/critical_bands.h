@@ -10,27 +10,34 @@
 
 struct CriticalBandsConfiguration : public Configuration<I::Real2D, O::Real2D>
 {
+    static int getNCriticalBands(float sampleRate);
+
     struct Coefficients
     {
         int nBands = 257;
         float sampleRate = 44.1e3f;
-        int nChannels = 2;
-        DEFINE_TUNABLE_COEFFICIENTS(nBands, sampleRate, nChannels)
+        DEFINE_TUNABLE_COEFFICIENTS(nBands, sampleRate)
     };
 
-    static auto initInput(const Coefficients& c) { return Eigen::ArrayXXf(c.nBands, c.nChannels); }
-	static auto initOutput(const Coefficients& c) { return Eigen::ArrayXXf(c.nBands, c.nChannels); }
+    static auto validateInput(Input input, const Coefficients& c) 
+    { 
+        return (input.rows() == c.nBands) && (input.cols() > 0);
+    }
+    
+	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(getNCriticalBands(c.sampleRate), input.cols()); }
 
     template<typename Talgo>
     struct Test
     {
         Talgo algo;
+        int nChannels = 2;
         Eigen::ArrayXXf xPower;
         Eigen::ArrayXXf yPower;
 
-        Test(const Coefficients& c = {}) : algo(c), yPower(initOutput(c))
+        Test(const Coefficients& c = {}) : algo(c)
         {
-            xPower = Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2();
+            xPower = Eigen::ArrayXXf::Random(c.nBands, nChannels).abs2();
+            yPower = initOutput(xPower, c);
         }
 
         void processAlgorithm() { algo.process(xPower, yPower); }

@@ -17,15 +17,8 @@ struct InterpolationSampleInput
 
 struct InterpolationSampleConfiguration : public Configuration<InterpolationSampleInput, O::Float>
 {
-	struct InputData { Eigen::Array4f samples; float fractionalDelay;};
-	using OutputData = float;
-
-	static auto initInput(const Coefficients& c) 
-	{ 	
-		return InputData();
-	}
-
-	static auto initOutput(const Coefficients& c) { return OutputData{}; }
+	static auto validateInput(Input input, const Coefficients& c) { return (input.samples.size() == 4) && (input.fractionalDelay >= 0.f) && (input.fractionalDelay <= 1.f);	}
+	static auto initOutput(Input input, const Coefficients& c) { return 0.f; }
 
 	template<typename Talgo>
 	struct Test
@@ -64,6 +57,8 @@ struct InterpolationInput
 
 struct InterpolationConfiguration : public Configuration<InterpolationInput, O::Real>
 {
+	static auto validateInput(Input input, const Coefficients& c) { return (input.samples.size() >= 4) && (input.fractionalIndices >= 1.0).all() && (input.fractionalIndices <= (input.samples.size() - 2.f)).all();	}
+	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.fractionalIndices.size()); }
 
 	template<typename Talgo>
 	struct Test
@@ -79,7 +74,7 @@ struct InterpolationConfiguration : public Configuration<InterpolationInput, O::
 			samples = Eigen::ArrayXf::Random(N);
 			fractionalIndices = Eigen::ArrayXf::Random(N).abs() * (N - 3.f) + 1.f; // indices must be between 1.0 and N-2.0
 			std::sort(&fractionalIndices(0), &fractionalIndices(0) + N - 1); // indices must be in increasing order
-			output.resize(N);
+			output = initOutput({samples, fractionalIndices}, c);
 		}
 
 		inline void processAlgorithm() { algo.process({ samples, fractionalIndices }, output); }
@@ -103,6 +98,9 @@ struct InterpolationConstantConfiguration : public Configuration<I::Real, O::Rea
 		DEFINE_TUNABLE_COEFFICIENTS(fractionalDelay)
 	};
 
+	static auto validateInput(Input input, const Coefficients& c) { return (input.size() >= 4);	}
+	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.size() - 3); }
+
 	template<typename Talgo>
 	struct Test
 	{
@@ -114,7 +112,7 @@ struct InterpolationConstantConfiguration : public Configuration<I::Real, O::Rea
 		{
 			const int N = 256;
 			samples = Eigen::ArrayXf::Random(N);
-			output.resize(N - 3); // interpolation needs 4 values, so there will be 3 less outputs than inputs
+			output = initOutput(samples, c); // interpolation needs 4 values, so there will be 3 less outputs than inputs
 		}
 
 		inline void processAlgorithm() { algo.process(samples, output); }
