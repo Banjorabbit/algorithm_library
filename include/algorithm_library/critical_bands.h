@@ -19,7 +19,7 @@ struct CriticalBandsConfiguration : public Configuration<I::Real2D, O::Real2D>
         DEFINE_TUNABLE_COEFFICIENTS(nBands, sampleRate)
     };
 
-    static auto validateInput(Input input, const Coefficients& c) 
+    static auto validInput(Input input, const Coefficients& c) 
     { 
         return (input.rows() == c.nBands) && (input.cols() > 0);
     }

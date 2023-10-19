@@ -25,7 +25,7 @@ struct Normal3dConfiguration : public Configuration<I::Real2D, O::Real2D>
 		DEFINE_TUNABLE_PARAMETERS(distance1, distance2)
 	};
 
-	static auto validateInput(Input input, const Coefficients& c) { (input.rows() == c.nValuesX) && (input.cols() > 0); }
+	static auto validInput(Input input, const Coefficients& c) { (input.rows() == c.nValuesX) && (input.cols() > 0); }
 	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(3 * c.nValuesX, input.cols()); }
 
 	template<typename Talgo>

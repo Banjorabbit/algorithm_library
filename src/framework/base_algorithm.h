@@ -88,7 +88,7 @@ public:
 
 	void onParametersChanged() {} // hide in derived algorithm if desired
 
-	auto validateInput(Input input) const { return Configuration::validateInput(input, C); }
+	auto validInput(Input input) const { return Configuration::validInput(input, C); }
 	auto initOutput(Input input) const { return Configuration::initOutput(input, C); }
 
 protected:

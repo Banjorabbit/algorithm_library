@@ -34,7 +34,7 @@ struct BaseFilterMinMaxConfiguration  : public Configuration<I::Real2D, FilterMi
 		DEFINE_TUNABLE_COEFFICIENTS(filterLength, nChannels)
 	};
 
-    static auto validateInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels);}
+    static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels);}
     static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple( Eigen::ArrayXXf(input.rows(), c.nChannels), Eigen::ArrayXXf(input.rows(), c.nChannels) ); }
     
     template<typename Talgo>
@@ -95,7 +95,7 @@ struct BaseFilterExtremumConfiguration : public Configuration<I::Real2D, O::Real
 		DEFINE_TUNABLE_COEFFICIENTS(filterLength, nChannels)
 	};
 
-    static auto validateInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels);}
+    static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels);}
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.rows(), c.nChannels); }
     
 	template<typename Talgo>

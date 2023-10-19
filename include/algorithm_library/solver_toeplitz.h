@@ -19,7 +19,7 @@ struct SolverToeplitzInput
 
 struct SolverToeplitzConfiguration : public Configuration<SolverToeplitzInput, O::Complex2D>
 {
-	static auto validateInput(Input input, const Coefficients& c) { return (input.aToeplitz.size() > 0) && (input.aToeplitz.size() == input.BRighthand.rows()) && (input.BRighthand.rows() == input.BRighthand.cols()); }
+	static auto validInput(Input input, const Coefficients& c) { return (input.aToeplitz.size() > 0) && (input.aToeplitz.size() == input.BRighthand.rows()) && (input.BRighthand.rows() == input.BRighthand.cols()); }
 	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(input.BRighthand.rows(), input.BRighthand.cols()); }
 
 	template<typename Talgo>

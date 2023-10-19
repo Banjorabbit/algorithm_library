@@ -20,7 +20,7 @@ struct SpectrogramConfiguration : public Configuration<I::Real, O::Real2D>
 		DEFINE_TUNABLE_COEFFICIENTS(bufferSize, fftSize)
 	};
 
-	static auto validateInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == 1); }
+	static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == 1); }
 	static auto initOutput(const Input& input, const Coefficients& c)
 	{
 		return Eigen::ArrayXXf(c.fftSize / 2 + 1, input.rows() / c.bufferSize);

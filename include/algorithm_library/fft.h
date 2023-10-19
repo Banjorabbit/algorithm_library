@@ -23,7 +23,7 @@ struct FFTConfiguration : public Configuration<I::Real2D, O::Complex2D>
 		DEFINE_TUNABLE_COEFFICIENTS(fftSize)
 	};
 
-	static auto validateInput(Input input, const Coefficients& c) { return (input.rows() == c.fftSize) && (input.cols() > 0); }
+	static auto validInput(Input input, const Coefficients& c) { return (input.rows() == c.fftSize) && (input.cols() > 0); }
 	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(c.fftSize/2 +1, input.cols()); }
 
 	template<typename Talgo>

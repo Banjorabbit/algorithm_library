@@ -17,7 +17,7 @@ struct InterpolationSampleInput
 
 struct InterpolationSampleConfiguration : public Configuration<InterpolationSampleInput, O::Float>
 {
-	static auto validateInput(Input input, const Coefficients& c) { return (input.samples.size() == 4) && (input.fractionalDelay >= 0.f) && (input.fractionalDelay <= 1.f);	}
+	static auto validInput(Input input, const Coefficients& c) { return (input.samples.size() == 4) && (input.fractionalDelay >= 0.f) && (input.fractionalDelay <= 1.f);	}
 	static auto initOutput(Input input, const Coefficients& c) { return 0.f; }
 
 	template<typename Talgo>
@@ -57,7 +57,7 @@ struct InterpolationInput
 
 struct InterpolationConfiguration : public Configuration<InterpolationInput, O::Real>
 {
-	static auto validateInput(Input input, const Coefficients& c) { return (input.samples.size() >= 4) && (input.fractionalIndices >= 1.0).all() && (input.fractionalIndices <= (input.samples.size() - 2.f)).all();	}
+	static auto validInput(Input input, const Coefficients& c) { return (input.samples.size() >= 4) && (input.fractionalIndices >= 1.0).all() && (input.fractionalIndices <= (input.samples.size() - 2.f)).all();	}
 	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.fractionalIndices.size()); }
 
 	template<typename Talgo>
@@ -98,7 +98,7 @@ struct InterpolationConstantConfiguration : public Configuration<I::Real, O::Rea
 		DEFINE_TUNABLE_COEFFICIENTS(fractionalDelay)
 	};
 
-	static auto validateInput(Input input, const Coefficients& c) { return (input.size() >= 4);	}
+	static auto validInput(Input input, const Coefficients& c) { return (input.size() >= 4);	}
 	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.size() - 3); }
 
 	template<typename Talgo>

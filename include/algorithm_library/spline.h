@@ -21,7 +21,7 @@ struct SplineConfiguration : public Configuration<SplineInput, O::Real2D>
 		DEFINE_TUNABLE_PARAMETERS(sFactor)
 	};
 
-	static auto validateInput(Input input, const Coefficients& c) { return (input.xDesired.cols() == input.xGiven.cols()) && (input.xDesired.cols() == input.yGiven.cols()) && (input.xGiven.rows() == input.yGiven.rows()); }
+	static auto validInput(Input input, const Coefficients& c) { return (input.xDesired.cols() == input.xGiven.cols()) && (input.xDesired.cols() == input.yGiven.cols()) && (input.xGiven.rows() == input.yGiven.rows()); }
 	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.xDesired.rows(), input.xDesired.cols()); }
 
 	template<typename Talgo>

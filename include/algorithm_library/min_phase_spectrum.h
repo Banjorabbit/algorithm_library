@@ -20,7 +20,7 @@ struct MinPhaseSpectrumConfiguration : public Configuration<I::Real2D, O::Comple
         DEFINE_TUNABLE_PARAMETERS(minMagnitude)
     };
 
-    static auto validateInput(Input input, const Coefficients& c) { return (input.rows() == c.nBands) && (input.cols() > 0); }
+    static auto validInput(Input input, const Coefficients& c) { return (input.rows() == c.nBands) && (input.cols() > 0); }
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(c.nBands, input.cols()); }
 
 	template<typename Talgo>

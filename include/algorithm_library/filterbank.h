@@ -26,7 +26,7 @@ struct FilterbankAnalysisConfiguration : public Configuration<I::Real2D, O::Comp
 		DEFINE_TUNABLE_PARAMETERS(windowType)
 	};
 
-	static auto validateInput(Input input, const Coefficients& c) { return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels); }
+	static auto validInput(Input input, const Coefficients& c) { return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels); }
 	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(c.fftSize/2 + 1, c.nChannels); }
 	
 	template<typename Talgo>
@@ -83,7 +83,7 @@ struct FilterbankSynthesisConfiguration : public Configuration<I::Complex2D, O::
 		DEFINE_TUNABLE_PARAMETERS(windowType)
 	};
 
-	static auto validateInput(Input input, const Coefficients& c) { return (input.rows() == c.fftSize / 2 + 1) && (input.cols() == c.nChannels); }
+	static auto validInput(Input input, const Coefficients& c) { return (input.rows() == c.fftSize / 2 + 1) && (input.cols() == c.nChannels); }
 	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(c.bufferSize, c.nChannels); }
 
 	template<typename Talgo>
