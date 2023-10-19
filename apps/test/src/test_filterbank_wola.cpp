@@ -32,9 +32,9 @@ TEST(Filterbank, ReconstructionHighQuality)
 
 	ArrayXXf input(nFrames * c.bufferSize, c.nChannels);
 	input.setRandom();
-	ArrayXXf output(nFrames * c.bufferSize, c.nChannels);
-
-	ArrayXXcf outFreq(c.fftSize / 2 + 1, c.nChannels);
+	
+	ArrayXXcf outFreq = filterbank.initOutput(input.topRows(c.bufferSize));
+	auto output = ArrayXXf(c.bufferSize * nFrames, c.nChannels); 
 	for (auto i = 0; i < nFrames; i++)
 	{
 		filterbank.process(input.middleRows(i * c.bufferSize, c.bufferSize), outFreq);
@@ -66,7 +66,7 @@ TEST(Filterbank, ReconstructionLowDelay)
 	input.setRandom();
 	ArrayXXf output(nFrames * c.bufferSize, c.nChannels);
 
-	ArrayXXcf outFreq(c.fftSize / 2 + 1, c.nChannels);
+	auto outFreq = filterbank.initOutput(input.topRows(c.bufferSize));
 	for (auto i = 0; i < nFrames; i++)
 	{
 		filterbank.process(input.middleRows(i * c.bufferSize, c.bufferSize), outFreq);
@@ -98,7 +98,7 @@ TEST(Filterbank, ReconstructionStandard)
 	input.setRandom();
 	ArrayXXf output(nFrames * c.bufferSize, c.nChannels);
 
-	ArrayXXcf outFreq(c.fftSize / 2 + 1, c.nChannels);
+	auto outFreq = filterbank.initOutput(input.topRows(c.bufferSize));
 	for (auto i = 0; i < nFrames; i++)
 	{
 		filterbank.process(input.middleRows(i * c.bufferSize, c.bufferSize), outFreq);

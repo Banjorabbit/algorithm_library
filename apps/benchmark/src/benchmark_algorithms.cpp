@@ -9,6 +9,7 @@
 #include "normal3d/normal3d_diff.h"
 #include "min_phase_spectrum/min_phase_spectrum_cepstrum.h"
 #include "critical_bands/critical_bands_bark.h"
+#include "filter_min_max/filter_min_max_lemire.h"
 
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
@@ -37,6 +38,12 @@ DEFINE_BENCHMARK_ALGORITHM(SpectrogramNonlinear)
 DEFINE_BENCHMARK_ALGORITHM(Normal3dDiff)
 DEFINE_BENCHMARK_ALGORITHM(MinPhaseSpectrumCepstrum)
 DEFINE_BENCHMARK_ALGORITHM(CriticalBandsBarkSum)
+DEFINE_BENCHMARK_ALGORITHM(FilterMinMaxLemire)
+DEFINE_BENCHMARK_ALGORITHM(FilterMaxLemire)
+DEFINE_BENCHMARK_ALGORITHM(FilterMinLemire)
+DEFINE_BENCHMARK_ALGORITHM(StreamingMinMaxLemire)
+DEFINE_BENCHMARK_ALGORITHM(StreamingMaxLemire)
+DEFINE_BENCHMARK_ALGORITHM(StreamingMinLemire)
 
 // benchmark inverse FFT
 static void FFTInverse_process(benchmark::State& state) {

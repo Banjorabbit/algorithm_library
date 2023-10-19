@@ -16,15 +16,14 @@ TEST(FFTReal, Interface)
 TEST(FFTReal, Reconstruction)
 {
 	auto c = FFTReal::Coefficients();
-	c.nChannels = 1;
-	FFTReal fft(c);
+	FFTReal fft;
 
 	// Run FFT and reconstruct at default FFT size
 	int fftSize = c.fftSize;
 	ArrayXf input(fftSize);
 	input.setRandom();
 	ArrayXf inputRef = input;
-	ArrayXcf output(fftSize / 2 + 1);
+	ArrayXcf output = fft.initOutput(input); 
 	fft.process(input, output);
 	input.setRandom(); // randomize input in case inverse doesn't write to input
 	fft.inverse(output, input);
@@ -40,7 +39,7 @@ TEST(FFTReal, Reconstruction)
 	fft.setCoefficients(c);
 	input.resize(fftSize);
 	inputRef.resize(fftSize);
-	output.resize(fftSize);
+	output = fft.initOutput(input);
 	input.setRandom();
 	inputRef = input;
 	fft.process(input, output);

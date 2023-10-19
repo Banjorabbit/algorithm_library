@@ -11,6 +11,31 @@ TEST(FilterMinMaxLemire, Interface)
 	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<FilterMinMaxLemire>());
 }
 
+TEST(FilterMaxLemire, Interface)
+{
+	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<FilterMaxLemire>());
+}
+
+TEST(FilterMinLemire, Interface)
+{
+	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<FilterMinLemire>());
+}
+
+TEST(StreamingMinMaxLemire, Interface)
+{
+	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<StreamingMinMaxLemire>());
+}
+
+TEST(StreamingMaxLemire, Interface)
+{
+	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<StreamingMaxLemire>());
+}
+
+TEST(StreamingMinLemire, Interface)
+{
+	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<StreamingMinLemire>());
+}
+
  // Description: Run StreamingMinMax once and compare to same execution broken into two process calls
 TEST(FilterMinMaxLemire, StreamingMinMaxTwice)
 {
@@ -25,8 +50,8 @@ TEST(FilterMinMaxLemire, StreamingMinMaxTwice)
 	ArrayXXf input(nSamples, nChannels);
 	input.setRandom();
 	ArrayXXf outputSMMMin, outputSMMMax, outputSMMMin2, outputSMMMax2;
-    std::tie(outputSMMMin, outputSMMMax) = StreamingMinMaxConfiguration::initOutput(input, c);
-    std::tie(outputSMMMin2, outputSMMMax2) = StreamingMinMaxConfiguration::initOutput(input, c);
+    std::tie(outputSMMMin, outputSMMMax) = streamingMinMax.initOutput(input);
+    std::tie(outputSMMMin2, outputSMMMax2) = streamingMinMax.initOutput(input);
 
 	// run two times with a reset between them
 	streamingMinMax.process(input, { outputSMMMin, outputSMMMax });
@@ -53,8 +78,8 @@ TEST(FilterMinMaxLemire, StreamingMinMaxTwice)
     ArrayXXf input(nSamples, nChannels);
     input.setRandom();
     ArrayXXf outputFMMMin, outputFMMMax, outputFMMMin2, outputFMMMax2;
-    std::tie(outputFMMMin, outputFMMMax) = StreamingMinMaxConfiguration::initOutput(input, c);
-    std::tie(outputFMMMin2, outputFMMMax2) = StreamingMinMaxConfiguration::initOutput(input, c);
+    std::tie(outputFMMMin, outputFMMMax) = filterMinMax.initOutput(input);
+    std::tie(outputFMMMin2, outputFMMMax2) = filterMinMax.initOutput(input);
     
     // run two times with a reset between them
     filterMinMax.process(input, { outputFMMMin, outputFMMMax });
@@ -85,8 +110,8 @@ TEST(FilterMinMaxLemire, StreamingMinMaxTwice)
     ArrayXXf input(nSamples, nChannels);
     input.setRandom();
     ArrayXXf outputFMMMin, outputFMMMax, outputSMMMin, outputSMMMax;
-    std::tie(outputFMMMin, outputFMMMax) = FilterMinMaxConfiguration::initOutput(input, cF);
-    std::tie(outputSMMMin, outputSMMMax) = StreamingMinMaxConfiguration::initOutput(input, cS);
+    std::tie(outputFMMMin, outputFMMMax) = filterMinMax.initOutput(input);
+    std::tie(outputSMMMin, outputSMMMax) = streamingMinMax.initOutput(input);
 
 	filterMinMax.process(input, { outputFMMMin, outputFMMMax });
 	streamingMinMax.process(input, { outputSMMMin, outputSMMMax });
@@ -137,12 +162,12 @@ TEST(FilterMinMaxLemire, StreamingMinMaxTwice)
     input.setRandom();
 
     ArrayXXf outputFMMMin, outputFMMMax, outputFMin, outputFMax, outputSMMMin, outputSMMMax, outputSMin, outputSMax;
-    std::tie(outputFMMMin, outputFMMMax) = FilterMinMaxConfiguration::initOutput(input, cfMM);
-    outputFMax = FilterMaxConfiguration::initOutput(input, cfMax);
-    outputFMin = FilterMinConfiguration::initOutput(input, cfMin);
-    std::tie(outputSMMMin, outputSMMMax) = StreamingMinMaxConfiguration::initOutput(input, csMM);
-    outputSMax = StreamingMaxConfiguration::initOutput(input, csMax);
-    outputSMin = StreamingMinConfiguration::initOutput(input, csMin);
+    std::tie(outputFMMMin, outputFMMMax) = filterMinMax.initOutput(input);
+    outputFMax = filterMax.initOutput(input);
+    outputFMin = filterMin.initOutput(input);
+    std::tie(outputSMMMin, outputSMMMax) = streamingMinMax.initOutput(input);
+    outputSMax = streamingMax.initOutput(input);
+    outputSMin = streamingMin.initOutput(input);
 
     ArrayXXf outputRef(nSamples + 2 * (filterLength - 1), nChannels);
     ArrayXXf minRef(nSamples + (filterLength - 1), nChannels);
