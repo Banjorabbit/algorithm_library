@@ -83,3 +83,86 @@ public:
 	void resetInitialValue(const float inputOld); 
 	void resetInitialValue(const I::Real inputOld); 
 };
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Extremum configuration finds either min or max value and is a cheaper version of minmax configuration
+struct BaseFilterExtremumConfiguration : public Configuration<I::Real2D, O::Real2D>
+{
+    struct Coefficients
+	{
+		int filterLength = 100;
+		int nChannels = 2;
+		DEFINE_TUNABLE_COEFFICIENTS(filterLength, nChannels)
+	};
+
+    static auto validateInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels);}
+    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.rows(), c.nChannels); }
+    
+	template<typename Talgo>
+	struct Test
+	{
+        Talgo algo;
+		Eigen::ArrayXXf output;
+		Eigen::ArrayXXf input;
+
+		Test(const Coefficients& c = {}) : algo(c)
+		{
+			const int samples = 1000;
+			input.resize(samples, c.nChannels);
+			input.setRandom();
+            output = initOutput(input, c);
+		}
+
+        inline void processAlgorithm() { algo.process(input, output); }
+		bool isTestOutputFinite() const { return output.allFinite(); }
+	};
+};
+
+struct FilterMaxConfiguration : public BaseFilterExtremumConfiguration {};
+struct FilterMinConfiguration : public BaseFilterExtremumConfiguration {};
+struct StreamingMaxConfiguration : public BaseFilterExtremumConfiguration {};
+struct StreamingMinConfiguration : public BaseFilterExtremumConfiguration {};
+
+class StreamingMax : public Algorithm<StreamingMaxConfiguration>
+{
+public:
+    StreamingMax() = default;
+    StreamingMax(const Coefficients& c);
+	// It might be necessary to call the public ResetInitialValues function before Process, 
+	// if certain initial conditions are required.
+	void resetInitialValue(const float inputOld);
+	void resetInitialValue(const I::Real inputOld);
+};
+
+class StreamingMin : public Algorithm<StreamingMinConfiguration>
+{
+public:
+    StreamingMin() = default;
+    StreamingMin(const Coefficients& c);
+	// It might be necessary to call the public ResetInitialValues function before Process, 
+	// if certain initial conditions are required.
+	void resetInitialValue(const float inputOld);
+	void resetInitialValue(const I::Real inputOld);
+};
+
+class FilterMax : public Algorithm<FilterMaxConfiguration>
+{
+public:
+	FilterMax() = default;
+    FilterMax(const Coefficients& c);
+
+    // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
+	void resetInitialValue(const float inputOld); 
+	void resetInitialValue(const I::Real inputOld); 
+};
+
+class FilterMin : public Algorithm<FilterMinConfiguration>
+{
+public:
+	FilterMin() = default;
+    FilterMin(const Coefficients& c);
+
+    // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
+	void resetInitialValue(const float inputOld); 
+	void resetInitialValue(const I::Real inputOld); 
+};
