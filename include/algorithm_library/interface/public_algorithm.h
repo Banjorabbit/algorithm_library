@@ -45,10 +45,12 @@ public:
 
 	static constexpr size_t ALGORITHM_VERSION_MAJOR = 1; // version changes in ABI
 
+	struct Impl;
+	
 protected:
 	~Algorithm();
 
-	struct Impl;
+	
 	std::unique_ptr<Impl> pimpl; // PIMPL. Define in derived source file
 
 	
