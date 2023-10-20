@@ -25,33 +25,41 @@ public:
 	using Parameters = typename Configuration::Parameters;
 	using Setup = TSetup<Configuration>;
 
-	template<typename T>
-	Algorithm(const T& t);
+	Algorithm(const Coefficients& t);
 	Algorithm();
 	
 	// define in pimpl source file
-	void process(Input input, Output output);
-	Coefficients getCoefficients() const;
-	Parameters getParameters() const;
-	Setup getSetup() const;
-	void reset();
+	void process(Input input, Output output) { pimpl->process(input, output); }
+	Coefficients getCoefficients() const { return pimpl->getCoefficients(); }
+	Parameters getParameters() const { return pimpl->getParameters(); }
+	Setup getSetup() const { return pimpl->getSetup(); }
+	void reset() { pimpl->reset(); }
 	
-	void setCoefficients(const Coefficients& c);
-	void setParameters(const Parameters& p);
-	void setSetup(const Setup& s);
+	void setCoefficients(const Coefficients& c) { pimpl->setCoefficients(c); }
+	void setParameters(const Parameters& p) { pimpl->setParameters(p); }
+	void setSetup(const Setup& s) { pimpl->setSetup(s); }
 
 	auto validInput(Input input) const { return Configuration::validInput(input, getCoefficients()); }
 	auto initOutput(Input input) const { return Configuration::initOutput(input, getCoefficients()); }
 
 	static constexpr size_t ALGORITHM_VERSION_MAJOR = 1; // version changes in ABI
 
-	struct Impl;
+	struct BaseImpl // Base of implementation
+	{ 
+    	BaseImpl() = default;
+    	virtual ~BaseImpl() = default;
+    	virtual void process(Input input, Output output) = 0;
+    	virtual Coefficients getCoefficients() const = 0;
+    	virtual Parameters getParameters() const = 0;
+    	virtual Setup getSetup() const = 0;
+    	virtual void setCoefficients(const Coefficients& c) = 0;
+    	virtual void setParameters(const Parameters& p) = 0;
+    	virtual void setSetup(const Setup& s) = 0;
+    	virtual void reset() = 0;
+	};
 	
 protected:
 	~Algorithm();
-
 	
-	std::unique_ptr<Impl> pimpl; // PIMPL. Define in derived source file
-
-	
+	std::unique_ptr<BaseImpl> pimpl; // PIMPL. Define in derived source file
 };

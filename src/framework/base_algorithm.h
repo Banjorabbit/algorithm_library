@@ -2,6 +2,23 @@
 #include "algorithm_library/interface/macros_json.h"
 #include "algorithm_library/interface/public_algorithm.h"
 
+template<typename Talgo, typename Tconfiguration>
+struct Impl : public Algorithm<Tconfiguration>::BaseImpl
+{
+    Impl() : algo{} {}
+    Impl(const typename Tconfiguration::Coefficients& c) : algo{ c } {}
+    Talgo algo;
+    void process(typename Algorithm<Tconfiguration>::Input input, typename Algorithm<Tconfiguration>::Output output) override { algo.process(input, output); }
+    typename Algorithm<Tconfiguration>::Coefficients getCoefficients() const override { return algo.getCoefficients(); }
+    typename Algorithm<Tconfiguration>::Parameters getParameters() const override { return algo.getParameters(); }
+    typename Algorithm<Tconfiguration>::Setup getSetup() const override { return algo.getSetup(); }
+    void setCoefficients(const typename Algorithm<Tconfiguration>::Coefficients& c) override { algo.setCoefficients(c); }
+    void setParameters(const typename Algorithm<Tconfiguration>::Parameters& p) override { algo.setParameters(p); }
+    void setSetup(const typename Algorithm<Tconfiguration>::Setup& s) override { algo.setSetup(s); }
+    void reset() override { algo.reset(); }
+};
+
+
 template<typename Tconfiguration, typename Talgo>
 class IAlgorithm
 {

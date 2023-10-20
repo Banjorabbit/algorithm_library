@@ -9,15 +9,13 @@
 struct SpectrogramConfiguration : public Configuration<I::Real, O::Real2D>
 {
 
-	// choose algorithm to use for calculating spectrogram (set compile time)
-	enum SpectrogramType { FILTERBANK, NONLINEAR};
-	static constexpr SpectrogramType spectrogramType = FILTERBANK;
-
 	struct Coefficients
 	{
         int bufferSize = 128;
 		int fftSize = 512;
-		DEFINE_TUNABLE_COEFFICIENTS(bufferSize, fftSize)
+		enum SpectrogramType { FILTERBANK, NONLINEAR};
+		SpectrogramType spectrogramType = FILTERBANK; // choose algorithm to use for calculating spectrogram
+		DEFINE_TUNABLE_COEFFICIENTS(bufferSize, fftSize, spectrogramType)
 	};
 
 	static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == 1); }
