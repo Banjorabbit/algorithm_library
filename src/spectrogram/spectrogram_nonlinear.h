@@ -7,10 +7,15 @@ class SpectrogramNonlinear: public IAlgorithm<SpectrogramConfiguration, Spectrog
 public:
     SpectrogramNonlinear(Coefficients c = Coefficients()) : 
         IAlgorithm<SpectrogramConfiguration, SpectrogramNonlinear>{c},
-        filterbank0(convertCoefficientsToFilterbankSetup(c)),
-        filterbank1(convertCoefficientsToFilterbankSetup(c)),
-        filterbank2(convertCoefficientsToFilterbankSetup(c))
+        filterbank0(convertCoefficientsToFilterbankCoefficients(c)),
+        filterbank1(convertCoefficientsToFilterbankCoefficients(c)),
+        filterbank2(convertCoefficientsToFilterbankCoefficients(c))
     { 
+        auto pFilterbank = filterbank0.getParameters();
+        pFilterbank.windowType = pFilterbank.USER_DEFINED;
+        filterbank0.setParameters(pFilterbank);
+        filterbank1.setParameters(pFilterbank);
+        filterbank2.setParameters(pFilterbank);
         // set windows
         nBands = C.fftSize / 2 + 1;
         Eigen::ArrayXf window = hann(C.fftSize);
@@ -91,16 +96,15 @@ public:
     static inline int getNFrames(int nSamples, int bufferSize) { return nSamples / bufferSize; }
 
 private:
-    static FilterbankAnalysis::Setup convertCoefficientsToFilterbankSetup(Coefficients c) 
+    static FilterbankAnalysis::Coefficients convertCoefficientsToFilterbankCoefficients(Coefficients c) 
     {
-        FilterbankAnalysis::Setup sFilterbank;
-        sFilterbank.coefficients.bufferSize = c.bufferSize;
-        sFilterbank.coefficients.fftSize = c.fftSize;
-        sFilterbank.coefficients.frameSize = c.fftSize;
-        sFilterbank.coefficients.gain = 1.f;
-        sFilterbank.coefficients.nChannels = 1;
-        sFilterbank.parameters.windowType = sFilterbank.parameters.USER_DEFINED;
-        return sFilterbank;
+        FilterbankAnalysis::Coefficients cFilterbank;
+        cFilterbank.bufferSize = c.bufferSize;
+        cFilterbank.fftSize = c.fftSize;
+        cFilterbank.frameSize = c.fftSize;
+        cFilterbank.gain = 1.f;
+        cFilterbank.nChannels = 1;
+        return cFilterbank;
     }
 
     int nBands;

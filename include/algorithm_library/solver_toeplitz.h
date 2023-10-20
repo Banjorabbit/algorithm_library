@@ -46,4 +46,8 @@ struct SolverToeplitzConfiguration : public Configuration<SolverToeplitzInput, O
 };
 
 class SolverToeplitz : public Algorithm<SolverToeplitzConfiguration>
-{ };
+{
+public:
+	SolverToeplitz() = default;
+	SolverToeplitz(const Coefficients& c);
+ };

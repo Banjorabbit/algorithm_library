@@ -54,7 +54,6 @@ class FilterbankAnalysis : public Algorithm<FilterbankAnalysisConfiguration>
 public:
 	FilterbankAnalysis() = default;
 	FilterbankAnalysis(const Coefficients& c);
-	FilterbankAnalysis(const Setup& s);
 
 	void setWindow(I::Real window); // To have any effect, this method requires P.windowType == USER_DEFINED
 	void setStandardFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);
@@ -110,7 +109,6 @@ class FilterbankSynthesis : public Algorithm<FilterbankSynthesisConfiguration>
 public:
 	FilterbankSynthesis() = default;
 	FilterbankSynthesis(const Coefficients& c);
-	FilterbankSynthesis(const Setup& s);
 
 	void setWindow(I::Real window); // To have any effect, this method requires P.windowType == USER_DEFINED
 	void setStandardFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);

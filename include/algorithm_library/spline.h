@@ -42,7 +42,7 @@ struct SplineConfiguration : public Configuration<SplineInput, O::Real2D>
 			yGiven.resize(n, nChannels);
 			yGiven.setRandom();
 			xDesired = Eigen::ArrayXf::LinSpaced(nOS, 0, n - 1).replicate(1, nChannels);
-			yDesired.resize(nOS, nChannels);
+			yDesired = initOutput({xGiven, yGiven, xDesired}, c);
 		}
 
 		inline void processAlgorithm() { algo.process({ xGiven, yGiven, xDesired }, yDesired); }
@@ -54,6 +54,5 @@ class Spline : public Algorithm<SplineConfiguration>
 { 
 public:
 	Spline() = default;
-	Spline(const Setup& s);
 	Spline(const Coefficients& c);
 };

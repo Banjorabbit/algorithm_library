@@ -15,6 +15,10 @@
 class SolverToeplitzSystem : public IAlgorithm<SolverToeplitzConfiguration, SolverToeplitzSystem>
 {
 public:
+	SolverToeplitzSystem(Coefficients c = Coefficients()) :
+		IAlgorithm<SolverToeplitzConfiguration, SolverToeplitzSystem>{ c }
+	{ }
+	
 	inline void processOn(Input x, Output y)
 	{
 		const auto nFilt = x.BRighthand.rows();

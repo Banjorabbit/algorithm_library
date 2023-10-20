@@ -10,10 +10,7 @@
 class SplineCubic : public IAlgorithm<SplineConfiguration, SplineCubic>
 {
 public:
-	SplineCubic(Setup s = {}) :
-		IAlgorithm<SplineConfiguration, SplineCubic>{ s }
-	{ }
-	SplineCubic(Coefficients c) :
+	SplineCubic(Coefficients c = Coefficients()) :
 		IAlgorithm<SplineConfiguration, SplineCubic>{ c }
 	{ }
 

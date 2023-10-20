@@ -7,8 +7,12 @@ class SpectrogramFilterbank : public IAlgorithm<SpectrogramConfiguration, Spectr
 public:
     SpectrogramFilterbank(Coefficients c = Coefficients()) : 
         IAlgorithm<SpectrogramConfiguration, SpectrogramFilterbank>{c},
-        filterbank(convertCoefficientsToFilterbankSetup(c))
+        filterbank(convertCoefficientsToFilterbankCoefficients(c))
     { 
+        auto pFilterbank = filterbank.getParameters();
+        pFilterbank.windowType = pFilterbank.HANN_WINDOW;
+        filterbank.setParameters(pFilterbank);
+        
         nBands = c.fftSize / 2 + 1;
     }
 
@@ -37,16 +41,15 @@ public:
     static inline int getNFrames(int nSamples, int bufferSize) { return nSamples / bufferSize; }
 
 private:
-    static FilterbankAnalysis::Setup convertCoefficientsToFilterbankSetup(Coefficients c) 
+    static FilterbankAnalysis::Coefficients convertCoefficientsToFilterbankCoefficients(Coefficients c) 
     {
-        FilterbankAnalysis::Setup sFilterbank;
-        sFilterbank.coefficients.bufferSize = c.bufferSize;
-        sFilterbank.coefficients.fftSize = c.fftSize;
-        sFilterbank.coefficients.frameSize = c.fftSize;
-        sFilterbank.coefficients.gain = 1.f;
-        sFilterbank.coefficients.nChannels = 1;
-        sFilterbank.parameters.windowType = sFilterbank.parameters.HANN_WINDOW;
-        return sFilterbank;
+        FilterbankAnalysis::Coefficients cFilterbank;
+        cFilterbank.bufferSize = c.bufferSize;
+        cFilterbank.fftSize = c.fftSize;
+        cFilterbank.frameSize = c.fftSize;
+        cFilterbank.gain = 1.f;
+        cFilterbank.nChannels = 1;
+        return cFilterbank;
     }
 
     int nBands;

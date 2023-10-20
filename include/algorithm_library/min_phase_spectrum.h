@@ -47,6 +47,5 @@ class MinPhaseSpectrum : public Algorithm<MinPhaseSpectrumConfiguration>
 public:
 	MinPhaseSpectrum() = default;
     MinPhaseSpectrum(const Coefficients& c);
-    MinPhaseSpectrum(const Setup& s);
 };
 

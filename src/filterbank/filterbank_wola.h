@@ -16,13 +16,6 @@ public:
 		initialize();
 	}
 
-	FilterbankAnalysisWOLA(Setup s) : 
-	IAlgorithm<FilterbankAnalysisConfiguration, FilterbankAnalysisWOLA>{ s },
-		fft({ C.fftSize })
-	{ 
-		initialize();
-	}
-
 	FFTReal fft;
 	DEFINE_MEMBER_ALGORITHMS(fft)
 
@@ -162,13 +155,6 @@ class FilterbankSynthesisWOLA : public IAlgorithm<FilterbankSynthesisConfigurati
 public:
 	FilterbankSynthesisWOLA(Coefficients c = Coefficients()) :
 		IAlgorithm<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>{ c },
-		fft({ C.fftSize })
-	{
-		initialize();
-	}
-
-		FilterbankSynthesisWOLA(Setup s) :
-		IAlgorithm<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>{ s },
 		fft({ C.fftSize })
 	{
 		initialize();

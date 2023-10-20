@@ -53,5 +53,4 @@ class Normal3d : public Algorithm<Normal3dConfiguration>
 public:
 	Normal3d() = default;
 	Normal3d(const Coefficients& c);
-	Normal3d(const Setup& s);
 };

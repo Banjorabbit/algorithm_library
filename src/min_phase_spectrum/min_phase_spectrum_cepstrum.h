@@ -13,11 +13,6 @@ public:
 		fft({ 2 * (C.nBands - 1) })
 	{ }
 
-	MinPhaseSpectrumCepstrum(Setup s) : 
-	    IAlgorithm<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>{ s },
-		fft({ 2 * (C.nBands - 1) })
-	{ }
-
 	FFTReal fft;
 	DEFINE_MEMBER_ALGORITHMS(fft)
 

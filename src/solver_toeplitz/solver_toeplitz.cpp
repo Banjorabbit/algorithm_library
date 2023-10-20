@@ -2,3 +2,4 @@
 
 DEFINE_SOURCE_INTERFACE(SolverToeplitzConfiguration, SolverToeplitzSystem)
 
+SolverToeplitz::SolverToeplitz(const Coefficients& c) : Algorithm<SolverToeplitzConfiguration>{c} {}

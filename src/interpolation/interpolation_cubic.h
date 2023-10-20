@@ -15,6 +15,9 @@
 class InterpolationCubicSample : public IAlgorithm<InterpolationSampleConfiguration, InterpolationCubicSample>
 {
 public:
+	InterpolationCubicSample(Coefficients c = Coefficients()) :
+		IAlgorithm<InterpolationSampleConfiguration, InterpolationCubicSample>{ c }
+	{ }
 
 	inline void processOn(Input input, Output output)
 	{
@@ -33,7 +36,10 @@ public:
 class InterpolationCubic : public IAlgorithm<InterpolationConfiguration, InterpolationCubic>
 {
 public:
-
+	InterpolationCubic(Coefficients c = Coefficients()) :
+		IAlgorithm<InterpolationConfiguration, InterpolationCubic>{ c }
+	{ }
+	
 	InterpolationCubicSample interpolation; // this class uses default constructor
 	DEFINE_MEMBER_ALGORITHMS(interpolation)
 

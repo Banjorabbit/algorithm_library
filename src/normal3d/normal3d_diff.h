@@ -20,13 +20,11 @@ public:
     Normal3dDiff(Coefficients c = Coefficients()) :
         IAlgorithm<Normal3dConfiguration, Normal3dDiff> {c}
     {
-        initialize();
-    }
-
-    Normal3dDiff(Setup s) :
-        IAlgorithm<Normal3dConfiguration, Normal3dDiff> {s}
-    {
-        initialize();
+        valuesOld0.resize(C.nValuesX);
+        valuesOld1.resize(C.nValuesX);
+        den1 = 1.f / (2.f * P.distance1);
+        den2 = 1.f / (2.f * P.distance2);
+        resetMembers();
     }
 
 	inline void processOn(Input input, Output output)
@@ -51,15 +49,6 @@ public:
 	}
 
 private:
-
-    void initialize()
-    {
-        valuesOld0.resize(C.nValuesX);
-        valuesOld1.resize(C.nValuesX);
-        den1 = 1.f / (2.f * P.distance1);
-        den2 = 1.f / (2.f * P.distance2);
-        resetMembers();
-    }
 
     void resetMembers() final
     {
