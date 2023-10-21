@@ -1,8 +1,17 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/eigen/matrix.h>
-#include <algorithm_library/spectrogram.h>
+
+#include <algorithm_library/critical_bands.h>
+#include <algorithm_library/fft.h>
 #include <algorithm_library/filter_min_max.h>
+#include <algorithm_library/filterbank.h>
+#include <algorithm_library/interpolation.h>
+#include <algorithm_library/min_phase_spectrum.h>
+#include <algorithm_library/normal3d.h>
+#include <algorithm_library/solver_toeplitz.h>
+#include <algorithm_library/spectrogram.h>
 #include <algorithm_library/spline.h>
+
 #include <pybind11_json/pybind11_json.hpp>
 #include <pfr.hpp>
 
@@ -158,11 +167,27 @@ py::class_<AlgorithmName>(m,#AlgorithmName) \
 
 // ------------------------------------------------------------------------------------
 
-PYBIND11_MODULE(PythonAlgorithmLibrary, m) {
-
-
-  DEFINE_PYTHON_INTERFACE(Spline)
+PYBIND11_MODULE(PythonAlgorithmLibrary, m) 
+{
+  DEFINE_PYTHON_INTERFACE(CriticalBandsMax)
+  DEFINE_PYTHON_INTERFACE(CriticalBandsMean)
+  DEFINE_PYTHON_INTERFACE(CriticalBandsSum)
+  DEFINE_PYTHON_INTERFACE(FFT)
   DEFINE_PYTHON_INTERFACE(FilterMinMax)
+  DEFINE_PYTHON_INTERFACE(FilterMin)
+  DEFINE_PYTHON_INTERFACE(FilterMax)
+  DEFINE_PYTHON_INTERFACE(StreamingMinMax)
+  DEFINE_PYTHON_INTERFACE(StreamingMin)
+  DEFINE_PYTHON_INTERFACE(StreamingMax)
+  DEFINE_PYTHON_INTERFACE(FilterbankAnalysis)
+  DEFINE_PYTHON_INTERFACE(FilterbankSynthesis)
+  DEFINE_PYTHON_INTERFACE(Interpolation)
+  DEFINE_PYTHON_INTERFACE(InterpolationConstant)
+  DEFINE_PYTHON_INTERFACE(InterpolationSample)
+  DEFINE_PYTHON_INTERFACE(MinPhaseSpectrum)
+  DEFINE_PYTHON_INTERFACE(Normal3d)
+  DEFINE_PYTHON_INTERFACE(SolverToeplitz)
   DEFINE_PYTHON_INTERFACE(Spectrogram)
+  DEFINE_PYTHON_INTERFACE(Spline)
 }
 
