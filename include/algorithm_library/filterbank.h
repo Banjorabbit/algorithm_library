@@ -56,9 +56,9 @@ public:
 	FilterbankAnalysis(const Coefficients& c);
 
 	void setWindow(I::Real window); // To have any effect, this method requires P.windowType == USER_DEFINED
-	void setStandardFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);
-	void setLowDelayFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);
-	void setHighQualityFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);
+	void setStandardFilterbank(int bufferSize = Coefficients().bufferSize);
+	void setLowDelayFilterbank(int bufferSize = Coefficients().bufferSize);
+	void setHighQualityFilterbank(int bufferSize = Coefficients().bufferSize);
 };
 
 // --------------------------------------------- Filterbank Synthesis ----------------------------------------------------------------
@@ -111,7 +111,7 @@ public:
 	FilterbankSynthesis(const Coefficients& c);
 
 	void setWindow(I::Real window); // To have any effect, this method requires P.windowType == USER_DEFINED
-	void setStandardFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);
-	void setLowDelayFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);
-	void setHighQualityFilterbank(int bufferSize = Coefficients().bufferSize, int nChannels = 1);
+	void setStandardFilterbank(int bufferSize = Coefficients().bufferSize);
+	void setLowDelayFilterbank(int bufferSize = Coefficients().bufferSize);
+	void setHighQualityFilterbank(int bufferSize = Coefficients().bufferSize);
 };

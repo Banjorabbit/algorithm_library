@@ -163,31 +163,37 @@ py::class_<AlgorithmName>(m,#AlgorithmName) \
       auto input = make_tuple_from_python<AlgorithmName::Input>(std::move(args)); \
       auto output = initOutput(algo, input); \
       return process(algo, input, output); \
-  });
+  })
 
 // ------------------------------------------------------------------------------------
 
 PYBIND11_MODULE(PythonAlgorithmLibrary, m) 
 {
-  DEFINE_PYTHON_INTERFACE(CriticalBandsMax)
-  DEFINE_PYTHON_INTERFACE(CriticalBandsMean)
-  DEFINE_PYTHON_INTERFACE(CriticalBandsSum)
-  DEFINE_PYTHON_INTERFACE(FFT)
-  DEFINE_PYTHON_INTERFACE(FilterMinMax)
-  DEFINE_PYTHON_INTERFACE(FilterMin)
-  DEFINE_PYTHON_INTERFACE(FilterMax)
-  DEFINE_PYTHON_INTERFACE(StreamingMinMax)
-  DEFINE_PYTHON_INTERFACE(StreamingMin)
-  DEFINE_PYTHON_INTERFACE(StreamingMax)
+  DEFINE_PYTHON_INTERFACE(CriticalBandsMax);
+  DEFINE_PYTHON_INTERFACE(CriticalBandsMean);
+  DEFINE_PYTHON_INTERFACE(CriticalBandsSum);
+  DEFINE_PYTHON_INTERFACE(FFT);
+  DEFINE_PYTHON_INTERFACE(FilterMinMax);
+  DEFINE_PYTHON_INTERFACE(FilterMin);
+  DEFINE_PYTHON_INTERFACE(FilterMax);
+  DEFINE_PYTHON_INTERFACE(StreamingMinMax);
+  DEFINE_PYTHON_INTERFACE(StreamingMin);
+  DEFINE_PYTHON_INTERFACE(StreamingMax);
   DEFINE_PYTHON_INTERFACE(FilterbankAnalysis)
+    .def("setStandardFilterbank", [](FilterbankAnalysis& algo, int bufferSize) { algo.setStandardFilterbank(bufferSize); })
+    .def("setLowDelayFilterbank", [](FilterbankAnalysis& algo, int bufferSize) { algo.setLowDelayFilterbank(bufferSize); })
+    .def("setHighQualityFilterbank", [](FilterbankAnalysis& algo, int bufferSize) { algo.setHighQualityFilterbank(bufferSize); });
   DEFINE_PYTHON_INTERFACE(FilterbankSynthesis)
-  DEFINE_PYTHON_INTERFACE(Interpolation)
-  DEFINE_PYTHON_INTERFACE(InterpolationConstant)
-  DEFINE_PYTHON_INTERFACE(InterpolationSample)
-  DEFINE_PYTHON_INTERFACE(MinPhaseSpectrum)
-  DEFINE_PYTHON_INTERFACE(Normal3d)
-  DEFINE_PYTHON_INTERFACE(SolverToeplitz)
-  DEFINE_PYTHON_INTERFACE(Spectrogram)
-  DEFINE_PYTHON_INTERFACE(Spline)
+    .def("setStandardFilterbank", [](FilterbankSynthesis& algo, int bufferSize) { algo.setStandardFilterbank(bufferSize); })
+    .def("setLowDelayFilterbank", [](FilterbankSynthesis& algo, int bufferSize) { algo.setLowDelayFilterbank(bufferSize); })
+    .def("setHighQualityFilterbank", [](FilterbankSynthesis& algo, int bufferSize) { algo.setHighQualityFilterbank(bufferSize); });
+  DEFINE_PYTHON_INTERFACE(Interpolation);
+  DEFINE_PYTHON_INTERFACE(InterpolationConstant);
+  DEFINE_PYTHON_INTERFACE(InterpolationSample);
+  DEFINE_PYTHON_INTERFACE(MinPhaseSpectrum);
+  DEFINE_PYTHON_INTERFACE(Normal3d);
+  DEFINE_PYTHON_INTERFACE(SolverToeplitz);
+  DEFINE_PYTHON_INTERFACE(Spectrogram);
+  DEFINE_PYTHON_INTERFACE(Spline);
 }
 
