@@ -145,7 +145,7 @@ py::class_<AlgorithmName>(m,#AlgorithmName) \
   .def("__repr__", [](const AlgorithmName& algo) \
   { \
       nlohmann::json setup = algo.getSetup(); \
-      return "PythonAlgorithmLibrary.AlgorithmName\n" + setup.dump(4); \
+      return std::string("PythonAlgorithmLibrary.") + #AlgorithmName + "\n" + setup.dump(4); \
   }) \
   .def("getCoefficients", [](const AlgorithmName& algo)  { return static_cast<nlohmann::json>(algo.getCoefficients()); }) \
   .def("setCoefficients", [](AlgorithmName& algo, const nlohmann::json& c) { algo.setCoefficients(c); }) \
