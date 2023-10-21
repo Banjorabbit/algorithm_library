@@ -25,7 +25,7 @@ public:
 	using Parameters = typename Configuration::Parameters;
 	using Setup = TSetup<Configuration>;
 
-	Algorithm(const Coefficients& t);
+	Algorithm(const Coefficients& c);
 	Algorithm();
 	
 	// define in pimpl source file
@@ -44,7 +44,7 @@ public:
 
 	static constexpr size_t ALGORITHM_VERSION_MAJOR = 1; // version changes in ABI
 
-	struct BaseImpl // Base of implementation
+	struct BaseImpl // Base of implementation. Allows to derive different implementations from this struct.
 	{ 
     	BaseImpl() = default;
     	virtual ~BaseImpl() = default;
