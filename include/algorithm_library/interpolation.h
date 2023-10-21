@@ -44,6 +44,7 @@ class InterpolationSample : public Algorithm<InterpolationSampleConfiguration>
 {
 public:
 	InterpolationSample() = default;
+	InterpolationSample(const Coefficients& c);
 };
 
 
@@ -86,6 +87,7 @@ class Interpolation : public Algorithm<InterpolationConfiguration>
 {
 public:
 	Interpolation() = default;
+	Interpolation(const Coefficients& c);
 };
 
 // -----------------------------  interpolation of array with constant fractionalDelay. This is faster ------------------------------------------------------

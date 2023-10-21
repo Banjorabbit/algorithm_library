@@ -48,6 +48,7 @@ void Spectrogram::setWindow(I::Real window)
     }
 }
 
+// static function so it doesn't matter which getNFrames we are using
 int Spectrogram::getNFrames(int inputSize, int bufferSize) 
 {
     return SpectrogramFilterbank::getNFrames(inputSize, bufferSize);

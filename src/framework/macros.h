@@ -151,6 +151,23 @@
 	void processOn(Input input, Output output); \
 	void resetData();
 
+#define DEFINE_CONSTRUCTOR_DESTRUCTOR(PublicAlgorithm, InternalAlgorithm, ConfigurationName) \
+using InternalAlgorithm##Impl = Impl<InternalAlgorithm, ConfigurationName>; \
+template<> \
+Algorithm<ConfigurationName>::Algorithm() \
+{ \
+    pimpl = std::make_unique<InternalAlgorithm##Impl>(); \
+} \
+template<> \
+Algorithm<ConfigurationName>::~Algorithm() {} \
+template<> \
+Algorithm<ConfigurationName>::Algorithm(const Coefficients& c) \
+{ \
+    pimpl = std::make_unique<InternalAlgorithm##Impl>(c); \
+} \
+PublicAlgorithm::PublicAlgorithm(const Coefficients& c) : Algorithm<ConfigurationName>(c) {}
+
+
 #define DEFINE_SOURCE_INTERFACE(ConfigurationName, InternalName) \
 template<> \
 struct Algorithm<ConfigurationName>::Impl \
