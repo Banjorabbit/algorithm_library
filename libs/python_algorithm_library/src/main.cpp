@@ -1,125 +1,168 @@
-#include <nanobind/nanobind.h>
-#include <nanobind/stl/string.h>
-#include <nanobind/stl/tuple.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/eigen/matrix.h>
 #include <algorithm_library/spectrogram.h>
+#include <algorithm_library/filter_min_max.h>
+#include <algorithm_library/spline.h>
+#include <pybind11_json/pybind11_json.hpp>
+#include <pfr.hpp>
 
-#include <tuple>
-#include <type_traits>
-#include <cassert>
+namespace py = pybind11;
 
-template <class T, class... TArgs> decltype(void(T{std::declval<TArgs>()...}), std::true_type{}) test_is_braces_constructible(int);
-template <class, class...> std::false_type test_is_braces_constructible(...);
-template <class T, class... TArgs> using is_braces_constructible = decltype(test_is_braces_constructible<T, TArgs...>(0));
+// remove Eigen::Ref<> from type
+template<class T> struct removeEigenRef{ typedef T type; };
+template<class T> struct removeEigenRef<Eigen::Ref<T>> { typedef T type; };
+template< class T >
+using removeEigenRef_t = typename removeEigenRef<T>::type;
 
-struct any_type {
-  template<class T>
-  constexpr operator T(); // non explicit
-};
+// remove any of the following qualifiers: const Eigen::Ref<const T>&
+template<typename T>
+using eigenRemoveQualifiers = std::remove_const_t<removeEigenRef_t<std::remove_const_t<std::remove_reference_t<T>>>>;
 
-template<class T>
-auto to_tuple(T&& object) noexcept {
-    using type = std::decay_t<T>;
-    if constexpr(is_braces_constructible<type, any_type, any_type, any_type, any_type>{}) {
-      auto&& [p1, p2, p3, p4] = object;
-      return std::make_tuple(p1, p2, p3, p4);
-    } else if constexpr(is_braces_constructible<type, any_type, any_type, any_type>{}) {
-      auto&& [p1, p2, p3] = object;
-      return std::make_tuple(p1, p2, p3);
-    } else if constexpr(is_braces_constructible<type, any_type, any_type>{}) {
-      auto&& [p1, p2] = object;
-      return std::make_tuple(p1, p2);
-    } else if constexpr(is_braces_constructible<type, any_type>{}) {
-      auto&& [p1] = object;
-      return std::make_tuple(p1);
-    } else {
-        return std::make_tuple();
-    }
-}
-// int main() {
-//     {
-//       struct s {
-//         int p1;
-//         double p2;
-//       };
-
-//       auto t = to_tuple(s{1, 2.0});
-//       static_assert(std::is_same<std::tuple<int, double>, decltype(t)>{});
-//       assert(1 == std::get<0>(t));
-//       assert(2.0 == std::get<1>(t));
-//     }
-    
-//     {
-//       struct s {
-//         struct nested { } p1;
-//         int p2;
-//         int p3;
-//         s* p4;
-//       };
-
-//       auto t = to_tuple(s{s::nested{}, 42, 87, nullptr});
-//       static_assert(std::is_same<std::tuple<s::nested, int, int, s*>, decltype(t)>{});
-//       assert(42 == std::get<1>(t));
-//       assert(87 == std::get<2>(t));
-//       assert(nullptr == std::get<3>(t));
-//     }
-// }
-
-namespace nb = nanobind;
-using namespace nb::literals;
-
-int add(int i, int j=1) {
-    return i + j;
-}
-
-struct Dog
+// ---------------------------------------------------------------------------------
+// template function for returning number of elements in an Input/Output struct
+template<bool b, typename T>
+struct numberOfElementsImpl
 {
-    std::string name;
-
-    std::string bark() const 
-    {
-        return name + ": woof!";
-    }
+    static constexpr int n = pfr::tuple_size_v<T>;
 };
 
-NB_MODULE(PythonAlgorithmLibrary, m) {
-    m.def("add", &add, nb::arg("a"), nb::arg("b") = 1, "This functions adds two numbers and increments if only one is provided");
-    m.attr("the_answer") = 42;
-    m.doc() = "A simple example python extension";
+template<typename T>
+struct numberOfElementsImpl<false, T>
+{
+    static constexpr int n = 1;
+};
 
-    nb::class_<Dog>(m,"Dog")
-        .def(nb::init<>())
-        .def(nb::init<const std::string &>())
-        .def("bark", &Dog::bark)
-        .def_rw("name", &Dog::name)
-        .def("__repr__", [](const Dog& p) { return "<PythonAlgorithmLibrary.Dog named '" + p.name + "'>";});
-    
-    nb::class_<SpectrogramConfiguration::Coefficients>(m, "Coefficients")
-        .def(nb::init<>())
-        .def_rw("fftSize", &SpectrogramConfiguration::Coefficients::fftSize)
-        .def_rw("bufferSize", &SpectrogramConfiguration::Coefficients::bufferSize)
-        .def("__repr__", [](const SpectrogramConfiguration::Coefficients& c) 
-        { 
-            nlohmann::json j = c;
-            return "<PythonAlgorithmLibrary.SpectrogramConfiguration.Coefficients: \n" + j.dump(4) + ">";
-        });
+// T is Input/Output struct type
+template<typename T>
+constexpr int numberOfElements()
+{
+  using Tp = std::remove_reference_t<T>;
+  return numberOfElementsImpl<std::is_aggregate_v<Tp>,Tp>::n;
+}
 
-    nb::class_<Spectrogram>(m,"Spectrogram")
-        .def(nb::init<>())
-        .def(nb::init<const SpectrogramConfiguration::Coefficients&>())
-        .def("__repr__", [](const Spectrogram& algo) 
-        { 
-            nlohmann::json coef = algo.getCoefficients();
-            nlohmann::json param = algo.getParameters();
-            return "<PythonAlgorithmLibrary.Spectrogram\nCoefficients: \n" + coef.dump(4) + "\nParameters: \n" + param.dump(4) + "\n>";
-        })
-        .def("getCoefficients", [](const Spectrogram& algo)  { return static_cast<nlohmann::json>(algo.getCoefficients()).dump(); })
-        .def("setCoefficients", [](Spectrogram& algo, const std::string &s) { algo.setCoefficients(nlohmann::json::parse(s)); })
-        .def("getParameters", [](const Spectrogram& algo)  { return static_cast<nlohmann::json>(algo.getParameters()).dump(); })
-        .def("setParameters", [](Spectrogram& algo, const std::string &s) { algo.setParameters(nlohmann::json::parse(s)); })
-        .def("process", [](Spectrogram& algo, SpectrogramConfiguration::Input input), SpectrogramConfiguration::Output output) 
-        { 
-            algo.process(input, output); 
-            return output; 
-        });
+// -----------------------------------------------------------------------------------
+// template struct for getting the type of a field in an Input/Output struct
+template<int n, bool b, typename T>
+struct getTypeFieldImpl
+{
+  using type = eigenRemoveQualifiers<pfr::tuple_element_t<n, T>>;
+};
+
+template<int n, typename T>
+struct getTypeFieldImpl<n, false, T>
+{
+  using type = eigenRemoveQualifiers<T>;
+};
+
+// T is Input/Output struct type and n is index number in struct to get
+template<typename T, int n=0>
+using getTypeField = typename getTypeFieldImpl<n, std::is_aggregate_v<std::remove_reference_t<T>>,T>::type;
+
+// ------------------------------------------------------------------------------------
+// copy data from Python args to a C++ tuple, where template parameter T is the Input/Output type
+template <typename T, size_t... Idx>
+constexpr auto make_tuple_from_python_impl(py::args&& args, std::index_sequence<Idx...>)
+{
+  return std::make_tuple(py::cast<getTypeField<T, Idx>>(args[Idx])...);
+}
+
+template <typename T>
+constexpr auto make_tuple_from_python(py::args&& args)
+{
+  return make_tuple_from_python_impl<T>(std::forward<py::args>(args), std::make_index_sequence<numberOfElements<T>()>{});
+}
+// ------------------------------------------------------------------------------------
+// return true if input is valid
+template <typename Talgo, class... Args, size_t... Idx>
+inline auto validInputImpl(Talgo& algo, std::tuple<Args...>& t, std::index_sequence<Idx...>)
+{
+  return algo.validInput({std::get<Idx>(t)...});
+}
+
+template<typename Talgo,class... Args>
+inline auto validInput(Talgo& algo, std::tuple<Args...>& t)
+{
+  return validInputImpl(algo, t, std::make_index_sequence<std::tuple_size_v<std::tuple<Args...>>>{});
+}
+
+// ------------------------------------------------------------------------------------
+// initialize output
+template <typename Talgo, class... Args, size_t... Idx>
+inline auto initOutputImpl(Talgo& algo, std::tuple<Args...>& t, std::index_sequence<Idx...>)
+{
+  return algo.initOutput({std::get<Idx>(t)...});
+}
+
+template<typename Talgo,class... Args>
+inline auto initOutput(Talgo& algo, std::tuple<Args...>& t)
+{
+  return initOutputImpl(algo, t, std::make_index_sequence<std::tuple_size_v<std::tuple<Args...>>>{});
+}
+
+// ------------------------------------------------------------------------------------
+// process(input, output)
+template <typename Talgo, class... ArgsIn, size_t... Idx, typename Toutput>
+inline auto processImpl(Talgo& algo, std::tuple<ArgsIn...>& input, std::index_sequence<Idx...>, Toutput output)
+{
+  algo.process({std::get<Idx>(input)...}, output);
+  return output;
+}
+
+template <typename Talgo, class... ArgsIn, size_t... IdxIn, class... ArgsOut, size_t... IdxOut>
+inline auto processImpl(Talgo& algo, std::tuple<ArgsIn...>& input, std::index_sequence<IdxIn...>, std::tuple<ArgsOut...>& output, std::index_sequence<IdxOut...>)
+{
+  algo.process({std::get<IdxIn>(input)...}, {std::get<IdxOut>(output)...});
+  return output;
+}
+
+template<typename Talgo,class... ArgsIn, typename Toutput>
+inline auto process(Talgo& algo, std::tuple<ArgsIn...>& input, Toutput& output)
+{
+  return processImpl(algo, input, std::make_index_sequence<std::tuple_size_v<std::tuple<ArgsIn...>>>{}, output);
+}
+
+template<typename Talgo,class... ArgsIn, class... ArgsOut>
+inline auto process(Talgo& algo, std::tuple<ArgsIn...>& input, std::tuple<ArgsOut...>& output)
+{
+  return processImpl(algo, input, std::make_index_sequence<std::tuple_size_v<std::tuple<ArgsIn...>>>{}, output, std::make_index_sequence<std::tuple_size_v<std::tuple<ArgsOut...>>>{});
+}
+
+// ------------------------------------------------------------------------------------
+// Macro to define interface
+#define DEFINE_PYTHON_INTERFACE(AlgorithmName) \
+py::class_<AlgorithmName>(m,#AlgorithmName) \
+  .def(py::init<>()) \
+  .def(py::init<const nlohmann::json&>()) \
+  .def("__repr__", [](const AlgorithmName& algo) \
+  { \
+      nlohmann::json setup = algo.getSetup(); \
+      return "PythonAlgorithmLibrary.AlgorithmName\n" + setup.dump(4); \
+  }) \
+  .def("getCoefficients", [](const AlgorithmName& algo)  { return static_cast<nlohmann::json>(algo.getCoefficients()); }) \
+  .def("setCoefficients", [](AlgorithmName& algo, const nlohmann::json& c) { algo.setCoefficients(c); }) \
+  .def("getParameters", [](const AlgorithmName& algo)  { return static_cast<nlohmann::json>(algo.getParameters()); }) \
+  .def("setParameters", [](AlgorithmName& algo, const nlohmann::json& c) { algo.setParameters(c); }) \
+  .def("getSetup", [](const AlgorithmName& algo)  { return static_cast<nlohmann::json>(algo.getSetup()); }) \
+  .def("setSetup", [](AlgorithmName& algo, const nlohmann::json& s) { algo.setSetup(s); }) \
+  .def("validInput", [](const AlgorithmName& algo, py::args args) \
+  { \
+    auto input = make_tuple_from_python<AlgorithmName::Input>(std::move(args)); \
+    return validInput(algo, input); \
+  }) \
+  .def("process", [](AlgorithmName& algo, py::args args) \
+  { \
+      auto input = make_tuple_from_python<AlgorithmName::Input>(std::move(args)); \
+      auto output = initOutput(algo, input); \
+      return process(algo, input, output); \
+  });
+
+// ------------------------------------------------------------------------------------
+
+PYBIND11_MODULE(PythonAlgorithmLibrary, m) {
+
+
+  DEFINE_PYTHON_INTERFACE(Spline)
+  DEFINE_PYTHON_INTERFACE(FilterMinMax)
+  DEFINE_PYTHON_INTERFACE(Spectrogram)
 }
 
