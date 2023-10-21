@@ -76,3 +76,11 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   pybind11_json
   boost_pfr
 )
+
+file(GLOB_RECURSE SOURCE_LIST_PYTHON CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_script/*.py")
+
+add_custom_command(
+  TARGET ${PROJECT_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy 
+  ${SOURCE_LIST_PYTHON}
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>)
