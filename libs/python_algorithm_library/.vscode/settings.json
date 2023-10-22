@@ -1,5 +1,5 @@
 {
-    "cmake.buildDirectory": "${workspaceFolder}/../../build/python_algorithm_library",
+    "cmake.buildDirectory": "${workspaceFolder}/../../build/python_algorithm_library/${buildType}",
     "files.associations": {
         "typeindex": "cpp",
         "typeinfo": "cpp"
