@@ -10,6 +10,7 @@
 #include "min_phase_spectrum/min_phase_spectrum_cepstrum.h"
 #include "critical_bands/critical_bands_bark.h"
 #include "filter_min_max/filter_min_max_lemire.h"
+#include "dc_remover/dc_remover_first_order.h"
 
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
@@ -46,6 +47,7 @@ DEFINE_BENCHMARK_ALGORITHM(FilterMinLemire)
 DEFINE_BENCHMARK_ALGORITHM(StreamingMinMaxLemire)
 DEFINE_BENCHMARK_ALGORITHM(StreamingMaxLemire)
 DEFINE_BENCHMARK_ALGORITHM(StreamingMinLemire)
+DEFINE_BENCHMARK_ALGORITHM(DCRemoverFirstOrder)
 
 
 // benchmark inverse FFT
