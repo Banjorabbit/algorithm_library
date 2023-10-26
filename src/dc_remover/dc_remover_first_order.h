@@ -44,6 +44,12 @@ private:
 		delay.setZero();
 	}
 
+	size_t getMembersDynamicSize() const final
+	{
+		size_t size = delay.getDynamicMemorySize();
+		return size;
+	}
+
     ArrayXf delay;
     float coef0, coef1;
 };
