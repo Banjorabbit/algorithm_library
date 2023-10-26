@@ -11,6 +11,7 @@
 #include "critical_bands/critical_bands_bark.h"
 #include "filter_min_max/filter_min_max_lemire.h"
 #include "dc_remover/dc_remover_first_order.h"
+#include "circular_buffer/circular_buffer_general.h"
 
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
@@ -26,6 +27,8 @@ BENCHMARK(algorithm##_process);
 
 // insert algorithms to be benchmarked
 
+DEFINE_BENCHMARK_ALGORITHM(CircularBufferGeneral)
+DEFINE_BENCHMARK_ALGORITHM(CircularBufferSingleChannel)
 DEFINE_BENCHMARK_ALGORITHM(SplineCubic)
 DEFINE_BENCHMARK_ALGORITHM(InterpolationCubicSample)
 DEFINE_BENCHMARK_ALGORITHM(InterpolationSample)
@@ -48,6 +51,7 @@ DEFINE_BENCHMARK_ALGORITHM(StreamingMinMaxLemire)
 DEFINE_BENCHMARK_ALGORITHM(StreamingMaxLemire)
 DEFINE_BENCHMARK_ALGORITHM(StreamingMinLemire)
 DEFINE_BENCHMARK_ALGORITHM(DCRemoverFirstOrder)
+
 
 
 // benchmark inverse FFT
