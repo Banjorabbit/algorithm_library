@@ -1,14 +1,14 @@
 #include "gtest/gtest.h"
 #include "framework/unit_test.h"
-#include "circular_buffer/circular_buffer_general.h"
+#include "delay/circular_buffer.h"
 
 using namespace Eigen;
 
 // --------------------------------------------- TEST CASES ---------------------------------------------
 
-TEST(CircularBufferGeneral, Interface)
+TEST(CircularBuffer, Interface)
 {
-	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<CircularBufferGeneral>());
+	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<CircularBuffer>());
 }
 
 TEST(CircularBufferSingleChannel, Interface)
