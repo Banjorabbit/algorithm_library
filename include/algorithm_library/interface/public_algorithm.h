@@ -25,8 +25,7 @@ public:
 	using Parameters = typename Configuration::Parameters;
 	using Setup = TSetup<Configuration>;
 
-	Algorithm(const Coefficients& c);
-	Algorithm();
+	Algorithm(const Coefficients& c = Coefficients()); // define this in derived source file. It is declared with the Coefficients default argument, so we avoid having to define both this constructor and the default constructor.
 	
 	// define in pimpl source file
 	void process(Input input, Output output) { pimpl->process(input, output); }

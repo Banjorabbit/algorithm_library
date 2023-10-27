@@ -5,19 +5,6 @@ using FilterbankImpl = Impl<SpectrogramFilterbank, SpectrogramConfiguration>;
 using NonlinearImpl = Impl<SpectrogramNonlinear, SpectrogramConfiguration>;
 
 template<> 
-Algorithm<SpectrogramConfiguration>::Algorithm() 
-{
-    if (SpectrogramConfiguration::Coefficients().spectrogramType == SpectrogramConfiguration::Coefficients::FILTERBANK)
-    {
-        pimpl = std::make_unique<FilterbankImpl>();
-    }
-    else
-    {
-        pimpl = std::make_unique<NonlinearImpl>();
-    }
-} 
-
-template<> 
 Algorithm<SpectrogramConfiguration>::~Algorithm() {} 
 
 template<>

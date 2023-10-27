@@ -6,19 +6,6 @@ using CircularBufferSingleChannelImpl = Impl<CircularBufferSingleChannel, DelayC
 using CircularBufferImpl = Impl<CircularBuffer, DelayConfiguration>;
 
 template<> 
-Algorithm<DelayConfiguration>::Algorithm() 
-{
-    if (DelayConfiguration::Coefficients().nChannels == 1)
-    {
-        pimpl = std::make_unique<CircularBufferSingleChannelImpl>();
-    }
-    else
-    {
-        pimpl = std::make_unique<CircularBufferImpl>();
-    }
-}
-
-template<> 
 Algorithm<DelayConfiguration>::~Algorithm() {} 
 
 template<>

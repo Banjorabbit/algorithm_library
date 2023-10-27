@@ -154,11 +154,6 @@
 #define DEFINE_CONSTRUCTOR_DESTRUCTOR(PublicAlgorithm, InternalAlgorithm, ConfigurationName) \
 using InternalAlgorithm##Impl = Impl<InternalAlgorithm, ConfigurationName>; \
 template<> \
-Algorithm<ConfigurationName>::Algorithm() \
-{ \
-    pimpl = std::make_unique<InternalAlgorithm##Impl>(); \
-} \
-template<> \
 Algorithm<ConfigurationName>::~Algorithm() {} \
 template<> \
 Algorithm<ConfigurationName>::Algorithm(const Coefficients& c) \
