@@ -24,7 +24,7 @@ struct CriticalBandsConfiguration : public Configuration<I::Real2D, O::Real2D>
         return (input.rows() == c.nBands) && (input.cols() > 0);
     }
     
-	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(getNCriticalBands(c.sampleRate), input.cols()); }
+    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(getNCriticalBands(c.sampleRate), input.cols()); }
 
     template<typename Talgo>
     struct Test

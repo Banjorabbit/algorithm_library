@@ -13,41 +13,41 @@
 
 struct SolverToeplitzInput
 {
-	I::Complex aToeplitz;
-	I::Complex2D BRighthand;
+    I::Complex aToeplitz;
+    I::Complex2D BRighthand;
 };
 
 struct SolverToeplitzConfiguration : public Configuration<SolverToeplitzInput, O::Complex2D>
 {
-	static auto validInput(Input input, const Coefficients& c) { return (input.aToeplitz.size() > 0) && (input.aToeplitz.size() == input.BRighthand.rows()) && (input.BRighthand.rows() == input.BRighthand.cols()); }
-	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(input.BRighthand.rows(), input.BRighthand.cols()); }
+    static auto validInput(Input input, const Coefficients& c) { return (input.aToeplitz.size() > 0) && (input.aToeplitz.size() == input.BRighthand.rows()) && (input.BRighthand.rows() == input.BRighthand.cols()); }
+    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(input.BRighthand.rows(), input.BRighthand.cols()); }
 
-	template<typename Talgo>
-	struct Test
-	{
-		Talgo algo;
-		Eigen::ArrayXcf aToeplitz;
-		Eigen::ArrayXXcf BRighthand;
-		Eigen::ArrayXXcf output;
+    template<typename Talgo>
+    struct Test
+    {
+        Talgo algo;
+        Eigen::ArrayXcf aToeplitz;
+        Eigen::ArrayXXcf BRighthand;
+        Eigen::ArrayXXcf output;
 
-		Test(const Coefficients& c = {})
-		{
-			aToeplitz.resize(8);
-			aToeplitz.setRandom();
-			aToeplitz(0) = 1;
-			BRighthand.resize(8, 8);
-			BRighthand.setRandom();
-			output = initOutput({aToeplitz, BRighthand}, c);
-		}
+        Test(const Coefficients& c = {})
+        {
+            aToeplitz.resize(8);
+            aToeplitz.setRandom();
+            aToeplitz(0) = 1;
+            BRighthand.resize(8, 8);
+            BRighthand.setRandom();
+            output = initOutput({aToeplitz, BRighthand}, c);
+        }
 
-		inline void processAlgorithm() { algo.process({ aToeplitz, BRighthand }, output); }
-		bool isTestOutputFinite() const { return output.allFinite(); }
-	};
+        inline void processAlgorithm() { algo.process({ aToeplitz, BRighthand }, output); }
+        bool isTestOutputFinite() const { return output.allFinite(); }
+    };
 };
 
 class SolverToeplitz : public Algorithm<SolverToeplitzConfiguration>
 {
 public:
-	SolverToeplitz() = default;
-	SolverToeplitz(const Coefficients& c);
+    SolverToeplitz() = default;
+    SolverToeplitz(const Coefficients& c);
  };

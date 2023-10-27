@@ -27,8 +27,8 @@ public:
         resetMembers();
     }
 
-	inline void processOn(Input input, Output output)
-	{
+    inline void processOn(Input input, Output output)
+    {
         for (auto frame = 0; frame < input.cols(); frame++)
         {
             Eigen::ArrayXXf normals(C.nValuesX, 3);
@@ -46,7 +46,7 @@ public:
             valuesOld0 = valuesOld1;
             valuesOld1 = input.col(frame);
         }
-	}
+    }
 
 private:
 

@@ -12,45 +12,45 @@
 
 struct Normal3dConfiguration : public Configuration<I::Real2D, O::Real2D>
 {
-	struct Coefficients
-	{
+    struct Coefficients
+    {
         int nValuesX = 257;
-		DEFINE_TUNABLE_COEFFICIENTS(nValuesX)
-	};
+        DEFINE_TUNABLE_COEFFICIENTS(nValuesX)
+    };
 
-	struct Parameters
-	{
-		float distance1 = 31.25f; // distance between values along 1st dimension
-		float distance2 = 8.f; // distance between values along 2nd dimension
-		DEFINE_TUNABLE_PARAMETERS(distance1, distance2)
-	};
+    struct Parameters
+    {
+        float distance1 = 31.25f; // distance between values along 1st dimension
+        float distance2 = 8.f; // distance between values along 2nd dimension
+        DEFINE_TUNABLE_PARAMETERS(distance1, distance2)
+    };
 
-	static auto validInput(Input input, const Coefficients& c) { (input.rows() == c.nValuesX) && (input.cols() > 0); }
-	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(3 * c.nValuesX, input.cols()); }
+    static auto validInput(Input input, const Coefficients& c) { (input.rows() == c.nValuesX) && (input.cols() > 0); }
+    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(3 * c.nValuesX, input.cols()); }
 
-	template<typename Talgo>
-	struct Test
-	{
-		Talgo algo;
-		Eigen::ArrayXXf input;
+    template<typename Talgo>
+    struct Test
+    {
+        Talgo algo;
+        Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
         int nValuesY = 10;
 
-		Test(const Coefficients& c = {}) : algo(c)
-		{
-			input.resize(c.nValuesX, nValuesY);
-			input.setRandom();
-			output = initOutput(input, c);
-		}
-	
-		inline void processAlgorithm() { algo.process(input, output); }
-		bool isTestOutputFinite() const { return output.allFinite(); }
-	};
+        Test(const Coefficients& c = {}) : algo(c)
+        {
+            input.resize(c.nValuesX, nValuesY);
+            input.setRandom();
+            output = initOutput(input, c);
+        }
+    
+        inline void processAlgorithm() { algo.process(input, output); }
+        bool isTestOutputFinite() const { return output.allFinite(); }
+    };
 };
 
 class Normal3d : public Algorithm<Normal3dConfiguration>
 {
 public:
-	Normal3d() = default;
-	Normal3d(const Coefficients& c);
+    Normal3d() = default;
+    Normal3d(const Coefficients& c);
 };

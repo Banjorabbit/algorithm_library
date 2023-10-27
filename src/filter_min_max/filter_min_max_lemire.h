@@ -25,9 +25,9 @@ using namespace Eigen;
 class StreamingMinMaxLemire : public IAlgorithm<StreamingMinMaxConfiguration, StreamingMinMaxLemire>
 {
 public:
-	StreamingMinMaxLemire(Coefficients c = Coefficients()) :
-		IAlgorithm<StreamingMinMaxConfiguration, StreamingMinMaxLemire>{ c }
-	{
+    StreamingMinMaxLemire(Coefficients c = Coefficients()) :
+        IAlgorithm<StreamingMinMaxConfiguration, StreamingMinMaxLemire>{ c }
+    {
         minIndex.resize(C.filterLength, C.nChannels);
         maxIndex.resize(C.filterLength, C.nChannels);
         maxValue.resize(C.filterLength, C.nChannels);
@@ -37,8 +37,8 @@ public:
         upperEndIndex.resize(C.nChannels);
         lowerFrontIndex.resize(C.nChannels);
         lowerEndIndex.resize(C.nChannels);
-		resetMembers();
-	}
+        resetMembers();
+    }
 
     void processOn(Input input, Output output)
     {
@@ -121,8 +121,8 @@ public:
 
     void resetInitialValue(const float iOld) 
     { 
-	    reset(); 
-	    inputOld.setConstant(iOld); 
+        reset(); 
+        inputOld.setConstant(iOld); 
     }
 
     void resetInitialValue(const I::Real iOld)
@@ -130,30 +130,30 @@ public:
         if (iOld.size() == inputOld.size())
         {
             reset();
-	        inputOld = iOld; 
+            inputOld = iOld; 
         }
     }
 
 private:
 
     size_t getMembersDynamicSize() const final
-	{
-		auto size = minIndex.getDynamicMemorySize();
-		size += maxIndex.getDynamicMemorySize();
-		size += maxValue.getDynamicMemorySize();
+    {
+        auto size = minIndex.getDynamicMemorySize();
+        size += maxIndex.getDynamicMemorySize();
+        size += maxValue.getDynamicMemorySize();
         size += minValue.getDynamicMemorySize();
         size += inputOld.getDynamicMemorySize();
         size += upperFrontIndex.getDynamicMemorySize();
         size += upperEndIndex.getDynamicMemorySize();
         size += lowerFrontIndex.getDynamicMemorySize();
         size += lowerEndIndex.getDynamicMemorySize();
-		return size;
-	}
+        return size;
+    }
 
-	void resetMembers() final 
-	{
-		minIndex.setZero();
-		maxIndex.setZero();
+    void resetMembers() final 
+    {
+        minIndex.setZero();
+        maxIndex.setZero();
         maxValue.setZero();
         minValue.setZero();
         inputOld.setZero();
@@ -161,25 +161,25 @@ private:
         upperEndIndex.setZero();
         lowerFrontIndex.setZero();
         lowerEndIndex.setZero();
-	}
+    }
 
     ArrayXXi minIndex;
-	ArrayXXi maxIndex;
-	ArrayXXf maxValue;
-	ArrayXXf minValue;
-	ArrayXf inputOld;
-	ArrayXi upperFrontIndex, upperEndIndex, lowerFrontIndex, lowerEndIndex;
+    ArrayXXi maxIndex;
+    ArrayXXf maxValue;
+    ArrayXXf minValue;
+    ArrayXf inputOld;
+    ArrayXi upperFrontIndex, upperEndIndex, lowerFrontIndex, lowerEndIndex;
 };
 
 class FilterMinMaxLemire : public IAlgorithm<FilterMinMaxConfiguration, FilterMinMaxLemire>
 {
 public:
-	FilterMinMaxLemire(Coefficients c = Coefficients()) :
-		IAlgorithm<FilterMinMaxConfiguration, FilterMinMaxLemire>{ c },
+    FilterMinMaxLemire(Coefficients c = Coefficients()) :
+        IAlgorithm<FilterMinMaxConfiguration, FilterMinMaxLemire>{ c },
         streaming{c}
-	{
-		wHalf = (c.filterLength - 1) / 2;
-	}
+    {
+        wHalf = (c.filterLength - 1) / 2;
+    }
 
     StreamingMinMaxLemire streaming;
     DEFINE_MEMBER_ALGORITHMS(streaming)
@@ -188,12 +188,12 @@ public:
     {
         streaming.resetInitialValue(input.row(0).transpose());
         // this output is discarded and is only used to update internal values
-	    streaming.process(input.topRows(wHalf), { output.minValue.topRows(wHalf), output.maxValue.topRows(wHalf) });
-	    // This is the shifted streaming filter, which creates a symmetric window
-	    ArrayXXf xSymmetric(input.rows(), input.cols());
-	    xSymmetric.topRows(input.rows() - wHalf) = input.bottomRows(input.rows() - wHalf);
-	    xSymmetric.bottomRows(wHalf) = input.bottomRows<1>().replicate(wHalf, 1);
-	    streaming.process(xSymmetric, output);
+        streaming.process(input.topRows(wHalf), { output.minValue.topRows(wHalf), output.maxValue.topRows(wHalf) });
+        // This is the shifted streaming filter, which creates a symmetric window
+        ArrayXXf xSymmetric(input.rows(), input.cols());
+        xSymmetric.topRows(input.rows() - wHalf) = input.bottomRows(input.rows() - wHalf);
+        xSymmetric.bottomRows(wHalf) = input.bottomRows<1>().replicate(wHalf, 1);
+        streaming.process(xSymmetric, output);
     }
 
     void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
@@ -207,16 +207,16 @@ private:
 class StreamingMaxLemire : public IAlgorithm<StreamingMaxConfiguration, StreamingMaxLemire>
 {
 public:
-	StreamingMaxLemire(Coefficients c = Coefficients()) :
-		IAlgorithm<StreamingMaxConfiguration, StreamingMaxLemire>{ c }
-	{
+    StreamingMaxLemire(Coefficients c = Coefficients()) :
+        IAlgorithm<StreamingMaxConfiguration, StreamingMaxLemire>{ c }
+    {
         maxIndex.resize(C.filterLength, C.nChannels);
         maxValue.resize(C.filterLength, C.nChannels);
         inputOld.resize(C.nChannels);
         upperFrontIndex.resize(C.nChannels);
         upperEndIndex.resize(C.nChannels);
-		resetMembers();
-	}
+        resetMembers();
+    }
 
     void processOn(Input input, Output output)
     {
@@ -268,8 +268,8 @@ public:
 
     void resetInitialValue(const float iOld) 
     { 
-	    reset(); 
-	    inputOld.setConstant(iOld); 
+        reset(); 
+        inputOld.setConstant(iOld); 
     }
 
     void resetInitialValue(const I::Real iOld)
@@ -277,50 +277,50 @@ public:
         if (iOld.size() == inputOld.size())
         {
             reset();
-	        inputOld = iOld; 
+            inputOld = iOld; 
         }
     }
 
 private:
 
     size_t getMembersDynamicSize() const final
-	{
-		auto size = maxIndex.getDynamicMemorySize();
-		size += maxValue.getDynamicMemorySize();
+    {
+        auto size = maxIndex.getDynamicMemorySize();
+        size += maxValue.getDynamicMemorySize();
         size += inputOld.getDynamicMemorySize();
         size += upperFrontIndex.getDynamicMemorySize();
         size += upperEndIndex.getDynamicMemorySize();
-		return size;
-	}
+        return size;
+    }
 
-	void resetMembers() final 
-	{
-		maxIndex.setZero();
+    void resetMembers() final 
+    {
+        maxIndex.setZero();
         maxValue.setZero();
         inputOld.setZero();
         upperFrontIndex.setZero();
         upperEndIndex.setZero();
-	}
+    }
 
-	ArrayXXi maxIndex;
-	ArrayXXf maxValue;
-	ArrayXf inputOld;
-	ArrayXi upperFrontIndex, upperEndIndex;
+    ArrayXXi maxIndex;
+    ArrayXXf maxValue;
+    ArrayXf inputOld;
+    ArrayXi upperFrontIndex, upperEndIndex;
 };
 
 class StreamingMinLemire : public IAlgorithm<StreamingMinConfiguration, StreamingMinLemire>
 {
 public:
-	StreamingMinLemire(Coefficients c = Coefficients()) :
-		IAlgorithm<StreamingMinConfiguration, StreamingMinLemire>{ c }
-	{
+    StreamingMinLemire(Coefficients c = Coefficients()) :
+        IAlgorithm<StreamingMinConfiguration, StreamingMinLemire>{ c }
+    {
         minIndex.resize(C.filterLength, C.nChannels);
         minValue.resize(C.filterLength, C.nChannels);
         inputOld.resize(C.nChannels);
         lowerFrontIndex.resize(C.nChannels);
         lowerEndIndex.resize(C.nChannels);
-		resetMembers();
-	}
+        resetMembers();
+    }
 
     void processOn(Input input, Output output)
     {
@@ -373,8 +373,8 @@ public:
 
     void resetInitialValue(const float iOld) 
     { 
-	    reset(); 
-	    inputOld.setConstant(iOld); 
+        reset(); 
+        inputOld.setConstant(iOld); 
     }
 
     void resetInitialValue(const I::Real iOld)
@@ -382,46 +382,46 @@ public:
         if (iOld.size() == inputOld.size())
         {
             reset();
-	        inputOld = iOld; 
+            inputOld = iOld; 
         }
     }
 
 private:
 
     size_t getMembersDynamicSize() const final
-	{
-		auto size = minIndex.getDynamicMemorySize();
-		size += minValue.getDynamicMemorySize();
+    {
+        auto size = minIndex.getDynamicMemorySize();
+        size += minValue.getDynamicMemorySize();
         size += inputOld.getDynamicMemorySize();
         size += lowerFrontIndex.getDynamicMemorySize();
         size += lowerEndIndex.getDynamicMemorySize();
-		return size;
-	}
+        return size;
+    }
 
-	void resetMembers() final 
-	{
-		minIndex.setZero();
+    void resetMembers() final 
+    {
+        minIndex.setZero();
         minValue.setZero();
         inputOld.setZero();
         lowerFrontIndex.setZero();
         lowerEndIndex.setZero();
-	}
+    }
 
-	ArrayXXi minIndex;
-	ArrayXXf minValue;
-	ArrayXf inputOld;
-	ArrayXi lowerFrontIndex, lowerEndIndex;
+    ArrayXXi minIndex;
+    ArrayXXf minValue;
+    ArrayXf inputOld;
+    ArrayXi lowerFrontIndex, lowerEndIndex;
 };
 
 class FilterMaxLemire : public IAlgorithm<FilterMaxConfiguration, FilterMaxLemire>
 {
 public:
-	FilterMaxLemire(Coefficients c = Coefficients()) :
-		IAlgorithm<FilterMaxConfiguration, FilterMaxLemire>{ c },
+    FilterMaxLemire(Coefficients c = Coefficients()) :
+        IAlgorithm<FilterMaxConfiguration, FilterMaxLemire>{ c },
         streaming{c}
-	{
-		wHalf = (c.filterLength - 1) / 2;
-	}
+    {
+        wHalf = (c.filterLength - 1) / 2;
+    }
 
     StreamingMaxLemire streaming;
     DEFINE_MEMBER_ALGORITHMS(streaming)
@@ -430,12 +430,12 @@ public:
     {
         streaming.resetInitialValue(input.row(0).transpose());
         // this output is discarded and is only used to update internal values
-	    streaming.process(input.topRows(wHalf), output.topRows(wHalf));
-	    // This is the shifted streaming filter, which creates a symmetric window
-	    ArrayXXf xSymmetric(input.rows(), input.cols());
-	    xSymmetric.topRows(input.rows() - wHalf) = input.bottomRows(input.rows() - wHalf);
-	    xSymmetric.bottomRows(wHalf) = input.bottomRows<1>().replicate(wHalf, 1);
-	    streaming.process(xSymmetric, output);
+        streaming.process(input.topRows(wHalf), output.topRows(wHalf));
+        // This is the shifted streaming filter, which creates a symmetric window
+        ArrayXXf xSymmetric(input.rows(), input.cols());
+        xSymmetric.topRows(input.rows() - wHalf) = input.bottomRows(input.rows() - wHalf);
+        xSymmetric.bottomRows(wHalf) = input.bottomRows<1>().replicate(wHalf, 1);
+        streaming.process(xSymmetric, output);
     }
 
     void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
@@ -449,12 +449,12 @@ private:
 class FilterMinLemire : public IAlgorithm<FilterMinConfiguration, FilterMinLemire>
 {
 public:
-	FilterMinLemire(Coefficients c = Coefficients()) :
-		IAlgorithm<FilterMinConfiguration, FilterMinLemire>{ c },
+    FilterMinLemire(Coefficients c = Coefficients()) :
+        IAlgorithm<FilterMinConfiguration, FilterMinLemire>{ c },
         streaming{c}
-	{
-		wHalf = (c.filterLength - 1) / 2;
-	}
+    {
+        wHalf = (c.filterLength - 1) / 2;
+    }
 
     StreamingMinLemire streaming;
     DEFINE_MEMBER_ALGORITHMS(streaming)
@@ -463,12 +463,12 @@ public:
     {
         streaming.resetInitialValue(input.row(0).transpose());
         // this output is discarded and is only used to update internal values
-	    streaming.process(input.topRows(wHalf), output.topRows(wHalf));
-	    // This is the shifted streaming filter, which creates a symmetric window
-	    ArrayXXf xSymmetric(input.rows(), input.cols());
-	    xSymmetric.topRows(input.rows() - wHalf) = input.bottomRows(input.rows() - wHalf);
-	    xSymmetric.bottomRows(wHalf) = input.bottomRows<1>().replicate(wHalf, 1);
-	    streaming.process(xSymmetric, output);
+        streaming.process(input.topRows(wHalf), output.topRows(wHalf));
+        // This is the shifted streaming filter, which creates a symmetric window
+        ArrayXXf xSymmetric(input.rows(), input.cols());
+        xSymmetric.topRows(input.rows() - wHalf) = input.bottomRows(input.rows() - wHalf);
+        xSymmetric.bottomRows(wHalf) = input.bottomRows<1>().replicate(wHalf, 1);
+        streaming.process(xSymmetric, output);
     }
 
     void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }

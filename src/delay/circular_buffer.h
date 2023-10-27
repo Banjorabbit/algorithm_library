@@ -11,8 +11,8 @@ class CircularBufferSingleChannel : public IAlgorithm<DelayConfiguration, Circul
 {
 public:
     CircularBufferSingleChannel(Coefficients c =  Coefficients()) :
-		IAlgorithm<DelayConfiguration, CircularBufferSingleChannel>{ c }
-	{
+        IAlgorithm<DelayConfiguration, CircularBufferSingleChannel>{ c }
+    {
         C.nChannels = 1; // force number of channels to 1 since this is the single channel version
         buffer.resize(c.delayLength);
         reset();
@@ -70,9 +70,9 @@ public:
 private:
 
     inline void increment() { index++; if (index >= C.delayLength) { index = 0; } }
-	inline void increment(const int increment) { index += increment; while (index >= C.delayLength) { index -= C.delayLength; } }
-	inline void decrement() { index--; if (index < 0) { index = C.delayLength - 1; } }
-	inline void decrement(const int decrement) { index -= decrement; while (index < 0) { index += C.delayLength; } }
+    inline void increment(const int increment) { index += increment; while (index >= C.delayLength) { index -= C.delayLength; } }
+    inline void decrement() { index--; if (index < 0) { index = C.delayLength - 1; } }
+    inline void decrement(const int decrement) { index -= decrement; while (index < 0) { index += C.delayLength; } }
 
     void resetMembers() final
     {
@@ -82,10 +82,10 @@ private:
     }
 
     size_t getMembersDynamicSize() const final
-	{
-		size_t size = buffer.getDynamicMemorySize();
-		return size;
-	}
+    {
+        size_t size = buffer.getDynamicMemorySize();
+        return size;
+    }
 
     Eigen::ArrayXf buffer;
     int index;
@@ -95,8 +95,8 @@ class CircularBuffer : public IAlgorithm<DelayConfiguration, CircularBuffer>
 {
 public:
     CircularBuffer(Coefficients c =  Coefficients()) :
-		IAlgorithm<DelayConfiguration, CircularBuffer>{ c }
-	{
+        IAlgorithm<DelayConfiguration, CircularBuffer>{ c }
+    {
         buffer.resize(c.delayLength, c.nChannels);
         reset();
     }
@@ -153,9 +153,9 @@ public:
 private:
 
     inline void increment() { index++; if (index >= C.delayLength) { index = 0; } }
-	inline void increment(const int increment) { index += increment; while (index >= C.delayLength) { index -= C.delayLength; } }
-	inline void decrement() { index--; if (index < 0) { index = C.delayLength - 1; } }
-	inline void decrement(const int decrement) { index -= decrement; while (index < 0) { index += C.delayLength; } }
+    inline void increment(const int increment) { index += increment; while (index >= C.delayLength) { index -= C.delayLength; } }
+    inline void decrement() { index--; if (index < 0) { index = C.delayLength - 1; } }
+    inline void decrement(const int decrement) { index -= decrement; while (index < 0) { index += C.delayLength; } }
 
     void resetMembers() final
     {
@@ -165,10 +165,10 @@ private:
     }
 
     size_t getMembersDynamicSize() const final
-	{
-		size_t size = buffer.getDynamicMemorySize();
-		return size;
-	}
+    {
+        size_t size = buffer.getDynamicMemorySize();
+        return size;
+    }
 
     Eigen::ArrayXXf buffer;
     int index;

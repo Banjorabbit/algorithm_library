@@ -23,29 +23,29 @@ struct MinPhaseSpectrumConfiguration : public Configuration<I::Real2D, O::Comple
     static auto validInput(Input input, const Coefficients& c) { return (input.rows() == c.nBands) && (input.cols() > 0); }
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(c.nBands, input.cols()); }
 
-	template<typename Talgo>
-	struct Test
-	{
+    template<typename Talgo>
+    struct Test
+    {
         Talgo algo;
         int nChannels = 2;
-		Eigen::ArrayXXf input;
+        Eigen::ArrayXXf input;
         Eigen::ArrayXXcf output;
 
-		Test(const Coefficients& c = {}) : algo(c)
-		{
+        Test(const Coefficients& c = {}) : algo(c)
+        {
             input = Eigen::ArrayXXf::Random(c.nBands, nChannels).abs2();
             output = initOutput(input, c);
-		}
+        }
 
-		void processAlgorithm() { algo.process(input, output); }
-		bool isTestOutputFinite() const { return output.allFinite(); }
-	};
+        void processAlgorithm() { algo.process(input, output); }
+        bool isTestOutputFinite() const { return output.allFinite(); }
+    };
 };
 
 class MinPhaseSpectrum : public Algorithm<MinPhaseSpectrumConfiguration>
 {
 public:
-	MinPhaseSpectrum() = default;
+    MinPhaseSpectrum() = default;
     MinPhaseSpectrum(const Coefficients& c);
 };
 

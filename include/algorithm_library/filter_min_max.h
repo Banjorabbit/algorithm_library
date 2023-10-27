@@ -21,42 +21,42 @@
 
 struct FilterMinMaxOutput
 {
-	O::Real2D minValue;
-	O::Real2D maxValue;
+    O::Real2D minValue;
+    O::Real2D maxValue;
 };
 
 struct BaseFilterMinMaxConfiguration  : public Configuration<I::Real2D, FilterMinMaxOutput>
 {
     struct Coefficients
-	{
-		int filterLength = 100;
-		int nChannels = 2;
-		DEFINE_TUNABLE_COEFFICIENTS(filterLength, nChannels)
-	};
+    {
+        int filterLength = 100;
+        int nChannels = 2;
+        DEFINE_TUNABLE_COEFFICIENTS(filterLength, nChannels)
+    };
 
     static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels);}
     static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple( Eigen::ArrayXXf(input.rows(), c.nChannels), Eigen::ArrayXXf(input.rows(), c.nChannels) ); }
     
     template<typename Talgo>
-	struct Test
-	{
+    struct Test
+    {
         Talgo algo;
-		Eigen::ArrayXXf minValue;
-		Eigen::ArrayXXf maxValue;
-		Eigen::ArrayXXf input;
+        Eigen::ArrayXXf minValue;
+        Eigen::ArrayXXf maxValue;
+        Eigen::ArrayXXf input;
 
         Test(const Coefficients& c = {}) : algo(c)
-		{
+        {
             const int samples = 1000;
-			input.resize(samples, c.nChannels);
-			input.setRandom();
+            input.resize(samples, c.nChannels);
+            input.setRandom();
             std::tie(minValue, maxValue) = initOutput(input, c);
-		}
+        }
 
-		inline void processAlgorithm() { algo.process(input, { minValue, maxValue }); }
-		bool isTestOutputFinite() const { return minValue.allFinite() && maxValue.allFinite(); }
+        inline void processAlgorithm() { algo.process(input, { minValue, maxValue }); }
+        bool isTestOutputFinite() const { return minValue.allFinite() && maxValue.allFinite(); }
 
-	};
+    };
 };
 
 struct FilterMinMaxConfiguration : public BaseFilterMinMaxConfiguration {};
@@ -69,8 +69,8 @@ public:
     StreamingMinMax(const Coefficients& c);
 
     // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
-	void resetInitialValue(const float inputOld); 
-	void resetInitialValue(const I::Real inputOld); 
+    void resetInitialValue(const float inputOld); 
+    void resetInitialValue(const I::Real inputOld); 
 };
 
 class FilterMinMax : public Algorithm<FilterMinMaxConfiguration> 
@@ -80,8 +80,8 @@ public:
     FilterMinMax(const Coefficients& c);
 
     // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
-	void resetInitialValue(const float inputOld); 
-	void resetInitialValue(const I::Real inputOld); 
+    void resetInitialValue(const float inputOld); 
+    void resetInitialValue(const I::Real inputOld); 
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -89,33 +89,33 @@ public:
 struct BaseFilterExtremumConfiguration : public Configuration<I::Real2D, O::Real2D>
 {
     struct Coefficients
-	{
-		int filterLength = 100;
-		int nChannels = 2;
-		DEFINE_TUNABLE_COEFFICIENTS(filterLength, nChannels)
-	};
+    {
+        int filterLength = 100;
+        int nChannels = 2;
+        DEFINE_TUNABLE_COEFFICIENTS(filterLength, nChannels)
+    };
 
     static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels);}
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.rows(), c.nChannels); }
     
-	template<typename Talgo>
-	struct Test
-	{
+    template<typename Talgo>
+    struct Test
+    {
         Talgo algo;
-		Eigen::ArrayXXf output;
-		Eigen::ArrayXXf input;
+        Eigen::ArrayXXf output;
+        Eigen::ArrayXXf input;
 
-		Test(const Coefficients& c = {}) : algo(c)
-		{
-			const int samples = 1000;
-			input.resize(samples, c.nChannels);
-			input.setRandom();
+        Test(const Coefficients& c = {}) : algo(c)
+        {
+            const int samples = 1000;
+            input.resize(samples, c.nChannels);
+            input.setRandom();
             output = initOutput(input, c);
-		}
+        }
 
         inline void processAlgorithm() { algo.process(input, output); }
-		bool isTestOutputFinite() const { return output.allFinite(); }
-	};
+        bool isTestOutputFinite() const { return output.allFinite(); }
+    };
 };
 
 struct FilterMaxConfiguration : public BaseFilterExtremumConfiguration {};
@@ -128,10 +128,10 @@ class StreamingMax : public Algorithm<StreamingMaxConfiguration>
 public:
     StreamingMax() = default;
     StreamingMax(const Coefficients& c);
-	// It might be necessary to call the public ResetInitialValues function before Process, 
-	// if certain initial conditions are required.
-	void resetInitialValue(const float inputOld);
-	void resetInitialValue(const I::Real inputOld);
+    // It might be necessary to call the public ResetInitialValues function before Process, 
+    // if certain initial conditions are required.
+    void resetInitialValue(const float inputOld);
+    void resetInitialValue(const I::Real inputOld);
 };
 
 class StreamingMin : public Algorithm<StreamingMinConfiguration>
@@ -139,30 +139,30 @@ class StreamingMin : public Algorithm<StreamingMinConfiguration>
 public:
     StreamingMin() = default;
     StreamingMin(const Coefficients& c);
-	// It might be necessary to call the public ResetInitialValues function before Process, 
-	// if certain initial conditions are required.
-	void resetInitialValue(const float inputOld);
-	void resetInitialValue(const I::Real inputOld);
+    // It might be necessary to call the public ResetInitialValues function before Process, 
+    // if certain initial conditions are required.
+    void resetInitialValue(const float inputOld);
+    void resetInitialValue(const I::Real inputOld);
 };
 
 class FilterMax : public Algorithm<FilterMaxConfiguration>
 {
 public:
-	FilterMax() = default;
+    FilterMax() = default;
     FilterMax(const Coefficients& c);
 
     // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
-	void resetInitialValue(const float inputOld); 
-	void resetInitialValue(const I::Real inputOld); 
+    void resetInitialValue(const float inputOld); 
+    void resetInitialValue(const I::Real inputOld); 
 };
 
 class FilterMin : public Algorithm<FilterMinConfiguration>
 {
 public:
-	FilterMin() = default;
+    FilterMin() = default;
     FilterMin(const Coefficients& c);
 
     // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
-	void resetInitialValue(const float inputOld); 
-	void resetInitialValue(const I::Real inputOld); 
+    void resetInitialValue(const float inputOld); 
+    void resetInitialValue(const I::Real inputOld); 
 };

@@ -15,7 +15,7 @@ struct DelayConfiguration : public Configuration<I::Real2D, O::Real2D>
         return (input.rows() > 0) && (input.cols() == c.nChannels);
     }
     
-	static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.rows(), c.nChannels); }
+    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.rows(), c.nChannels); }
 
     template<typename Talgo>
     struct Test
