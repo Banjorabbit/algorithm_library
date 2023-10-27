@@ -2,18 +2,18 @@
 #include "framework/framework.h"
 #include "algorithm_library/delay.h"
 
-// Circular buffer 
+// Circular buffer. There is a single channel version and a multi-channel version.
 //
 // author: Kristian Timm Andersen
 
-
+// Single channel version of circular buffer that is faster than the multi-channel version
 class CircularBufferSingleChannel : public IAlgorithm<DelayConfiguration, CircularBufferSingleChannel>
 {
 public:
     CircularBufferSingleChannel(Coefficients c =  Coefficients()) :
 		IAlgorithm<DelayConfiguration, CircularBufferSingleChannel>{ c }
 	{
-        C.nChannels = 1; // force number of channels to 1
+        C.nChannels = 1; // force number of channels to 1 since this is the single channel version
         buffer.resize(c.delayLength);
         reset();
      }
