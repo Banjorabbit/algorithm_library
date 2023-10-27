@@ -1,7 +1,5 @@
 #include "delay/circular_buffer.h"
 
-//DEFINE_CONSTRUCTOR_DESTRUCTOR(Delay, CircularBufferSingleChannel, DelayConfiguration)
-
 using CircularBufferSingleChannelImpl = Impl<CircularBufferSingleChannel, DelayConfiguration>;
 using CircularBufferImpl = Impl<CircularBuffer, DelayConfiguration>;
 
