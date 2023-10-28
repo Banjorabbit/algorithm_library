@@ -10,7 +10,7 @@ Algorithm<SpectrogramConfiguration>::~Algorithm() {}
 template<>
 Algorithm<SpectrogramConfiguration>::Algorithm(const Coefficients& c) 
 {
-    if (c.spectrogramType == c.FILTERBANK)
+    if (c.algorithm == c.FILTERBANK)
     {
         pimpl = std::make_unique<FilterbankImpl>(c);
     }
@@ -25,7 +25,7 @@ Spectrogram::Spectrogram(const Coefficients& c) : Algorithm<SpectrogramConfigura
 void Spectrogram::setWindow(I::Real window)
 {
     const auto c = getCoefficients();
-    if (c.spectrogramType == c.FILTERBANK)
+    if (c.algorithm == c.FILTERBANK)
     {
         static_cast<FilterbankImpl*>(pimpl.get())->algo.setWindow(window);
     }
