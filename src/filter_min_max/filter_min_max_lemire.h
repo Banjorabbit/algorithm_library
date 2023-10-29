@@ -125,7 +125,7 @@ public:
         inputOld.setConstant(iOld); 
     }
 
-    void resetInitialValue(const I::Real iOld)
+    void resetInitialValue(I::Real iOld)
     { 
         if (iOld.size() == inputOld.size())
         {
@@ -197,7 +197,7 @@ public:
     }
 
     void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
-    void resetInitialValue(const I::Real iOld) { streaming.resetInitialValue(iOld); }
+    void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
 
 private:
 
@@ -272,7 +272,7 @@ public:
         inputOld.setConstant(iOld); 
     }
 
-    void resetInitialValue(const I::Real iOld)
+    void resetInitialValue(I::Real iOld)
     { 
         if (iOld.size() == inputOld.size())
         {
@@ -377,7 +377,7 @@ public:
         inputOld.setConstant(iOld); 
     }
 
-    void resetInitialValue(const I::Real iOld)
+    void resetInitialValue(I::Real iOld)
     { 
         if (iOld.size() == inputOld.size())
         {
@@ -439,7 +439,7 @@ public:
     }
 
     void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
-    void resetInitialValue(const I::Real iOld) { streaming.resetInitialValue(iOld); }
+    void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
 
 private:
 
@@ -472,7 +472,7 @@ public:
     }
 
     void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
-    void resetInitialValue(const I::Real iOld) { streaming.resetInitialValue(iOld); }
+    void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
 
 private:
 

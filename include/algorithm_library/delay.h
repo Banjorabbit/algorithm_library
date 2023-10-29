@@ -24,7 +24,8 @@ struct DelayConfiguration : public Configuration<I::Real2D, O::Real2D>
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
 
-        Test(const Coefficients& c = {}) : algo(c)
+        Test() : Test(Coefficients()) {}
+        Test(const Coefficients& c) : algo(c)
         {
             input = Eigen::ArrayXXf(c.delayLength, c.nChannels);
             output = initOutput(input, c);

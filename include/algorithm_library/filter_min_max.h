@@ -45,7 +45,8 @@ struct BaseFilterMinMaxConfiguration  : public Configuration<I::Real2D, FilterMi
         Eigen::ArrayXXf maxValue;
         Eigen::ArrayXXf input;
 
-        Test(const Coefficients& c = {}) : algo(c)
+        Test() : Test(Coefficients()) {}
+        Test(const Coefficients& c) : algo(c)
         {
             const int samples = 1000;
             input.resize(samples, c.nChannels);
@@ -69,8 +70,8 @@ public:
     StreamingMinMax(const Coefficients& c);
 
     // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
-    void resetInitialValue(const float inputOld); 
-    void resetInitialValue(const I::Real inputOld); 
+    void resetInitialValue(float inputOld); 
+    void resetInitialValue(I::Real inputOld); 
 };
 
 class FilterMinMax : public Algorithm<FilterMinMaxConfiguration> 
@@ -81,7 +82,7 @@ public:
 
     // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
     void resetInitialValue(const float inputOld); 
-    void resetInitialValue(const I::Real inputOld); 
+    void resetInitialValue(I::Real inputOld); 
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -105,7 +106,8 @@ struct BaseFilterExtremumConfiguration : public Configuration<I::Real2D, O::Real
         Eigen::ArrayXXf output;
         Eigen::ArrayXXf input;
 
-        Test(const Coefficients& c = {}) : algo(c)
+        Test() : Test(Coefficients()) {}
+        Test(const Coefficients& c) : algo(c)
         {
             const int samples = 1000;
             input.resize(samples, c.nChannels);
@@ -131,7 +133,7 @@ public:
     // It might be necessary to call the public ResetInitialValues function before Process, 
     // if certain initial conditions are required.
     void resetInitialValue(const float inputOld);
-    void resetInitialValue(const I::Real inputOld);
+    void resetInitialValue(I::Real inputOld);
 };
 
 class StreamingMin : public Algorithm<StreamingMinConfiguration>
@@ -142,7 +144,7 @@ public:
     // It might be necessary to call the public ResetInitialValues function before Process, 
     // if certain initial conditions are required.
     void resetInitialValue(const float inputOld);
-    void resetInitialValue(const I::Real inputOld);
+    void resetInitialValue(I::Real inputOld);
 };
 
 class FilterMax : public Algorithm<FilterMaxConfiguration>
@@ -153,7 +155,7 @@ public:
 
     // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
     void resetInitialValue(const float inputOld); 
-    void resetInitialValue(const I::Real inputOld); 
+    void resetInitialValue(I::Real inputOld); 
 };
 
 class FilterMin : public Algorithm<FilterMinConfiguration>
@@ -164,5 +166,5 @@ public:
 
     // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
     void resetInitialValue(const float inputOld); 
-    void resetInitialValue(const I::Real inputOld); 
+    void resetInitialValue(I::Real inputOld); 
 };

@@ -33,7 +33,9 @@ struct FFTConfiguration : public Configuration<I::Real2D, O::Complex2D>
         int nChannels = 2;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXcf output;
-        Test(const Coefficients& c = {}) : algo(c)
+
+        Test() : Test(Coefficients()) {}
+        Test(const Coefficients& c) : algo(c)
         {
             input = Eigen::ArrayXXf::Random(c.fftSize, nChannels);
             output = initOutput(input, c);

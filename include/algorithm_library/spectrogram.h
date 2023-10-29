@@ -19,7 +19,7 @@ struct SpectrogramConfiguration : public Configuration<I::Real, O::Real2D>
     };
 
     static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == 1); }
-    static auto initOutput(const Input& input, const Coefficients& c)
+    static auto initOutput(Input input, const Coefficients& c)
     {
         return Eigen::ArrayXXf(c.fftSize / 2 + 1, input.rows() / c.bufferSize);
     }
@@ -30,7 +30,9 @@ struct SpectrogramConfiguration : public Configuration<I::Real, O::Real2D>
         Talgo algo;
         Eigen::ArrayXf input;
         Eigen::ArrayXXf output;
-        Test(const Coefficients& c = {}) : algo(c)
+
+        Test() : Test(Coefficients()) {}
+        Test(const Coefficients& c) : algo(c)
         {
             const int nFrames = 10;
             input.resize(nFrames * c.bufferSize);

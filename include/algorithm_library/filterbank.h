@@ -36,7 +36,8 @@ struct FilterbankAnalysisConfiguration : public Configuration<I::Real2D, O::Comp
         Eigen::ArrayXXf input;
         Eigen::ArrayXXcf output;
 
-        Test(const Coefficients& c = {}) : algo(c)
+        Test() : Test(Coefficients()) {}
+        Test(const Coefficients& c) : algo(c)
         {
             input.resize(c.bufferSize, c.nChannels);
             input.setRandom();
@@ -92,7 +93,8 @@ struct FilterbankSynthesisConfiguration : public Configuration<I::Complex2D, O::
         Eigen::ArrayXXcf input;
         Eigen::ArrayXXf output;
 
-        Test(const Coefficients& c = {}) : algo(c)
+        Test() : Test(Coefficients()) {}
+        Test(const Coefficients& c) : algo(c)
         {
             input.resize(c.fftSize/2+1, c.nChannels);
             input.setRandom();

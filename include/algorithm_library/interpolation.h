@@ -28,7 +28,8 @@ struct InterpolationSampleConfiguration : public Configuration<InterpolationSamp
         float fractionalIndex; // index must be between 0.0 - 1.0
         float output; // output has same size as fractionalIndices
 
-        Test(const Coefficients& c = {})
+        Test() : Test(Coefficients()) {}
+        Test(const Coefficients& c)
         {
             samples.setRandom();
             fractionalIndex = 0.3f;
@@ -110,7 +111,8 @@ struct InterpolationConstantConfiguration : public Configuration<I::Real, O::Rea
         Eigen::ArrayXf samples;
         Eigen::ArrayXf output;
 
-        Test(const Coefficients& c = {}) : algo(c)
+        Test() : Test(Coefficients()) {}
+        Test(const Coefficients& c) : algo(c)
         {
             const int N = 256;
             samples = Eigen::ArrayXf::Random(N);

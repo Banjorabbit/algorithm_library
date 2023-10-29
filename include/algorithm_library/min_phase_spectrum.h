@@ -31,7 +31,8 @@ struct MinPhaseSpectrumConfiguration : public Configuration<I::Real2D, O::Comple
         Eigen::ArrayXXf input;
         Eigen::ArrayXXcf output;
 
-        Test(const Coefficients& c = {}) : algo(c)
+        Test() : Test(Coefficients()) {}
+        Test(const Coefficients& c) : algo(c)
         {
             input = Eigen::ArrayXXf::Random(c.nBands, nChannels).abs2();
             output = initOutput(input, c);

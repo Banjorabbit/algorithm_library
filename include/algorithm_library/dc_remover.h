@@ -32,7 +32,8 @@ struct DCRemoverConfiguration : public Configuration<I::Real2D, O::Real2D>
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
 
-        Test(const Coefficients& c = {})
+        Test() : Test(Coefficients()) {}
+        Test(const Coefficients& c)
         {
             int nSamples = 100;
             input.resize(nSamples, c.nChannels);

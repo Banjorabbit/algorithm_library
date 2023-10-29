@@ -33,7 +33,8 @@ struct SplineConfiguration : public Configuration<SplineInput, O::Real2D>
         Eigen::ArrayXXf xDesired;
         Eigen::ArrayXXf yDesired;
 
-        Test(const Coefficients& c = {}) : algo(c)
+        Test() : Test(Coefficients()) {}
+        Test(const Coefficients& c) : algo(c)
         {
             int n = 10; // number of input samples per channel
             int nOS = 100; // number of output samples per channel

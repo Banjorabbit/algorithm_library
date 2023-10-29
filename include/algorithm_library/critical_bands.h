@@ -34,7 +34,8 @@ struct CriticalBandsConfiguration : public Configuration<I::Real2D, O::Real2D>
         Eigen::ArrayXXf xPower;
         Eigen::ArrayXXf yPower;
 
-        Test(const Coefficients& c = {}) : algo(c)
+        Test() : Test(Coefficients()) {}
+        Test(Coefficients c): algo(c)
         {
             xPower = Eigen::ArrayXXf::Random(c.nBands, nChannels).abs2();
             yPower = initOutput(xPower, c);

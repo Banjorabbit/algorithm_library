@@ -30,7 +30,8 @@ struct SolverToeplitzConfiguration : public Configuration<SolverToeplitzInput, O
         Eigen::ArrayXXcf BRighthand;
         Eigen::ArrayXXcf output;
 
-        Test(const Coefficients& c = {})
+        Test() : Test(Coefficients()) {}
+        Test(const Coefficients& c)
         {
             aToeplitz.resize(8);
             aToeplitz.setRandom();
