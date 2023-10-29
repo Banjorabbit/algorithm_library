@@ -29,7 +29,6 @@ CPMAddPackage(
 CPMAddPackage(
     NAME Eigen
     URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip
-    GIT_TAG 3.4.0
     DOWNLOAD_ONLY YES
 )
 add_library(Eigen INTERFACE IMPORTED)
