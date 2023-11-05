@@ -37,7 +37,7 @@ struct NoiseEstimationConfiguration : public Configuration<I::Real2D, O::Real2D>
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c) : algo(c)
         {
-            input = Eigen::ArrayXXf::Random(c.nBands, c.nChannels);
+            input = Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2();
             output = initOutput(input, c);
         }
 
