@@ -74,12 +74,12 @@ protected:
 
 // --------------------------------------------------- CriticalBandsBarkSum ----------------------------------------------------------------
 
-class CriticalBandsBarkSum : public CriticalBandsBark, public IAlgorithm<CriticalBandsSumConfiguration, CriticalBandsBarkSum>
+class CriticalBandsBarkSum : public CriticalBandsBark, public AlgorithmImplementation<CriticalBandsSumConfiguration, CriticalBandsBarkSum>
 {
 public:
     CriticalBandsBarkSum(Coefficients c =  Coefficients()) :
         CriticalBandsBark(c), 
-        IAlgorithm<CriticalBandsSumConfiguration, CriticalBandsBarkSum>{ c }
+        AlgorithmImplementation<CriticalBandsSumConfiguration, CriticalBandsBarkSum>{ c }
     { }
 
     inline void processOn(Input xPower, Output yPower)
@@ -102,13 +102,13 @@ private:
 
 // --------------------------------------------------- CriticalBandsBarkMax ----------------------------------------------------------------
 
-class CriticalBandsBarkMax : public CriticalBandsBark, public IAlgorithm<CriticalBandsMaxConfiguration, CriticalBandsBarkMax>
+class CriticalBandsBarkMax : public CriticalBandsBark, public AlgorithmImplementation<CriticalBandsMaxConfiguration, CriticalBandsBarkMax>
 {
 public:
 
     CriticalBandsBarkMax(Coefficients c =  Coefficients()) :
         CriticalBandsBark(c), 
-        IAlgorithm<CriticalBandsMaxConfiguration, CriticalBandsBarkMax>{ c }
+        AlgorithmImplementation<CriticalBandsMaxConfiguration, CriticalBandsBarkMax>{ c }
     { }
 
     inline void processOn(Input xPower, Output yPower)
@@ -131,13 +131,13 @@ private:
 
 // --------------------------------------------------- CriticalBandsBarkMean ----------------------------------------------------------------
 
-class CriticalBandsBarkMean : public CriticalBandsBark, public IAlgorithm<CriticalBandsMeanConfiguration, CriticalBandsBarkMean>
+class CriticalBandsBarkMean : public CriticalBandsBark, public AlgorithmImplementation<CriticalBandsMeanConfiguration, CriticalBandsBarkMean>
 {
 public:
 
     CriticalBandsBarkMean(Coefficients c =  Coefficients()) :
         CriticalBandsBark(c), 
-        IAlgorithm<CriticalBandsMeanConfiguration, CriticalBandsBarkMean>{ c }
+        AlgorithmImplementation<CriticalBandsMeanConfiguration, CriticalBandsBarkMean>{ c }
     { }
 
     inline void processOn(Input xPower, Output yPower)

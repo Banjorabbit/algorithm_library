@@ -17,11 +17,11 @@
 //
 // author: Kristian Timm Andersen
 
-class FFTReal : public IAlgorithm<FFTConfiguration, FFTReal>
+class FFTReal : public AlgorithmImplementation<FFTConfiguration, FFTReal>
 {
 public:
     FFTReal(Coefficients c = Coefficients()) :
-        IAlgorithm<FFTConfiguration, FFTReal>{ c },
+        AlgorithmImplementation<FFTConfiguration, FFTReal>{ c },
         scale{ 1.f / static_cast<float>(C.fftSize) },
         setup{ std::shared_ptr<PFFFT_Setup>(pffftSmartCreate(C.fftSize), pffftSmartDestroy) }
     {

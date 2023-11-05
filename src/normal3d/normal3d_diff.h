@@ -14,11 +14,11 @@
 
 // ----------------------------- Cubic interpolation of one sample -----------------------------------------
 
-class Normal3dDiff: public IAlgorithm<Normal3dConfiguration, Normal3dDiff>
+class Normal3dDiff: public AlgorithmImplementation<Normal3dConfiguration, Normal3dDiff>
 {
 public:
     Normal3dDiff(Coefficients c = Coefficients()) :
-        IAlgorithm<Normal3dConfiguration, Normal3dDiff> {c}
+        AlgorithmImplementation<Normal3dConfiguration, Normal3dDiff> {c}
     {
         valuesOld0.resize(C.nValuesX);
         valuesOld1.resize(C.nValuesX);

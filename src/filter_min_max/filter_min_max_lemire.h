@@ -22,11 +22,11 @@ using namespace Eigen;
 // author : Kristian Timm Andersen
 
 
-class StreamingMinMaxLemire : public IAlgorithm<StreamingMinMaxConfiguration, StreamingMinMaxLemire>
+class StreamingMinMaxLemire : public AlgorithmImplementation<StreamingMinMaxConfiguration, StreamingMinMaxLemire>
 {
 public:
     StreamingMinMaxLemire(Coefficients c = Coefficients()) :
-        IAlgorithm<StreamingMinMaxConfiguration, StreamingMinMaxLemire>{ c }
+        AlgorithmImplementation<StreamingMinMaxConfiguration, StreamingMinMaxLemire>{ c }
     {
         minIndex.resize(C.filterLength, C.nChannels);
         maxIndex.resize(C.filterLength, C.nChannels);
@@ -171,11 +171,11 @@ private:
     ArrayXi upperFrontIndex, upperEndIndex, lowerFrontIndex, lowerEndIndex;
 };
 
-class FilterMinMaxLemire : public IAlgorithm<FilterMinMaxConfiguration, FilterMinMaxLemire>
+class FilterMinMaxLemire : public AlgorithmImplementation<FilterMinMaxConfiguration, FilterMinMaxLemire>
 {
 public:
     FilterMinMaxLemire(Coefficients c = Coefficients()) :
-        IAlgorithm<FilterMinMaxConfiguration, FilterMinMaxLemire>{ c },
+        AlgorithmImplementation<FilterMinMaxConfiguration, FilterMinMaxLemire>{ c },
         streaming{c}
     {
         wHalf = (c.filterLength - 1) / 2;
@@ -204,11 +204,11 @@ private:
     int wHalf;
 };
 
-class StreamingMaxLemire : public IAlgorithm<StreamingMaxConfiguration, StreamingMaxLemire>
+class StreamingMaxLemire : public AlgorithmImplementation<StreamingMaxConfiguration, StreamingMaxLemire>
 {
 public:
     StreamingMaxLemire(Coefficients c = Coefficients()) :
-        IAlgorithm<StreamingMaxConfiguration, StreamingMaxLemire>{ c }
+        AlgorithmImplementation<StreamingMaxConfiguration, StreamingMaxLemire>{ c }
     {
         maxIndex.resize(C.filterLength, C.nChannels);
         maxValue.resize(C.filterLength, C.nChannels);
@@ -308,11 +308,11 @@ private:
     ArrayXi upperFrontIndex, upperEndIndex;
 };
 
-class StreamingMinLemire : public IAlgorithm<StreamingMinConfiguration, StreamingMinLemire>
+class StreamingMinLemire : public AlgorithmImplementation<StreamingMinConfiguration, StreamingMinLemire>
 {
 public:
     StreamingMinLemire(Coefficients c = Coefficients()) :
-        IAlgorithm<StreamingMinConfiguration, StreamingMinLemire>{ c }
+        AlgorithmImplementation<StreamingMinConfiguration, StreamingMinLemire>{ c }
     {
         minIndex.resize(C.filterLength, C.nChannels);
         minValue.resize(C.filterLength, C.nChannels);
@@ -413,11 +413,11 @@ private:
     ArrayXi lowerFrontIndex, lowerEndIndex;
 };
 
-class FilterMaxLemire : public IAlgorithm<FilterMaxConfiguration, FilterMaxLemire>
+class FilterMaxLemire : public AlgorithmImplementation<FilterMaxConfiguration, FilterMaxLemire>
 {
 public:
     FilterMaxLemire(Coefficients c = Coefficients()) :
-        IAlgorithm<FilterMaxConfiguration, FilterMaxLemire>{ c },
+        AlgorithmImplementation<FilterMaxConfiguration, FilterMaxLemire>{ c },
         streaming{c}
     {
         wHalf = (c.filterLength - 1) / 2;
@@ -446,11 +446,11 @@ private:
     int wHalf;
 };
 
-class FilterMinLemire : public IAlgorithm<FilterMinConfiguration, FilterMinLemire>
+class FilterMinLemire : public AlgorithmImplementation<FilterMinConfiguration, FilterMinLemire>
 {
 public:
     FilterMinLemire(Coefficients c = Coefficients()) :
-        IAlgorithm<FilterMinConfiguration, FilterMinLemire>{ c },
+        AlgorithmImplementation<FilterMinConfiguration, FilterMinLemire>{ c },
         streaming{c}
     {
         wHalf = (c.filterLength - 1) / 2;

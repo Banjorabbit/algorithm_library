@@ -6,11 +6,11 @@
 // noise estimation based on an activity detector. The more activity in the power spectra, the more the output is smoothed.
 //
 // author: Kristian Timm Andersen
-class NoiseEstimationActivityDetection : public IAlgorithm<NoiseEstimationConfiguration, NoiseEstimationActivityDetection>
+class NoiseEstimationActivityDetection : public AlgorithmImplementation<NoiseEstimationConfiguration, NoiseEstimationActivityDetection>
 {
 public:
     NoiseEstimationActivityDetection(Coefficients c =  Coefficients()) :
-        IAlgorithm<NoiseEstimationConfiguration, NoiseEstimationActivityDetection>{ c }
+        AlgorithmImplementation<NoiseEstimationConfiguration, NoiseEstimationActivityDetection>{ c }
     {
         activityMean.resize(c.nBands, c.nChannels);
         powerNoise.resize(c.nBands, c.nChannels);

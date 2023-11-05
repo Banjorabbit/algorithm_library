@@ -1,7 +1,7 @@
 #include "delay/circular_buffer.h"
 
-using CircularBufferSingleChannelImpl = Impl<CircularBufferSingleChannel, DelayConfiguration>;
-using CircularBufferImpl = Impl<CircularBuffer, DelayConfiguration>;
+using CircularBufferSingleChannelImpl = Implementation<CircularBufferSingleChannel, DelayConfiguration>;
+using CircularBufferImpl = Implementation<CircularBuffer, DelayConfiguration>;
 
 template<> 
 Algorithm<DelayConfiguration>::~Algorithm() {} 

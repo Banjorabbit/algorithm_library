@@ -5,11 +5,11 @@
 
 // --------------------------------------------------- MinPhaseSpectrumCepstrum ----------------------------------------------------------------
 
-class MinPhaseSpectrumCepstrum : public IAlgorithm<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>
+class MinPhaseSpectrumCepstrum : public AlgorithmImplementation<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>
 {
 public:
     MinPhaseSpectrumCepstrum(Coefficients c =  Coefficients()) :
-        IAlgorithm<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>{ c },
+        AlgorithmImplementation<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>{ c },
         fft({ 2 * (C.nBands - 1) })
     { }
 

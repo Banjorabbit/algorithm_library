@@ -12,11 +12,11 @@
 
     // ----------------------------- Cubic interpolation ------------------------------------------------------
 
-    class SolverToeplitzSystem : public IAlgorithm<SolverToeplitzConfiguration, SolverToeplitzSystem>
+    class SolverToeplitzSystem : public AlgorithmImplementation<SolverToeplitzConfiguration, SolverToeplitzSystem>
     {
     public:
         SolverToeplitzSystem(Coefficients c = Coefficients()) :
-            IAlgorithm<SolverToeplitzConfiguration, SolverToeplitzSystem>{ c }
+            AlgorithmImplementation<SolverToeplitzConfiguration, SolverToeplitzSystem>{ c }
         { }
         
         inline void processOn(Input x, Output y)

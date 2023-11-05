@@ -6,11 +6,11 @@
 
 // --------------------------------------------------- FilterbankAnalysis ----------------------------------------------------------------
 
-class FilterbankAnalysisWOLA : public IAlgorithm<FilterbankAnalysisConfiguration, FilterbankAnalysisWOLA>
+class FilterbankAnalysisWOLA : public AlgorithmImplementation<FilterbankAnalysisConfiguration, FilterbankAnalysisWOLA>
 {
 public:
     FilterbankAnalysisWOLA(Coefficients c =  Coefficients()) :
-        IAlgorithm<FilterbankAnalysisConfiguration, FilterbankAnalysisWOLA>{ c },
+        AlgorithmImplementation<FilterbankAnalysisConfiguration, FilterbankAnalysisWOLA>{ c },
         fft({ C.fftSize })
     {
         initialize();
@@ -147,11 +147,11 @@ private:
 
 // --------------------------------------------------- FilterbankSynthesis ----------------------------------------------------------------
 
-class FilterbankSynthesisWOLA : public IAlgorithm<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>
+class FilterbankSynthesisWOLA : public AlgorithmImplementation<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>
 {
 public:
     FilterbankSynthesisWOLA(Coefficients c = Coefficients()) :
-        IAlgorithm<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>{ c },
+        AlgorithmImplementation<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>{ c },
         fft({ C.fftSize })
     {
         initialize();

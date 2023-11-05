@@ -2,11 +2,11 @@
 #include "algorithm_library/spectrogram.h"
 #include "filterbank/filterbank_wola.h"
 
-class SpectrogramFilterbank : public IAlgorithm<SpectrogramConfiguration, SpectrogramFilterbank>
+class SpectrogramFilterbank : public AlgorithmImplementation<SpectrogramConfiguration, SpectrogramFilterbank>
 {
 public:
     SpectrogramFilterbank(Coefficients c = Coefficients()) : 
-        IAlgorithm<SpectrogramConfiguration, SpectrogramFilterbank>{c},
+        AlgorithmImplementation<SpectrogramConfiguration, SpectrogramFilterbank>{c},
         filterbank(convertCoefficientsToFilterbankCoefficients(c))
     { 
         auto pFilterbank = filterbank.getParameters();

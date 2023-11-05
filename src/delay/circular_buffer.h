@@ -7,11 +7,11 @@
 // author: Kristian Timm Andersen
 
 // Single channel version of circular buffer that is faster than the multi-channel version
-class CircularBufferSingleChannel : public IAlgorithm<DelayConfiguration, CircularBufferSingleChannel>
+class CircularBufferSingleChannel : public AlgorithmImplementation<DelayConfiguration, CircularBufferSingleChannel>
 {
 public:
     CircularBufferSingleChannel(Coefficients c =  Coefficients()) :
-        IAlgorithm<DelayConfiguration, CircularBufferSingleChannel>{ c }
+        AlgorithmImplementation<DelayConfiguration, CircularBufferSingleChannel>{ c }
     {
         C.nChannels = 1; // force number of channels to 1 since this is the single channel version
         buffer.resize(c.delayLength);
@@ -91,11 +91,11 @@ private:
     int index;
 };
 
-class CircularBuffer : public IAlgorithm<DelayConfiguration, CircularBuffer>
+class CircularBuffer : public AlgorithmImplementation<DelayConfiguration, CircularBuffer>
 {
 public:
     CircularBuffer(Coefficients c =  Coefficients()) :
-        IAlgorithm<DelayConfiguration, CircularBuffer>{ c }
+        AlgorithmImplementation<DelayConfiguration, CircularBuffer>{ c }
     {
         buffer.resize(c.delayLength, c.nChannels);
         reset();

@@ -3,10 +3,10 @@
 #include "algorithm_library/interface/public_algorithm.h"
 
 template<typename Talgo, typename Tconfiguration>
-struct Impl : public Algorithm<Tconfiguration>::BaseImpl
+struct Implementation : public Algorithm<Tconfiguration>::BaseImplementation
 {
-    Impl() : algo{} {}
-    Impl(const typename Tconfiguration::Coefficients& c) : algo{ c } {}
+    Implementation() : algo{} {}
+    Implementation(const typename Tconfiguration::Coefficients& c) : algo{ c } {}
     Talgo algo;
     void process(typename Algorithm<Tconfiguration>::Input input, typename Algorithm<Tconfiguration>::Output output) override { algo.process(input, output); }
     typename Algorithm<Tconfiguration>::Coefficients getCoefficients() const override { return algo.getCoefficients(); }
@@ -20,13 +20,13 @@ struct Impl : public Algorithm<Tconfiguration>::BaseImpl
 
 
 template<typename Tconfiguration, typename Talgo>
-class IAlgorithm
+class AlgorithmImplementation
 {
 public:
 	using Configuration = Tconfiguration;
 	using Input = const typename Configuration::Input&; // force inputs to be const reference
 	using Output = typename Configuration::Output;
-	using BaseAlgorithm = IAlgorithm;
+	using BaseAlgorithm = AlgorithmImplementation;
 	using Coefficients = typename Configuration::Coefficients;
 	using Parameters = typename Configuration::Parameters;
 	using Setup = TSetup<Configuration>;
@@ -35,11 +35,11 @@ public:
 	static_assert(std::is_trivially_copyable<Parameters>::value, "Parameters data type must be trivially copyable.");
 
 
-	IAlgorithm() = default;
-	IAlgorithm(const Coefficients& c) : C(c) {}
-	IAlgorithm(const Parameters& p) : P(p) { }
-	IAlgorithm(const Setup& s) : C(s.coefficients), P(s.parameters) { }
-	~IAlgorithm() = default;
+	AlgorithmImplementation() = default;
+	AlgorithmImplementation(const Coefficients& c) : C(c) {}
+	AlgorithmImplementation(const Parameters& p) : P(p) { }
+	AlgorithmImplementation(const Setup& s) : C(s.coefficients), P(s.parameters) { }
+	~AlgorithmImplementation() = default;
 	
 	size_t getStaticSize() const { return sizeof(Talgo); }
 

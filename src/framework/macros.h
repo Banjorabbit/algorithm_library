@@ -152,7 +152,7 @@
 	void resetData();
 
 #define DEFINE_CONSTRUCTOR_DESTRUCTOR(PublicAlgorithm, InternalAlgorithm, ConfigurationName) \
-using InternalAlgorithm##Impl = Impl<InternalAlgorithm, ConfigurationName>; \
+using InternalAlgorithm##Impl = Implementation<InternalAlgorithm, ConfigurationName>; \
 template<> \
 Algorithm<ConfigurationName>::~Algorithm() {} \
 template<> \
@@ -165,11 +165,11 @@ PublicAlgorithm::PublicAlgorithm(const Coefficients& c) : Algorithm<Configuratio
 
 #define DEFINE_SOURCE_INTERFACE(ConfigurationName, InternalName) \
 template<> \
-struct Algorithm<ConfigurationName>::Impl \
+struct Algorithm<ConfigurationName>::Implementation \
 { \
 	template<typename T>\
-	Impl(const T& t) : algo(t) {}\
-	Impl() = default;\
+	Implementation(const T& t) : algo(t) {}\
+	Implementation() = default;\
 	InternalName algo; \
 };\
 template<> \
@@ -178,12 +178,12 @@ void Algorithm<ConfigurationName>::process(Input input, Output output) \
 	pimpl->algo.process(input, output); \
 } \
 template<> \
-Algorithm<ConfigurationName>::Algorithm() : pimpl{ std::make_unique<Impl>() } {} \
+Algorithm<ConfigurationName>::Algorithm() : pimpl{ std::make_unique<Implementation>() } {} \
 template<> \
 Algorithm<ConfigurationName>::~Algorithm() {} \
 template<> \
 template<typename T> \
-Algorithm<ConfigurationName>::Algorithm(const T& t) : pimpl{ std::make_unique<Impl>(t) } {} \
+Algorithm<ConfigurationName>::Algorithm(const T& t) : pimpl{ std::make_unique<Implementation>(t) } {} \
 template<> \
 Algorithm<ConfigurationName>::Coefficients Algorithm<ConfigurationName>::getCoefficients() const \
 { \

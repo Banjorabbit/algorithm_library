@@ -43,10 +43,10 @@ public:
 
 	static constexpr size_t ALGORITHM_VERSION_MAJOR = 1; // version changes in ABI
 
-	struct BaseImpl // Base of implementation. Allows to derive different implementations from this struct.
+	struct BaseImplementation // Base of implementation. Allows to derive different implementations from this struct.
 	{ 
-    	BaseImpl() = default;
-    	virtual ~BaseImpl() = default;
+    	BaseImplementation() = default;
+    	virtual ~BaseImplementation() = default;
     	virtual void process(Input input, Output output) = 0;
     	virtual Coefficients getCoefficients() const = 0;
     	virtual Parameters getParameters() const = 0;
@@ -60,5 +60,5 @@ public:
 protected:
 	~Algorithm();
 	
-	std::unique_ptr<BaseImpl> pimpl; // PIMPL. Define in derived source file
+	std::unique_ptr<BaseImplementation> pimpl; // PIMPL. Define in derived source file
 };

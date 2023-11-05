@@ -1,8 +1,8 @@
 #include "spectrogram/spectrogram_filterbank.h"
 #include "spectrogram/spectrogram_nonlinear.h"
 
-using FilterbankImpl = Impl<SpectrogramFilterbank, SpectrogramConfiguration>;
-using NonlinearImpl = Impl<SpectrogramNonlinear, SpectrogramConfiguration>;
+using FilterbankImpl = Implementation<SpectrogramFilterbank, SpectrogramConfiguration>;
+using NonlinearImpl = Implementation<SpectrogramNonlinear, SpectrogramConfiguration>;
 
 template<> 
 Algorithm<SpectrogramConfiguration>::~Algorithm() {} 

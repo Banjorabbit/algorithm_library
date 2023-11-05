@@ -4,11 +4,11 @@
 
 using namespace Eigen;
 
-class DCRemoverFirstOrder : public IAlgorithm<DCRemoverConfiguration, DCRemoverFirstOrder>
+class DCRemoverFirstOrder : public AlgorithmImplementation<DCRemoverConfiguration, DCRemoverFirstOrder>
 {
 public:
     DCRemoverFirstOrder(Coefficients c = Coefficients()) :
-        IAlgorithm<DCRemoverConfiguration, DCRemoverFirstOrder>{ c }
+        AlgorithmImplementation<DCRemoverConfiguration, DCRemoverFirstOrder>{ c }
     {
         delay.resize(c.nChannels);
         resetMembers();

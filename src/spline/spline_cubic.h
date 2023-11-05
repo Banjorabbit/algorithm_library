@@ -7,11 +7,11 @@
 //
 // author: Kristian Timm Andersen
 
-class SplineCubic : public IAlgorithm<SplineConfiguration, SplineCubic>
+class SplineCubic : public AlgorithmImplementation<SplineConfiguration, SplineCubic>
 {
 public:
     SplineCubic(Coefficients c = Coefficients()) :
-        IAlgorithm<SplineConfiguration, SplineCubic>{ c }
+        AlgorithmImplementation<SplineConfiguration, SplineCubic>{ c }
     { }
 
     inline void processOn(Input x, Output y)

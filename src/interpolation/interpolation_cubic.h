@@ -12,11 +12,11 @@
 
 // ----------------------------- Cubic interpolation of one sample -----------------------------------------
 
-class InterpolationCubicSample : public IAlgorithm<InterpolationSampleConfiguration, InterpolationCubicSample>
+class InterpolationCubicSample : public AlgorithmImplementation<InterpolationSampleConfiguration, InterpolationCubicSample>
 {
 public:
     InterpolationCubicSample(Coefficients c = Coefficients()) :
-        IAlgorithm<InterpolationSampleConfiguration, InterpolationCubicSample>{ c }
+        AlgorithmImplementation<InterpolationSampleConfiguration, InterpolationCubicSample>{ c }
     { }
 
     inline void processOn(Input input, Output output)
@@ -33,11 +33,11 @@ public:
 
 // ----------------------------- Cubic interpolation of array ------------------------------------------------------
 
-class InterpolationCubic : public IAlgorithm<InterpolationConfiguration, InterpolationCubic>
+class InterpolationCubic : public AlgorithmImplementation<InterpolationConfiguration, InterpolationCubic>
 {
 public:
     InterpolationCubic(Coefficients c = Coefficients()) :
-        IAlgorithm<InterpolationConfiguration, InterpolationCubic>{ c }
+        AlgorithmImplementation<InterpolationConfiguration, InterpolationCubic>{ c }
     { }
     
     InterpolationCubicSample interpolation; // this class uses default constructor
@@ -59,11 +59,11 @@ public:
 // ----------------------------- Cubic interpolation of array with constant fractionalDelay. This is faster ------------------------------------------------------
 
 
-class InterpolationCubicConstant : public IAlgorithm<InterpolationConstantConfiguration, InterpolationCubicConstant>
+class InterpolationCubicConstant : public AlgorithmImplementation<InterpolationConstantConfiguration, InterpolationCubicConstant>
 {
 public:
     InterpolationCubicConstant(Coefficients c = Coefficients()) :
-        IAlgorithm <InterpolationConstantConfiguration, InterpolationCubicConstant>{ c }
+        AlgorithmImplementation <InterpolationConstantConfiguration, InterpolationCubicConstant>{ c }
     { 
         const auto d2 = C.fractionalDelay * C.fractionalDelay;
         const auto dm1 = C.fractionalDelay - 1.f;
