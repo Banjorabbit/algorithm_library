@@ -1,7 +1,7 @@
 #pragma once
 #include "framework/framework.h"
 #include "algorithm_library/noise_estimation.h"
-
+#include "utilities/functions.h"
 
 // noise estimation based on an activity detector. The more activity in the power spectra, the more the output is smoothed.
 //
@@ -22,7 +22,16 @@ public:
     inline void processOn(Input input, Output output)
     {
         // activity detection
-        Eigen::ArrayXXf activity = (0.9693465699682844f * input / (powerNoise + 1e-20f) - 3.485010713180571f).cwiseMin(25.f).exp();
+        Eigen::ArrayXXf activity = (0.9693465699682844f * input / (powerNoise + 1e-20f) - 3.485010713180571f).cwiseMin(25.f);
+
+        // for-loop has been profiled to be faster in gcc than the commented line below:
+        // activity = activity.unaryExpr(std::ref(fasterExp));
+        float* ptr = activity.data();
+        for (auto i = 0; i < activity.size(); i++, ptr++)
+        {
+            *ptr = fasterExp(*ptr);
+        }
+        
         activity /= (1.f + activity);
 
         // smooth activity
