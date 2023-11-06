@@ -26,7 +26,7 @@ namespace BarkScale
     }
 }
 
-// Commen CriticalBandsBark class that following classes inherit from and specialize
+// Common CriticalBandsBark class that following classes inherit from and specialize
 class CriticalBandsBark
 {
 public:
