@@ -15,7 +15,7 @@ public:
         activityMean.resize(c.nBands, c.nChannels);
         powerNoise.resize(c.nBands, c.nChannels);
         activityMeanLambda = 1.f - expf(-1.f / (c.filterbankRate * .152f));
-        resetWithoutSubMembers();
+        resetWithoutMemberAlgorithms();
         onParametersChanged();
      }
 
@@ -50,7 +50,7 @@ public:
 
 private:
 
-    void resetWithoutSubMembers() final
+    void resetWithoutMemberAlgorithms() final
     {
         activityMean.setZero();
         powerNoise.setZero();

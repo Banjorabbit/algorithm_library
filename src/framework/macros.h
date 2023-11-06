@@ -225,6 +225,6 @@ void Algorithm<ConfigurationName>::reset() \
 	DEFINE_MEMBER_SET_GET_FUNCTIONS(Coefficients, coefficients, __VA_ARGS__) \
 	DEFINE_MEMBER_SETUP_SET_GET_FUNCTIONS(__VA_ARGS__) \
 	size_t getSubMembersDynamicSize() const final { return SELECT_APPLY_MEMBER_METHOD(EVAL(getDynamicSize() + ), __VA_ARGS__ )0; } \
-	void resetSubMembers() final     { SELECT_APPLY_MEMBER_METHOD( EVAL(reset();),      __VA_ARGS__ ) }
+	void resetMemberAlgorithms() final     { SELECT_APPLY_MEMBER_METHOD( EVAL(reset();),      __VA_ARGS__ ) }
 
 	

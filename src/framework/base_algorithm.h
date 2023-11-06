@@ -57,8 +57,8 @@ public:
 
 	void reset()
 	{
-		resetWithoutSubMembers();
-		resetSubMembers();
+		resetWithoutMemberAlgorithms();
+		resetMemberAlgorithms();
 	}
 
 	static constexpr size_t ALGORITHM_VERSION_MINOR = 1; // version changes in implementation
@@ -111,8 +111,8 @@ protected:
 	// these functions will be overridden if defined in derived Talgo
 	virtual size_t getMembersDynamicSize() const { return 0; }
 	virtual size_t getSubMembersDynamicSize() const { return 0; }
-	virtual void resetWithoutSubMembers() { }
-	virtual void resetSubMembers() { }
+	virtual void resetWithoutMemberAlgorithms() { }
+	virtual void resetMemberAlgorithms() { }
 
 	// these functions will be hidden if macro DEFINE_STATIC_MEMBER_ALGORITHMS(...) or DEFINE_SIMPLE_MEMBER_ALGORITHMS(...) is declared in derived Talgo
 	Coefficients getCoefficientsTreeImpl() const { return getCoefficients(); }

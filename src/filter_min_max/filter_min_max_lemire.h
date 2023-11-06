@@ -37,7 +37,7 @@ public:
         upperEndIndex.resize(C.nChannels);
         lowerFrontIndex.resize(C.nChannels);
         lowerEndIndex.resize(C.nChannels);
-        resetWithoutSubMembers();
+        resetWithoutMemberAlgorithms();
     }
 
     void processOn(Input input, Output output)
@@ -150,7 +150,7 @@ private:
         return size;
     }
 
-    void resetWithoutSubMembers() final 
+    void resetWithoutMemberAlgorithms() final 
     {
         minIndex.setZero();
         maxIndex.setZero();
@@ -215,7 +215,7 @@ public:
         inputOld.resize(C.nChannels);
         upperFrontIndex.resize(C.nChannels);
         upperEndIndex.resize(C.nChannels);
-        resetWithoutSubMembers();
+        resetWithoutMemberAlgorithms();
     }
 
     void processOn(Input input, Output output)
@@ -293,7 +293,7 @@ private:
         return size;
     }
 
-    void resetWithoutSubMembers() final 
+    void resetWithoutMemberAlgorithms() final 
     {
         maxIndex.setZero();
         maxValue.setZero();
@@ -319,7 +319,7 @@ public:
         inputOld.resize(C.nChannels);
         lowerFrontIndex.resize(C.nChannels);
         lowerEndIndex.resize(C.nChannels);
-        resetWithoutSubMembers();
+        resetWithoutMemberAlgorithms();
     }
 
     void processOn(Input input, Output output)
@@ -398,7 +398,7 @@ private:
         return size;
     }
 
-    void resetWithoutSubMembers() final 
+    void resetWithoutMemberAlgorithms() final 
     {
         minIndex.setZero();
         minValue.setZero();

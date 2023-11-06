@@ -122,7 +122,7 @@ private:
 
         onParametersChanged();
 
-        resetWithoutSubMembers();
+        resetWithoutMemberAlgorithms();
     }
 
     size_t getMembersDynamicSize() const final
@@ -133,7 +133,7 @@ private:
         return size;
     }
 
-    void resetWithoutSubMembers() final 
+    void resetWithoutMemberAlgorithms() final 
     {
         fftBuffer.setZero();
         timeBuffer.setZero();
@@ -263,7 +263,7 @@ private:
 
         onParametersChanged();
 
-        resetWithoutSubMembers();
+        resetWithoutMemberAlgorithms();
     }
 
     size_t getMembersDynamicSize() const final
@@ -274,7 +274,7 @@ private:
         return size;
     }
 
-    void resetWithoutSubMembers() final
+    void resetWithoutMemberAlgorithms() final
     {
         fftBuffer.setZero();
         timeBuffer.setZero();
