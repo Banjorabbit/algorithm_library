@@ -11,7 +11,7 @@ public:
         AlgorithmImplementation<DCRemoverConfiguration, DCRemoverFirstOrder>{ c }
     {
         delay.resize(c.nChannels);
-        resetMembers();
+        resetWithoutSubMembers();
         onParametersChanged();
     }
 
@@ -39,7 +39,7 @@ public:
 
 private:
 
-    void resetMembers() final 
+    void resetWithoutSubMembers() final 
     {
         delay.setZero();
     }

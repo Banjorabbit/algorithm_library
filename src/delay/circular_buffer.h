@@ -15,7 +15,7 @@ public:
     {
         C.nChannels = 1; // force number of channels to 1 since this is the single channel version
         buffer.resize(c.delayLength);
-        reset();
+        resetWithoutSubMembers();
      }
 
     // push input values into buffer and write output values from buffer
@@ -74,7 +74,7 @@ private:
     inline void decrement() { index--; if (index < 0) { index = C.delayLength - 1; } }
     inline void decrement(const int decrement) { index -= decrement; while (index < 0) { index += C.delayLength; } }
 
-    void resetMembers() final
+    void resetWithoutSubMembers() final
     {
         buffer.setZero();
         index = C.delayLength - 1; // when pushing values, we first increment index and then write value
@@ -157,7 +157,7 @@ private:
     inline void decrement() { index--; if (index < 0) { index = C.delayLength - 1; } }
     inline void decrement(const int decrement) { index -= decrement; while (index < 0) { index += C.delayLength; } }
 
-    void resetMembers() final
+    void resetWithoutSubMembers() final
     {
         buffer.setZero();
         index = C.delayLength - 1; // when pushing values, we first increment index and then write value

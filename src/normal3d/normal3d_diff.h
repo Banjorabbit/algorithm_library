@@ -24,7 +24,7 @@ public:
         valuesOld1.resize(C.nValuesX);
         den1 = 1.f / (2.f * P.distance1);
         den2 = 1.f / (2.f * P.distance2);
-        resetMembers();
+        resetWithoutSubMembers();
     }
 
     inline void processOn(Input input, Output output)
@@ -50,7 +50,7 @@ public:
 
 private:
 
-    void resetMembers() final
+    void resetWithoutSubMembers() final
     {
         valuesOld0.setZero();
         valuesOld1.setZero();
