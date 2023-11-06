@@ -10,8 +10,11 @@
 
 // --------------------------------------------- Filterbank Analysis ----------------------------------------------------------------
 
-struct Normal3dConfiguration : public Configuration<I::Real2D, O::Real2D>
+struct Normal3dConfiguration
 {
+    using Input = I::Real2D;
+    using Output = O::Real2D;
+
     struct Coefficients
     {
         int nValuesX = 257;

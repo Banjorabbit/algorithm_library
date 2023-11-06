@@ -7,8 +7,11 @@
 
 // --------------------------------------------- Filterbank Analysis ----------------------------------------------------------------
 
-struct FilterbankAnalysisConfiguration : public Configuration<I::Real2D, O::Complex2D>
+struct FilterbankAnalysisConfiguration
 {
+    using Input = I::Real2D;
+    using Output = O::Complex2D;
+
     struct Coefficients
     {
         int nChannels = 2;
@@ -64,8 +67,11 @@ public:
 
 // --------------------------------------------- Filterbank Synthesis ----------------------------------------------------------------
 
-struct FilterbankSynthesisConfiguration : public Configuration<I::Complex2D, O::Real2D, I::Real>
+struct FilterbankSynthesisConfiguration
 {
+    using Input = I::Complex2D;
+    using Output = O::Real2D;
+
     struct Coefficients
     {
         int nChannels = 2;

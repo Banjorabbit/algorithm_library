@@ -6,15 +6,19 @@
 //
 // author: Kristian Timm Andersen
 
-struct SplineInput
+struct SplineConfiguration
 {
-    I::Real2D xGiven;
-    I::Real2D yGiven;
-    I::Real2D xDesired;
-};
+    struct Input
+    {
+        I::Real2D xGiven;
+        I::Real2D yGiven;
+        I::Real2D xDesired;
+    };
 
-struct SplineConfiguration : public Configuration<SplineInput, O::Real2D>
-{
+    using Output = O::Real2D;
+
+    struct Coefficients { DEFINE_NO_TUNABLE_COEFFICIENTS };
+    
     struct Parameters
     {
         float sFactor = 0.f;

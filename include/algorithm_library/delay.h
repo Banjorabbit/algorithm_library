@@ -1,14 +1,19 @@
 #pragma once 
 #include "interface/interface.h"
 
-struct DelayConfiguration : public Configuration<I::Real2D, O::Real2D>
+struct DelayConfiguration
 {
+    using Input = I::Real2D;
+    using Output = O::Real2D;
+
     struct Coefficients
     {
         int nChannels = 2;
         int delayLength = 100;
         DEFINE_TUNABLE_COEFFICIENTS(nChannels, delayLength)
     };
+
+    struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
     static auto validInput(Input input, const Coefficients& c) 
     { 

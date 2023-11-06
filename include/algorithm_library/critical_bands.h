@@ -7,9 +7,12 @@
 //
 // author: Kristian Timm Andersen
 
-
-struct CriticalBandsConfiguration : public Configuration<I::Real2D, O::Real2D>
+struct CriticalBandsConfiguration
 {
+
+    using Input = I::Real2D;
+    using Output = O::Real2D;
+
     static int getNCriticalBands(float sampleRate);
 
     struct Coefficients
@@ -18,6 +21,8 @@ struct CriticalBandsConfiguration : public Configuration<I::Real2D, O::Real2D>
         float sampleRate = 44.1e3f;
         DEFINE_TUNABLE_COEFFICIENTS(nBands, sampleRate)
     };
+
+    struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
     static auto validInput(Input input, const Coefficients& c) 
     { 

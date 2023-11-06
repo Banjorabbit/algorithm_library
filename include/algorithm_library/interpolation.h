@@ -9,14 +9,20 @@
 
 // -----------------------------  interpolation of one sample --------------------------------------------
 
-struct InterpolationSampleInput
+struct InterpolationSampleConfiguration
 {
-    I::Real4 samples;
-    I::Float fractionalDelay; // fractional index to interpolate. It must be between 0.0 - 1.0
-};
+    struct Input
+    {
+        I::Real4 samples;
+        I::Float fractionalDelay; // fractional index to interpolate. It must be between 0.0 - 1.0
+    };
 
-struct InterpolationSampleConfiguration : public Configuration<InterpolationSampleInput, O::Float>
-{
+    using Output = O::Float;
+
+    struct Coefficients { DEFINE_NO_TUNABLE_COEFFICIENTS };
+
+    struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
+
     static auto validInput(Input input, const Coefficients& c) { return (input.samples.size() == 4) && (input.fractionalDelay >= 0.f) && (input.fractionalDelay <= 1.f);	}
     static auto initOutput(Input input, const Coefficients& c) { return 0.f; }
 
@@ -51,14 +57,20 @@ public:
 
 // -----------------------------  interpolation of array ------------------------------------------------------
 
-struct InterpolationInput
+struct InterpolationConfiguration
 {
-    I::Real samples;
-    I::Real fractionalIndices; // fractional indices to interpolate. They must be in increasing order. Since 4 points are needed to do cubic interpolation it is not possible to interpolate indices smaller than 1.0 and larger than samples.size()-2.0
-};
+    struct Input
+    {
+        I::Real samples;
+        I::Real fractionalIndices; // fractional indices to interpolate. They must be in increasing order. Since 4 points are needed to do cubic interpolation it is not possible to interpolate indices smaller than 1.0 and larger than samples.size()-2.0
+    };
 
-struct InterpolationConfiguration : public Configuration<InterpolationInput, O::Real>
-{
+    using Output = O::Real;
+
+    struct Coefficients { DEFINE_NO_TUNABLE_COEFFICIENTS };
+
+    struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
+
     static auto validInput(Input input, const Coefficients& c) { return (input.samples.size() >= 4) && (input.fractionalIndices >= 1.0).all() && (input.fractionalIndices <= (input.samples.size() - 2.f)).all();	}
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.fractionalIndices.size()); }
 
@@ -93,13 +105,19 @@ public:
 
 // -----------------------------  interpolation of array with constant fractionalDelay. This is faster ------------------------------------------------------
 
-struct InterpolationConstantConfiguration : public Configuration<I::Real, O::Real>
+struct InterpolationConstantConfiguration
 {
+    using Input = I::Real;
+
+    using Output = O::Real;
+
     struct Coefficients
     {
         float fractionalDelay = 0.5;
         DEFINE_TUNABLE_COEFFICIENTS(fractionalDelay)
     };
+
+    struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
     static auto validInput(Input input, const Coefficients& c) { return (input.size() >= 4);	}
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.size() - 3); }

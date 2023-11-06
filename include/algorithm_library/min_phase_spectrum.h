@@ -6,8 +6,11 @@
 // author: Kristian Timm Andersen
 
 
-struct MinPhaseSpectrumConfiguration : public Configuration<I::Real2D, O::Complex2D>
+struct MinPhaseSpectrumConfiguration
 {
+    using Input = I::Real2D;
+    using Output = O::Complex2D;
+
     struct Coefficients
     {
         int nBands = 257;

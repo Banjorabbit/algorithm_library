@@ -9,13 +9,10 @@
 //
 // author: Kristian Timm Andersen
 
-struct FFTConfiguration : public Configuration<I::Real2D, O::Complex2D>
+struct FFTConfiguration
 {
-    // exception for constructing FFT with invalid FFT size
-    class ExceptionFFT : public std::runtime_error {
-    public:
-        ExceptionFFT(int fftSize) : std::runtime_error("FFT size = " + std::to_string(fftSize) + " is not supported.") { }
-    };
+    using Input = I::Real2D;
+    using Output = O::Complex2D;
 
     struct Coefficients
     {
@@ -23,8 +20,16 @@ struct FFTConfiguration : public Configuration<I::Real2D, O::Complex2D>
         DEFINE_TUNABLE_COEFFICIENTS(fftSize)
     };
 
+    struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
+
     static auto validInput(Input input, const Coefficients& c) { return (input.rows() == c.fftSize) && (input.cols() > 0); }
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(c.fftSize/2 +1, input.cols()); }
+
+    // exception for constructing FFT with invalid FFT size
+    class ExceptionFFT : public std::runtime_error {
+    public:
+        ExceptionFFT(int fftSize) : std::runtime_error("FFT size = " + std::to_string(fftSize) + " is not supported.") { }
+    };
 
     template<typename Talgo>
     struct Test

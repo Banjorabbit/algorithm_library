@@ -19,20 +19,29 @@
 //
 // author : Kristian Timm Andersen
 
-struct FilterMinMaxOutput
-{
-    O::Real2D minValue;
-    O::Real2D maxValue;
-};
+// struct FilterMinMaxOutput
+// {
+//     O::Real2D minValue;
+//     O::Real2D maxValue;
+// };
 
-struct BaseFilterMinMaxConfiguration  : public Configuration<I::Real2D, FilterMinMaxOutput>
+struct BaseFilterMinMaxConfiguration
 {
+    using Input = I::Real2D;
+
+    struct Output
+    {
+        O::Real2D minValue;
+        O::Real2D maxValue;
+    };
     struct Coefficients
     {
         int filterLength = 100;
         int nChannels = 2;
         DEFINE_TUNABLE_COEFFICIENTS(filterLength, nChannels)
     };
+
+    struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
     static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels);}
     static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple( Eigen::ArrayXXf(input.rows(), c.nChannels), Eigen::ArrayXXf(input.rows(), c.nChannels) ); }
@@ -87,14 +96,19 @@ public:
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Extremum configuration finds either min or max value and is a cheaper version of minmax configuration
-struct BaseFilterExtremumConfiguration : public Configuration<I::Real2D, O::Real2D>
+struct BaseFilterExtremumConfiguration
 {
+    using Input = I::Real2D;
+    using Output = O::Real2D;
+
     struct Coefficients
     {
         int filterLength = 100;
         int nChannels = 2;
         DEFINE_TUNABLE_COEFFICIENTS(filterLength, nChannels)
     };
+
+    struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
     static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels);}
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.rows(), c.nChannels); }

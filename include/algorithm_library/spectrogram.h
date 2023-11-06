@@ -6,8 +6,10 @@
 //
 // author: Kristian Timm Andersen
 
-struct SpectrogramConfiguration : public Configuration<I::Real, O::Real2D>
+struct SpectrogramConfiguration
 {
+    using Input = I::Real;
+    using Output = O::Real2D;
 
     struct Coefficients
     {
@@ -17,6 +19,8 @@ struct SpectrogramConfiguration : public Configuration<I::Real, O::Real2D>
         SpectrogramAlgorithm algorithm = FILTERBANK; // choose algorithm to use for calculating spectrogram
         DEFINE_TUNABLE_COEFFICIENTS(bufferSize, fftSize, algorithm)
     };
+
+    struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
     static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == 1); }
     static auto initOutput(Input input, const Coefficients& c)

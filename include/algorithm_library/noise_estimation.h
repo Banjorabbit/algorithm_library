@@ -4,8 +4,11 @@
 // noise estimation based on an activity detector. The more activity in the power spectra, the more the output is smoothed.
 //
 // author: Kristian Timm Andersen
-struct NoiseEstimationConfiguration : public Configuration<I::Real2D, O::Real2D>
+struct NoiseEstimationConfiguration
 {
+    using Input = I::Real2D;
+    using Output = O::Real2D;
+
     struct Coefficients
     {
         float filterbankRate = 125.f;

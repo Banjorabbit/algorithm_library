@@ -30,7 +30,7 @@ public:
 
     void onParametersChanged() 
     {
-        const float cosf = std::cos(2*DCRemoverConfiguration::PI * P.cutoffFrequency / C.sampleRate);
+        const float cosf = std::cos(2 * 3.14159265358979323846 * P.cutoffFrequency / C.sampleRate);
         const float a = (1.f - std::sqrt(1.f - cosf*cosf))/cosf;
 
         coef0 = a;

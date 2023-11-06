@@ -4,7 +4,6 @@
 #include <Eigen/Dense> // Eigen Library. 
 #include <Eigen/IterativeLinearSolvers>
 #include "algorithm_library/interface/public_algorithm.h" // Base Algorithm class
-#include "algorithm_library/interface/configuration.h" // Configuration class
 #include "algorithm_library/interface/input_output.h" // Input/Output structs. 
 #include "algorithm_library/interface/macros_json.h" // macros for coefficients and parameters
 #include "algorithm_library/interface/constrained_type.h" // ConstrainedType class
