@@ -24,7 +24,7 @@ public:
         valuesOld1.resize(C.nValuesX);
         den1 = 1.f / (2.f * P.distance1);
         den2 = 1.f / (2.f * P.distance2);
-        resetWithoutMemberAlgorithms();
+        resetVariables();
     }
 
     inline void processOn(Input input, Output output)
@@ -50,13 +50,13 @@ public:
 
 private:
 
-    void resetWithoutMemberAlgorithms() final
+    void resetVariables() final
     {
         valuesOld0.setZero();
         valuesOld1.setZero();
     }
 
-    size_t getMembersDynamicSize() const final
+    size_t getDynamicSizeVariables() const final
     { 
         size_t size = valuesOld0.getDynamicMemorySize();
         size += valuesOld1.getDynamicMemorySize();

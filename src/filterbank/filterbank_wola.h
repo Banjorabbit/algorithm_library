@@ -122,10 +122,10 @@ private:
 
         onParametersChanged();
 
-        resetWithoutMemberAlgorithms();
+        resetVariables();
     }
 
-    size_t getMembersDynamicSize() const final
+    size_t getDynamicSizeVariables() const final
     {
         auto size = window.getDynamicMemorySize();
         size += fftBuffer.getDynamicMemorySize();
@@ -133,7 +133,7 @@ private:
         return size;
     }
 
-    void resetWithoutMemberAlgorithms() final 
+    void resetVariables() final 
     {
         fftBuffer.setZero();
         timeBuffer.setZero();
@@ -263,10 +263,10 @@ private:
 
         onParametersChanged();
 
-        resetWithoutMemberAlgorithms();
+        resetVariables();
     }
 
-    size_t getMembersDynamicSize() const final
+    size_t getDynamicSizeVariables() const final
     {
         auto size = window.getDynamicMemorySize();
         size += fftBuffer.getDynamicMemorySize();
@@ -274,7 +274,7 @@ private:
         return size;
     }
 
-    void resetWithoutMemberAlgorithms() final
+    void resetVariables() final
     {
         fftBuffer.setZero();
         timeBuffer.setZero();

@@ -37,7 +37,7 @@ public:
         upperEndIndex.resize(C.nChannels);
         lowerFrontIndex.resize(C.nChannels);
         lowerEndIndex.resize(C.nChannels);
-        resetWithoutMemberAlgorithms();
+        resetVariables();
     }
 
     void processOn(Input input, Output output)
@@ -136,7 +136,7 @@ public:
 
 private:
 
-    size_t getMembersDynamicSize() const final
+    size_t getDynamicSizeVariables() const final
     {
         auto size = minIndex.getDynamicMemorySize();
         size += maxIndex.getDynamicMemorySize();
@@ -150,7 +150,7 @@ private:
         return size;
     }
 
-    void resetWithoutMemberAlgorithms() final 
+    void resetVariables() final 
     {
         minIndex.setZero();
         maxIndex.setZero();
@@ -215,7 +215,7 @@ public:
         inputOld.resize(C.nChannels);
         upperFrontIndex.resize(C.nChannels);
         upperEndIndex.resize(C.nChannels);
-        resetWithoutMemberAlgorithms();
+        resetVariables();
     }
 
     void processOn(Input input, Output output)
@@ -283,7 +283,7 @@ public:
 
 private:
 
-    size_t getMembersDynamicSize() const final
+    size_t getDynamicSizeVariables() const final
     {
         auto size = maxIndex.getDynamicMemorySize();
         size += maxValue.getDynamicMemorySize();
@@ -293,7 +293,7 @@ private:
         return size;
     }
 
-    void resetWithoutMemberAlgorithms() final 
+    void resetVariables() final 
     {
         maxIndex.setZero();
         maxValue.setZero();
@@ -319,7 +319,7 @@ public:
         inputOld.resize(C.nChannels);
         lowerFrontIndex.resize(C.nChannels);
         lowerEndIndex.resize(C.nChannels);
-        resetWithoutMemberAlgorithms();
+        resetVariables();
     }
 
     void processOn(Input input, Output output)
@@ -388,7 +388,7 @@ public:
 
 private:
 
-    size_t getMembersDynamicSize() const final
+    size_t getDynamicSizeVariables() const final
     {
         auto size = minIndex.getDynamicMemorySize();
         size += minValue.getDynamicMemorySize();
@@ -398,7 +398,7 @@ private:
         return size;
     }
 
-    void resetWithoutMemberAlgorithms() final 
+    void resetVariables() final 
     {
         minIndex.setZero();
         minValue.setZero();

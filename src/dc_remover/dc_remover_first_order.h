@@ -11,7 +11,7 @@ public:
         AlgorithmImplementation<DCRemoverConfiguration, DCRemoverFirstOrder>{ c }
     {
         delay.resize(c.nChannels);
-        resetWithoutMemberAlgorithms();
+        resetVariables();
         onParametersChanged();
     }
 
@@ -39,12 +39,12 @@ public:
 
 private:
 
-    void resetWithoutMemberAlgorithms() final 
+    void resetVariables() final 
     {
         delay.setZero();
     }
 
-    size_t getMembersDynamicSize() const final
+    size_t getDynamicSizeVariables() const final
     {
         size_t size = delay.getDynamicMemorySize();
         return size;

@@ -60,7 +60,7 @@ public:
     }
 
 protected:
-    size_t getMembersDynamicSize() const
+    size_t getDynamicSizeVariables() const
     { 
         size_t size = indexStart.getDynamicMemorySize();
         size += nBandsSum.getDynamicMemorySize();
@@ -97,7 +97,7 @@ public:
     inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
 
 private:
-    size_t getMembersDynamicSize() const final { return CriticalBandsBark::getMembersDynamicSize(); }
+    size_t getDynamicSizeVariables() const final { return CriticalBandsBark::getDynamicSizeVariables(); }
 };
 
 // --------------------------------------------------- CriticalBandsBarkMax ----------------------------------------------------------------
@@ -126,7 +126,7 @@ public:
     inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
 
 private:
-    size_t getMembersDynamicSize() const final { return CriticalBandsBark::getMembersDynamicSize(); }
+    size_t getDynamicSizeVariables() const final { return CriticalBandsBark::getDynamicSizeVariables(); }
 };
 
 // --------------------------------------------------- CriticalBandsBarkMean ----------------------------------------------------------------
@@ -155,5 +155,5 @@ public:
     inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
 
 private:
-    size_t getMembersDynamicSize() const final { return CriticalBandsBark::getMembersDynamicSize(); }
+    size_t getDynamicSizeVariables() const final { return CriticalBandsBark::getDynamicSizeVariables(); }
 };

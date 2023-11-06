@@ -44,7 +44,7 @@ public:
 
 	size_t getDynamicSize() const
 	{
-		return getMembersDynamicSize() + getSubMembersDynamicSize();
+		return getDynamicSizeVariables() + getDynamicSizeAlgorithms();
 	}
 
 	// Processing method. This is where the core of the algorithm is calculated.
@@ -57,8 +57,8 @@ public:
 
 	void reset()
 	{
-		resetWithoutMemberAlgorithms();
-		resetMemberAlgorithms();
+		resetVariables();
+		resetAlgorithms();
 	}
 
 	static constexpr size_t ALGORITHM_VERSION_MINOR = 1; // version changes in implementation
@@ -109,10 +109,10 @@ public:
 
 protected:
 	// these functions will be overridden if defined in derived Talgo
-	virtual size_t getMembersDynamicSize() const { return 0; }
-	virtual size_t getSubMembersDynamicSize() const { return 0; }
-	virtual void resetWithoutMemberAlgorithms() { }
-	virtual void resetMemberAlgorithms() { }
+	virtual size_t getDynamicSizeVariables() const { return 0; }
+	virtual size_t getDynamicSizeAlgorithms() const { return 0; }
+	virtual void resetVariables() { }
+	virtual void resetAlgorithms() { }
 
 	// these functions will be hidden if macro DEFINE_STATIC_MEMBER_ALGORITHMS(...) or DEFINE_SIMPLE_MEMBER_ALGORITHMS(...) is declared in derived Talgo
 	Coefficients getCoefficientsTreeImpl() const { return getCoefficients(); }

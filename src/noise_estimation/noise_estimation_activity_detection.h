@@ -15,7 +15,7 @@ public:
         activityMean.resize(c.nBands, c.nChannels);
         powerNoise.resize(c.nBands, c.nChannels);
         activityMeanLambda = 1.f - expf(-1.f / (c.filterbankRate * .152f));
-        resetWithoutMemberAlgorithms();
+        resetVariables();
         onParametersChanged();
      }
 
@@ -50,13 +50,13 @@ public:
 
 private:
 
-    void resetWithoutMemberAlgorithms() final
+    void resetVariables() final
     {
         activityMean.setZero();
         powerNoise.setZero();
     }
 
-    size_t getMembersDynamicSize() const final
+    size_t getDynamicSizeVariables() const final
     {
         size_t size = activityMean.getDynamicMemorySize();
         size += powerNoise.getDynamicMemorySize();

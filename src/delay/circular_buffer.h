@@ -15,7 +15,7 @@ public:
     {
         C.nChannels = 1; // force number of channels to 1 since this is the single channel version
         buffer.resize(c.delayLength);
-        resetWithoutMemberAlgorithms();
+        resetVariables();
      }
 
     // push input values into buffer and write output values from buffer
@@ -74,14 +74,14 @@ private:
     inline void decrement() { index--; if (index < 0) { index = C.delayLength - 1; } }
     inline void decrement(const int decrement) { index -= decrement; while (index < 0) { index += C.delayLength; } }
 
-    void resetWithoutMemberAlgorithms() final
+    void resetVariables() final
     {
         buffer.setZero();
         index = C.delayLength - 1; // when pushing values, we first increment index and then write value
         
     }
 
-    size_t getMembersDynamicSize() const final
+    size_t getDynamicSizeVariables() const final
     {
         size_t size = buffer.getDynamicMemorySize();
         return size;
@@ -157,14 +157,14 @@ private:
     inline void decrement() { index--; if (index < 0) { index = C.delayLength - 1; } }
     inline void decrement(const int decrement) { index -= decrement; while (index < 0) { index += C.delayLength; } }
 
-    void resetWithoutMemberAlgorithms() final
+    void resetVariables() final
     {
         buffer.setZero();
         index = C.delayLength - 1; // when pushing values, we first increment index and then write value
         
     }
 
-    size_t getMembersDynamicSize() const final
+    size_t getDynamicSizeVariables() const final
     {
         size_t size = buffer.getDynamicMemorySize();
         return size;

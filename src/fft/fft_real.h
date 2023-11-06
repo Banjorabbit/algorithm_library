@@ -74,7 +74,7 @@ public:
 
 private:
 
-    size_t getMembersDynamicSize() const final
+    size_t getDynamicSizeVariables() const final
     {
         if (setup) { return pffft_get_setup_size(setup.get()); }
         return 0;
