@@ -21,6 +21,7 @@ public:
 		eigenSolver = Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXcf>(c.nChannels);
 
         resetVariables();
+		eigenSolver.compute(Rx[0], Rn[0]); // run once to make sure calculation works
     }
 
     void processOn(Input input, Output yFreq)
@@ -94,7 +95,6 @@ private:
 		filter.col(0) = 1;
 
 		Rxn.setZero();
-		eigenSolver.compute(Rx[0], Rn[0]); // run once to make sure calculation works
     }
 
     size_t getDynamicSizeVariables() const final
