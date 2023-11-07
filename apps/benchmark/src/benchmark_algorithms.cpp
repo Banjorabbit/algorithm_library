@@ -13,6 +13,7 @@
 #include "dc_remover/dc_remover_first_order.h"
 #include "delay/circular_buffer.h"
 #include "noise_estimation/noise_estimation_activity_detection.h"
+#include "beamformer/beamformer_mvdr.h"
 
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
@@ -29,6 +30,7 @@ BENCHMARK(algorithm##_process);
 // insert algorithms to be benchmarked
 
 DEFINE_BENCHMARK_ALGORITHM(CircularBuffer)
+DEFINE_BENCHMARK_ALGORITHM(BeamformerMVDR)
 DEFINE_BENCHMARK_ALGORITHM(NoiseEstimationActivityDetection)
 DEFINE_BENCHMARK_ALGORITHM(CircularBufferSingleChannel)
 DEFINE_BENCHMARK_ALGORITHM(SplineCubic)
