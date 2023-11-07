@@ -75,9 +75,7 @@ private:
 		eigenVectors = eigenSolver.eigenvectors();
 		Eigen::MatrixXcf invEigen = eigenVectors.inverse();
 
-		// calculate max_snr beamformer with mic 0 as reference
-		//Eigen::VectorXcf filter = eigenVectors.col(C.nChannels - 1) * invEigen(C.nChannels-1,0);
-		// put resulting conjugated beamformer for current band into Filter 
+		// calculate max_snr beamformer with mic 0 as reference and put resulting conjugated beamformer for current band into filter 
 		filter.row(currentBand) = (eigenVectors.col(C.nChannels - 1) * invEigen(C.nChannels-1,0)).adjoint();		
 	}
 
