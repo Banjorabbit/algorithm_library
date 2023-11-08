@@ -47,9 +47,9 @@ public:
 		yFreq = (input.xFreq * filter).rowwise().sum(); // this has been profiled to be just as fast as multiplying with ones or summing in a for-loop
 	}
 
-    enum SpeechDecisions { NOISE, SPEECH, INPUT, FREEZE_UPDATE };
-    void setSpeechDecision(SpeechDecisions sd) { speechDecision = sd; }
-    SpeechDecisions getSpeechDecision() const { return speechDecision; }
+    enum SpeechUpdateDecisions { NOISE, SPEECH, INPUT, FREEZE_UPDATE };
+    void setSpeechDecision(SpeechUpdateDecisions sd) { speechDecision = sd; }
+    SpeechUpdateDecisions getSpeechDecision() const { return speechDecision; }
 
 private:
 
@@ -107,7 +107,7 @@ private:
         return size;
     }
 
-	SpeechDecisions speechDecision = INPUT;
+	SpeechUpdateDecisions speechDecision = INPUT;
     static constexpr float filterUpdateRate = 8.f; // how many times per second is the filter updated
     static constexpr float covarianceUpdateTConstant = 5.f; // covariance update smoothing time constant in seconds
     int filterUpdatesPerFrame;
