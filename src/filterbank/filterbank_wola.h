@@ -70,24 +70,37 @@ public:
 
     void setStandardFilterbank(int bufferSize)
     {
+        const int nChannels = getCoefficients().nChannels;
+        setStandardFilterbank(bufferSize, nChannels);
+    }
+
+    void setStandardFilterbank(int bufferSize, int nChannels)
+    {
         auto s = getSetup();
         s.coefficients.bufferSize = bufferSize;
         s.coefficients.fftSize = 4 * bufferSize;
         s.coefficients.frameSize = 4 * bufferSize;
         s.coefficients.gain = 1;
+        s.coefficients.nChannels = nChannels;
         s.parameters.windowType = s.parameters.USER_DEFINED;
         setSetup(s);
         setWindow(sinc(s.coefficients.frameSize, 1) * kaiser(s.coefficients.frameSize, 4));
-        
     }
 
     void setLowDelayFilterbank(int bufferSize)
+    {
+        const int nChannels = getCoefficients().nChannels;
+        setLowDelayFilterbank(bufferSize, nChannels);
+    }
+
+    void setLowDelayFilterbank(int bufferSize, int nChannels)
     {
         auto s = getSetup();
         s.coefficients.bufferSize = bufferSize;
         s.coefficients.fftSize = 16 * bufferSize;
         s.coefficients.frameSize = 16 * bufferSize;
         s.coefficients.gain = 1;
+        s.coefficients.nChannels = nChannels;
         s.parameters.windowType = s.parameters.USER_DEFINED;
         setSetup(s);
         Eigen::ArrayXf win1 = hann(4 * bufferSize);
@@ -99,11 +112,18 @@ public:
 
     void setHighQualityFilterbank(int bufferSize)
     {
+        const int nChannels = getCoefficients().nChannels;
+        setHighQualityFilterbank(bufferSize, nChannels);
+    }
+
+    void setHighQualityFilterbank(int bufferSize, int nChannels)
+    {
         auto s = getSetup();
         s.coefficients.bufferSize = bufferSize;
         s.coefficients.fftSize = 4 * bufferSize;
         s.coefficients.frameSize = 8 * bufferSize;
         s.coefficients.gain = 1;
+        s.coefficients.nChannels = nChannels;
         s.parameters.windowType = s.parameters.USER_DEFINED;
         setSetup(s);
         setWindow(sinc(s.coefficients.frameSize, 2) * kaiser(s.coefficients.frameSize, 10));
@@ -207,11 +227,18 @@ public:
 
     void setStandardFilterbank(int bufferSize)
     {
+        const int nChannels = getCoefficients().nChannels;
+        setStandardFilterbank(bufferSize, nChannels);
+    }
+
+    void setStandardFilterbank(int bufferSize, int nChannels)
+    {
         auto s = getSetup();
         s.coefficients.bufferSize = bufferSize;
         s.coefficients.fftSize = 4 * bufferSize;
         s.coefficients.frameSize = 4 * bufferSize;
         s.coefficients.gain = 1;
+        s.coefficients.nChannels = nChannels;
         s.parameters.windowType = s.parameters.USER_DEFINED;
         setSetup(s);
         Eigen::ArrayXf w = sinc(s.coefficients.frameSize, 1) * kaiser(s.coefficients.frameSize, 4);
@@ -226,11 +253,18 @@ public:
 
     void setLowDelayFilterbank(int bufferSize)
     {
+        const int nChannels = getCoefficients().nChannels;
+        setLowDelayFilterbank(bufferSize, nChannels);
+    }
+
+    void setLowDelayFilterbank(int bufferSize, int nChannels)
+    {
         auto s = getSetup();
         s.coefficients.bufferSize = bufferSize;
         s.coefficients.fftSize = 16 * bufferSize;
         s.coefficients.frameSize = 4 * bufferSize;
         s.coefficients.gain = 1;
+        s.coefficients.nChannels = nChannels;
         s.parameters.windowType = s.parameters.USER_DEFINED;
         setSetup(s);
         Eigen::ArrayXf w = hann(s.coefficients.frameSize) * 0.573576926471298f;
@@ -239,11 +273,18 @@ public:
 
     void setHighQualityFilterbank(int bufferSize)
     {
+        const int nChannels = getCoefficients().nChannels;
+        setHighQualityFilterbank(bufferSize, nChannels);
+    }
+
+    void setHighQualityFilterbank(int bufferSize, int nChannels)
+    {
         auto s = getSetup();
         s.coefficients.bufferSize = bufferSize;
         s.coefficients.fftSize = 4 * bufferSize;
         s.coefficients.frameSize = 8 * bufferSize;
         s.coefficients.gain = 1;
+        s.coefficients.nChannels = nChannels;
         s.parameters.windowType = s.parameters.USER_DEFINED;
         setSetup(s);
         Eigen::ArrayXf w = kaiser(s.coefficients.frameSize, 14) * 0.619944139445609f;

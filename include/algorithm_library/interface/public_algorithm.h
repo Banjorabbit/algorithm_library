@@ -59,7 +59,43 @@ public:
 	};
 	
 protected:
-	~Algorithm();
+	~Algorithm() = default;;
 	
 	std::unique_ptr<BaseImplementation> pimpl; // PIMPL. Define in derived source file
+};
+
+enum BufferMode {SINGLE_BUFFER, MULTI_BUFFER, ASYNCHRONOUS_BUFFER };
+
+template<typename Tconfiguration>
+class AlgorithmBuffer : public Algorithm<Tconfiguration>
+{
+public:
+	using Base = Algorithm<Tconfiguration>;
+	using Configuration = typename Base::Configuration;
+	using Input = typename Base::Input; 
+	using Output = typename Base::Output;
+	using Coefficients = typename Base::Coefficients;
+	using Parameters = typename Base::Parameters;
+	using Setup = typename Base::Setup;
+
+	AlgorithmBuffer() : AlgorithmBuffer(Coefficients()) {}
+	AlgorithmBuffer(const Coefficients& c); // define in derived source file
+
+	struct BufferBaseImplementation : public Base::BaseImplementation
+	{
+		BufferBaseImplementation() = default;
+		virtual ~BufferBaseImplementation() = default;
+		virtual BufferMode getBufferMode() const = 0;
+		virtual int getBufferSize() const = 0;
+		virtual int getNChannels() const = 0;
+		virtual int getDelaySamples() const = 0;
+	};
+
+	BufferMode getBufferMode() const { return static_cast<BufferBaseImplementation*>(Base::pimpl.get())->getBufferMode(); }
+	int getBufferSize() const { return static_cast<BufferBaseImplementation*>(Base::pimpl.get())->getBufferSize(); }
+	int getNChannels() const { return static_cast<BufferBaseImplementation*>(Base::pimpl.get())->getNChannels(); }
+	int getDelaySamples() const { return static_cast<BufferBaseImplementation*>(Base::pimpl.get())->getDelaySamples(); }
+
+protected:
+	~AlgorithmBuffer() = default;
 };

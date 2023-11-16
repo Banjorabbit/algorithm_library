@@ -152,13 +152,11 @@
 	void resetData();
 
 #define DEFINE_CONSTRUCTOR_DESTRUCTOR(PublicAlgorithm, InternalAlgorithm, ConfigurationName) \
-using InternalAlgorithm##Impl = Implementation<InternalAlgorithm, ConfigurationName>; \
-template<> \
-Algorithm<ConfigurationName>::~Algorithm() {} \
+using InternalAlgorithm##SingleBufferImpl = Implementation<InternalAlgorithm, ConfigurationName>; \
 template<> \
 Algorithm<ConfigurationName>::Algorithm(const Coefficients& c) \
 { \
-    pimpl = std::make_unique<InternalAlgorithm##Impl>(c); \
+    pimpl = std::make_unique<InternalAlgorithm##SingleBufferImpl>(c); \
 } \
 PublicAlgorithm::PublicAlgorithm(const Coefficients& c) : Algorithm<ConfigurationName>(c) {}
 

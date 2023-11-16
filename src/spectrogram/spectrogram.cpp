@@ -4,9 +4,6 @@
 using FilterbankImpl = Implementation<SpectrogramFilterbank, SpectrogramConfiguration>;
 using NonlinearImpl = Implementation<SpectrogramNonlinear, SpectrogramConfiguration>;
 
-template<> 
-Algorithm<SpectrogramConfiguration>::~Algorithm() {} 
-
 template<>
 Algorithm<SpectrogramConfiguration>::Algorithm(const Coefficients& c) 
 {

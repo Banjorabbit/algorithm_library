@@ -9,14 +9,14 @@ DEFINE_CONSTRUCTOR_DESTRUCTOR(CriticalBandsMean, CriticalBandsBarkMean, Critical
 int CriticalBandsSum::getNCriticalBands(float sampleRate) { return BarkScale::getNCriticalBands(sampleRate); }
 Eigen::ArrayXf CriticalBandsSum::getCenterFrequencies(float sampleRate) { return BarkScale::getCenterFrequencies(sampleRate); }
 Eigen::ArrayXf CriticalBandsSum::getCornerFrequencies(float sampleRate) { return BarkScale::getCornerFrequencies(sampleRate); }
-void CriticalBandsSum::inverse(I::Real2D xPower, O::Real2D yPower) { static_cast<CriticalBandsBarkSumImpl*>(pimpl.get())->algo.inverse(xPower, yPower); }
+void CriticalBandsSum::inverse(I::Real2D xPower, O::Real2D yPower) { static_cast<CriticalBandsBarkSumSingleBufferImpl*>(pimpl.get())->algo.inverse(xPower, yPower); }
 
 int CriticalBandsMean::getNCriticalBands(float sampleRate) { return BarkScale::getNCriticalBands(sampleRate); }
 Eigen::ArrayXf CriticalBandsMean::getCenterFrequencies(float sampleRate) { return BarkScale::getCenterFrequencies(sampleRate); }
 Eigen::ArrayXf CriticalBandsMean::getCornerFrequencies(float sampleRate) { return BarkScale::getCornerFrequencies(sampleRate); }
-void CriticalBandsMean::inverse(I::Real2D xPower, O::Real2D yPower) { static_cast<CriticalBandsBarkMeanImpl*>(pimpl.get())->algo.inverse(xPower, yPower); }
+void CriticalBandsMean::inverse(I::Real2D xPower, O::Real2D yPower) { static_cast<CriticalBandsBarkMeanSingleBufferImpl*>(pimpl.get())->algo.inverse(xPower, yPower); }
 
 int CriticalBandsMax::getNCriticalBands(float sampleRate) { return BarkScale::getNCriticalBands(sampleRate); }
 Eigen::ArrayXf CriticalBandsMax::getCenterFrequencies(float sampleRate) { return BarkScale::getCenterFrequencies(sampleRate); }
 Eigen::ArrayXf CriticalBandsMax::getCornerFrequencies(float sampleRate) { return BarkScale::getCornerFrequencies(sampleRate); }
-void CriticalBandsMax::inverse(I::Real2D xPower, O::Real2D yPower) { static_cast<CriticalBandsBarkMaxImpl*>(pimpl.get())->algo.inverse(xPower, yPower); }
+void CriticalBandsMax::inverse(I::Real2D xPower, O::Real2D yPower) { static_cast<CriticalBandsBarkMaxSingleBufferImpl*>(pimpl.get())->algo.inverse(xPower, yPower); }

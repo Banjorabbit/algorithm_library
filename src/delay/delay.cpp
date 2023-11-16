@@ -3,9 +3,6 @@
 using CircularBufferSingleChannelImpl = Implementation<CircularBufferSingleChannel, DelayConfiguration>;
 using CircularBufferImpl = Implementation<CircularBuffer, DelayConfiguration>;
 
-template<> 
-Algorithm<DelayConfiguration>::~Algorithm() {} 
-
 template<>
 Algorithm<DelayConfiguration>::Algorithm(const Coefficients& c) 
 {
