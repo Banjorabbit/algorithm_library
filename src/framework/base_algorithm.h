@@ -50,37 +50,30 @@ struct MultiBufferImplementation : public SingleBufferImplementation<Talgo, Tcon
 	using Base = SingleBufferImplementation<Talgo, Tconfiguration>;
 	
     MultiBufferImplementation() : MultiBufferImplementation(Algorithm<Tconfiguration>::Coefficients()) {}
-    MultiBufferImplementation(const typename Tconfiguration::Coefficients& c) : Base{ c }
-	{
-		bufferIn.resize(c.bufferSize, c.nChannels);
-		bufferOut.resize(c.bufferSize, c.nChannels);
-		bufferIn.setZero();
-		bufferOut.setZero();
-	}
+    MultiBufferImplementation(const typename Tconfiguration::Coefficients& c) : Base{ c } { }
+
     void process(typename Algorithm<Tconfiguration>::Input input, typename Algorithm<Tconfiguration>::Output output) override 
 	{ 
 		int i = 0;
-		const int bufferSize = bufferIn.rows();
+		const int bufferSize = Base::getBufferSize();
 		// Process as many full buffers as possible
 		for (; i <= (input.rows() - bufferSize); i += bufferSize)
 		{
 			Base::algo.process(input.middleRows(i, bufferSize), output.middleRows(i, bufferSize));
 		}
 		// if we have been given a size that is not an integer multiple of bufferSize, zeropad and process. 
-		const int remainingSamples = std::min(static_cast<int>(input.rows()) - i, bufferSize);
-		bufferIn.topRows(remainingSamples) = input.middleRows(i, remainingSamples);
-		bufferIn.bottomRows(bufferSize - remainingSamples).setZero();
-		Base::algo.process(bufferIn, bufferOut);
-		output.middleRows(i, remainingSamples) = bufferOut.topRows(remainingSamples);
+		const int remainingSamples = static_cast<int>(input.rows()) - i;
+		if (remainingSamples > 0)
+		{
+			auto const c = Base::getCoefficients();
+			typename I::array<typename Algorithm<Tconfiguration>::Input>::type bufferIn(c.bufferSize, c.nChannels);
+			bufferIn.topRows(remainingSamples) = input.middleRows(i, remainingSamples);
+			bufferIn.bottomRows(c.bufferSize - remainingSamples).setZero();
+			typename O::getType<typename Algorithm<Tconfiguration>::Output>::type bufferOut = Tconfiguration::initOutput(bufferIn, c);
+			Base::algo.process(bufferIn, bufferOut);
+			output.bottomRows(remainingSamples) = bufferOut.topRows(remainingSamples);
+		}
 	}
-	void reset() override 
-	{ 
-		bufferIn.setZero(); 
-		bufferOut.setZero(); 
-		Base::reset();
-	}
-	typename I::array<typename Algorithm<Tconfiguration>::Input>::type bufferIn;
-	typename O::getType<typename Algorithm<Tconfiguration>::Output>::type bufferOut;
 };
 
 template<typename Talgo, typename Tconfiguration>
@@ -90,18 +83,25 @@ struct AsynchronousBufferImplementation : public MultiBufferImplementation<Talgo
 
     AsynchronousBufferImplementation() : AsynchronousBufferImplementation(Algorithm<Tconfiguration>::Coefficients()) {}
     AsynchronousBufferImplementation(const typename Tconfiguration::Coefficients& c) : Base{ c }
-	{ index = 0; }
+	{ 
+		index = 0; 
+		bufferIn.resize(c.bufferSize, c.nChannels);
+		bufferOut = Tconfiguration::initOutput(bufferIn, c);
+		bufferIn.setZero();
+		bufferOut.setZero();
+	}
 
     void process(typename Algorithm<Tconfiguration>::Input input, typename Algorithm<Tconfiguration>::Output output) final 
 	{ 
+		int const bufferSize = Base::getBufferSize();
 		for (auto i = 0; i < input.rows(); i++)
 		{
-			Base::bufferIn.row(index) = input.row(i);
-			output.row(i) = Base::bufferOut.row(index);
+			bufferIn.row(index) = input.row(i);
+			output.row(i) = bufferOut.row(index);
 			index++;
-			if (index == Base::getBufferSize())
+			if (index == bufferSize)
 			{
-				Base::algo.process(Base::bufferIn, Base::bufferOut);
+				Base::algo.process(bufferIn, bufferOut);
 				index = 0;
 			}
 		}
@@ -110,6 +110,8 @@ struct AsynchronousBufferImplementation : public MultiBufferImplementation<Talgo
 	void reset() final
 	{
 		index = 0;
+		bufferIn.setZero(); 
+		bufferOut.setZero(); 
 		Base::reset();
 	}
 
@@ -117,6 +119,8 @@ struct AsynchronousBufferImplementation : public MultiBufferImplementation<Talgo
 	int getDelaySamples() const final { return Base::getDelaySamples() + Base::getBufferSize(); }
 
 	int index;
+	typename I::array<typename Algorithm<Tconfiguration>::Input>::type bufferIn;
+	typename O::getType<typename Algorithm<Tconfiguration>::Output>::type bufferOut;
 };
 
 template<typename Tconfiguration, typename Talgo>
