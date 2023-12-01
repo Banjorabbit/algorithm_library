@@ -22,10 +22,14 @@ struct PreprocessingPathConfiguration
 
     static auto validInput(Input input, const Coefficients& c) 
     { 
-        return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels);
+        if (c.bufferMode == SINGLE_BUFFER)
+        {
+            return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels);
+        }
+        return (input.cols() == c.nChannels);
     }
     
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(c.bufferSize); }
+    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.rows()); }
 
     template<typename Talgo>
     struct Test
@@ -46,7 +50,7 @@ struct PreprocessingPathConfiguration
     };  
 };
 
-class PreprocessingPath : public Algorithm<PreprocessingPathConfiguration>
+class PreprocessingPath : public AlgorithmBuffer<PreprocessingPathConfiguration>
 {
 public:
     PreprocessingPath() = default;

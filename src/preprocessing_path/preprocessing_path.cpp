@@ -21,4 +21,4 @@ Algorithm<PreprocessingPathConfiguration>::Algorithm(const Coefficients& c)
     }
 } 
 
-PreprocessingPath::PreprocessingPath(const Coefficients& c) : Algorithm<PreprocessingPathConfiguration>(c) {}
+PreprocessingPath::PreprocessingPath(const Coefficients& c) : AlgorithmBuffer<PreprocessingPathConfiguration>(c) {}
