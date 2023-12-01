@@ -79,7 +79,7 @@ public:
 	using Setup = typename Base::Setup;
 
 	AlgorithmBuffer() : AlgorithmBuffer(Coefficients()) {}
-	AlgorithmBuffer(const Coefficients& c); // define in derived source file
+	AlgorithmBuffer(const Coefficients& c) : Algorithm<Tconfiguration>(c) {}
 
 	struct BufferBaseImplementation : public Base::BaseImplementation
 	{
