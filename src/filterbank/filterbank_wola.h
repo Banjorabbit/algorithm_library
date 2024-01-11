@@ -129,11 +129,11 @@ public:
         setWindow(sinc(s.coefficients.frameSize, 2) * kaiser(s.coefficients.frameSize, 10));
     }
     
-    // calculate delay as the group delay at 0 Hz of the prototype window ( D(z) = Real{ FFT{window * ramp} / FFT{window} } )
+    // calculate delay as the group delay at 0 Hz of the prototype window:  Group Delay(z) = Real{ FFT{window * ramp} / FFT{window} } 
     int getDelaySamples() const 
     { 
         Eigen::ArrayXf ramp = Eigen::ArrayXf::LinSpaced(window.size(), 0, window.size()-1);
-        return (ramp * window).sum() / window.sum(); 
+        return (window * ramp).sum() / window.sum(); 
     } 
 
 private:
@@ -298,11 +298,11 @@ public:
         setWindow(w);
     }
 
-        // calculate delay as the group delay at 0 Hz of the prototype window ( D(z) = Real{ FFT{window * ramp} / FFT{window} } )
+        // calculate delay as the group delay at 0 Hz of the prototype window:  Group Delay(z) = Real{ FFT{window * ramp} / FFT{window} } 
     int getDelaySamples() const 
     { 
         Eigen::ArrayXf ramp = Eigen::ArrayXf::LinSpaced(window.size(), 0, window.size()-1);
-        return (ramp * window).sum() / window.sum(); 
+        return (window * ramp).sum() / window.sum(); 
     } 
 private:
 
