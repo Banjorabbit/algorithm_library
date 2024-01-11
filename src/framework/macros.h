@@ -151,7 +151,7 @@
 	void processOn(Input input, Output output); \
 	void resetData();
 
-#define DEFINE_CONSTRUCTOR_DESTRUCTOR(PublicAlgorithm, InternalAlgorithm, ConfigurationName) \
+#define DEFINE_ALGORITHM_CONSTRUCTOR(PublicAlgorithm, InternalAlgorithm, ConfigurationName) \
 using InternalAlgorithm##SingleBufferImpl = Implementation<InternalAlgorithm, ConfigurationName>; \
 template<> \
 Algorithm<ConfigurationName>::Algorithm(const Coefficients& c) \

@@ -1,3 +1,3 @@
 #include "min_phase_spectrum/min_phase_spectrum_cepstrum.h"
 
-DEFINE_CONSTRUCTOR_DESTRUCTOR(MinPhaseSpectrum, MinPhaseSpectrumCepstrum, MinPhaseSpectrumConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(MinPhaseSpectrum, MinPhaseSpectrumCepstrum, MinPhaseSpectrumConfiguration)

@@ -1,11 +1,11 @@
 #include "filter_min_max/filter_min_max_lemire.h"
 
-DEFINE_CONSTRUCTOR_DESTRUCTOR(StreamingMinMax, StreamingMinMaxLemire, StreamingMinMaxConfiguration)
-DEFINE_CONSTRUCTOR_DESTRUCTOR(FilterMinMax, FilterMinMaxLemire, FilterMinMaxConfiguration)
-DEFINE_CONSTRUCTOR_DESTRUCTOR(StreamingMax, StreamingMaxLemire, StreamingMaxConfiguration)
-DEFINE_CONSTRUCTOR_DESTRUCTOR(StreamingMin, StreamingMinLemire, StreamingMinConfiguration)
-DEFINE_CONSTRUCTOR_DESTRUCTOR(FilterMax, FilterMaxLemire, FilterMaxConfiguration)
-DEFINE_CONSTRUCTOR_DESTRUCTOR(FilterMin, FilterMinLemire, FilterMinConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(StreamingMinMax, StreamingMinMaxLemire, StreamingMinMaxConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(FilterMinMax, FilterMinMaxLemire, FilterMinMaxConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(StreamingMax, StreamingMaxLemire, StreamingMaxConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(StreamingMin, StreamingMinLemire, StreamingMinConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(FilterMax, FilterMaxLemire, FilterMaxConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(FilterMin, FilterMinLemire, FilterMinConfiguration)
 
 void StreamingMinMax::resetInitialValue(const float inputOld) { static_cast<StreamingMinMaxLemireSingleBufferImpl*>(pimpl.get())->algo.resetInitialValue(inputOld); }
 void StreamingMinMax::resetInitialValue(I::Real inputOld) { static_cast<StreamingMinMaxLemireSingleBufferImpl*>(pimpl.get())->algo.resetInitialValue(inputOld); }

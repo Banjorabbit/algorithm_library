@@ -1,6 +1,6 @@
 #include "fft/fft_real.h"
 
-DEFINE_CONSTRUCTOR_DESTRUCTOR(FFT, FFTReal, FFTConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(FFT, FFTReal, FFTConfiguration)
 
 void FFT::inverse(I::Complex2D xFreq, O::Real2D yTime)
 {

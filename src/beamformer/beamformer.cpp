@@ -1,3 +1,3 @@
 #include "beamformer/beamformer_mvdr.h"
 
-DEFINE_CONSTRUCTOR_DESTRUCTOR(Beamformer, BeamformerMVDR, BeamformerConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(Beamformer, BeamformerMVDR, BeamformerConfiguration)

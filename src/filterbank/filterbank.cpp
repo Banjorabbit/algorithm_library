@@ -1,7 +1,7 @@
 #include "filterbank/filterbank_wola.h"
 
-DEFINE_CONSTRUCTOR_DESTRUCTOR(FilterbankAnalysis, FilterbankAnalysisWOLA, FilterbankAnalysisConfiguration)
-DEFINE_CONSTRUCTOR_DESTRUCTOR(FilterbankSynthesis, FilterbankSynthesisWOLA, FilterbankSynthesisConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(FilterbankAnalysis, FilterbankAnalysisWOLA, FilterbankAnalysisConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(FilterbankSynthesis, FilterbankSynthesisWOLA, FilterbankSynthesisConfiguration)
 
 void FilterbankAnalysis::setWindow(I::Real window) { static_cast<FilterbankAnalysisWOLASingleBufferImpl*>(pimpl.get())->algo.setWindow(window); }
 void FilterbankAnalysis::setStandardFilterbank(int bufferSize) { static_cast<FilterbankAnalysisWOLASingleBufferImpl*>(pimpl.get())->algo.setStandardFilterbank(bufferSize); }

@@ -2,9 +2,9 @@
 
 int CriticalBandsConfiguration::getNCriticalBands(float sampleRate) { return BarkScale::getNCriticalBands(sampleRate); }
 
-DEFINE_CONSTRUCTOR_DESTRUCTOR(CriticalBandsMax, CriticalBandsBarkMax, CriticalBandsMaxConfiguration)
-DEFINE_CONSTRUCTOR_DESTRUCTOR(CriticalBandsSum, CriticalBandsBarkSum, CriticalBandsSumConfiguration)
-DEFINE_CONSTRUCTOR_DESTRUCTOR(CriticalBandsMean, CriticalBandsBarkMean, CriticalBandsMeanConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(CriticalBandsMax, CriticalBandsBarkMax, CriticalBandsMaxConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(CriticalBandsSum, CriticalBandsBarkSum, CriticalBandsSumConfiguration)
+DEFINE_ALGORITHM_CONSTRUCTOR(CriticalBandsMean, CriticalBandsBarkMean, CriticalBandsMeanConfiguration)
 
 int CriticalBandsSum::getNCriticalBands(float sampleRate) { return BarkScale::getNCriticalBands(sampleRate); }
 Eigen::ArrayXf CriticalBandsSum::getCenterFrequencies(float sampleRate) { return BarkScale::getCenterFrequencies(sampleRate); }
