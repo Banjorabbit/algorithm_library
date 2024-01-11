@@ -128,6 +128,13 @@ public:
         setSetup(s);
         setWindow(sinc(s.coefficients.frameSize, 2) * kaiser(s.coefficients.frameSize, 10));
     }
+    
+    // calculate delay as the group delay at 0 Hz of the filterbank ( D(z) = Real{ FFT{window * ramp} / FFT{window} } )
+    int getDelaySamples() const 
+    { 
+        Eigen::ArrayXf ramp = Eigen::ArrayXf::LinSpaced(window.size(), 0, window.size()-1);
+        return (ramp * window).sum() / window.sum(); 
+    } 
 
 private:
     
@@ -291,6 +298,12 @@ public:
         setWindow(w);
     }
 
+        // calculate delay as the group delay at 0 Hz of the filterbank ( D(z) = Real{ FFT{window * ramp} / FFT{window} } )
+    int getDelaySamples() const 
+    { 
+        Eigen::ArrayXf ramp = Eigen::ArrayXf::LinSpaced(window.size(), 0, window.size()-1);
+        return (ramp * window).sum() / window.sum(); 
+    } 
 private:
 
     void initialize()

@@ -36,7 +36,7 @@ public:
         filterbankInverse.process(xBeamformed, output);
 	}
 
-    int getDelaySamples() const { return filterbank.getCoefficients().fftSize; } // this assumes filterbank is initialized as a standard filterbank
+    int getDelaySamples() const { return filterbank.getDelaySamples() + filterbankInverse.getDelaySamples(); } 
 
 private:
     int nBands;
