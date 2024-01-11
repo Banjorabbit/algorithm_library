@@ -28,7 +28,6 @@ public:
     Algorithm() : Algorithm(Coefficients()) {} // default constructor
 	Algorithm(const Coefficients& c); // define this in derived source file.
 	
-	// define in pimpl source file
 	void process(Input input, Output output) { pimpl->process(input, output); }
 	Coefficients getCoefficients() const { return pimpl->getCoefficients(); }
 	Parameters getParameters() const { return pimpl->getParameters(); }
