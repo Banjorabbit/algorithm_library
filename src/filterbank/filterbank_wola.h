@@ -133,7 +133,7 @@ public:
     int getDelaySamples() const 
     { 
         Eigen::ArrayXf ramp = Eigen::ArrayXf::LinSpaced(window.size(), 0, window.size()-1);
-        return (window * ramp).sum() / window.sum(); 
+        return (window * ramp).sum() / (window.sum() + 1e-12f); 
     } 
 
 private:
@@ -302,7 +302,7 @@ public:
     int getDelaySamples() const 
     { 
         Eigen::ArrayXf ramp = Eigen::ArrayXf::LinSpaced(window.size(), 0, window.size()-1);
-        return (window * ramp).sum() / window.sum(); 
+        return (window * ramp).sum() / (window.sum() + 1e-12f); 
     } 
 private:
 
