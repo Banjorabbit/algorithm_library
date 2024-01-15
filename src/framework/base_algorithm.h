@@ -206,7 +206,7 @@ public:
 	template<typename Tsetup>
 	void setSetupTree(const Tsetup& s) { static_cast<Talgo&>(*this).setSetupTreeImpl(s); }
 
-	void onParametersChanged() {} // hide in derived algorithm if desired
+	void onParametersChanged() {} // hide in derived algorithm if desired. If more advanced functionality is needed, then write your own setters but remember to call the setters from this function.
 
 	auto validInput(Input input) const { return Configuration::validInput(input, C); }
 	auto initOutput(Input input) const { return Configuration::initOutput(input, C); }
