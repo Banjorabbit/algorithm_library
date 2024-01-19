@@ -19,12 +19,6 @@
 //
 // author : Kristian Timm Andersen
 
-// struct FilterMinMaxOutput
-// {
-//     O::Real2D minValue;
-//     O::Real2D maxValue;
-// };
-
 struct BaseFilterMinMaxConfiguration
 {
     using Input = I::Real2D;
