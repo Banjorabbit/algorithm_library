@@ -66,6 +66,13 @@ protected:
 
 enum BufferMode {SINGLE_BUFFER, MULTI_BUFFER, ASYNCHRONOUS_BUFFER };
 
+// AlgorithmBuffer<Tconfiguration> is a class that derives from Algorithm<Tconfiguration>
+// It is for algorithms that have a dynamic size input/output array and allows to change
+// the mode that the algorithm is using to process the input:
+//
+//	SINGLE_BUFFER - the same as processing in Algorithm<Tconfiguration>
+//	MULTI_BUFFER - zeropad the input to be a multiple of Configuration.bufferSize and process the entire input by successive calls to process
+//	ASYNCHRONOUS_BUFFER - Create an internal buffer and fill it with input values in a for-loop. Every time the buffer is full, call process and output the result. This results in an additional delay equal to bufferSize
 
 template<typename Tconfiguration>
 class AlgorithmBuffer : public Algorithm<Tconfiguration>
@@ -79,7 +86,7 @@ public:
 	using Parameters = typename Base::Parameters;
 	using Setup = typename Base::Setup;
 
-	// check if conditions for Tconfiguration  and input/output are fulfilled in AlgorithmBuffer
+	// check if conditions for AlgorithmBuffer<Tconfiguration> are fulfilled
 	static_assert(std::is_same<int, decltype(Coefficients::bufferSize)>::value); // Coefficients has integer member variable bufferSize
 	static_assert(std::is_same<int, decltype(Coefficients::nChannels)>::value); // Coefficients has integer member variable nChannels
 	static_assert(std::is_same<BufferMode, decltype(Coefficients::bufferMode)>::value); // Coefficients has BufferMode member variable bufferMode
