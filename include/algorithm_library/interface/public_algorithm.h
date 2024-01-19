@@ -1,5 +1,6 @@
 #pragma once
 #include "macros_json.h"
+#include "input_output.h"
 
 template<typename Tconfiguration>
 struct TSetup
@@ -65,6 +66,7 @@ protected:
 
 enum BufferMode {SINGLE_BUFFER, MULTI_BUFFER, ASYNCHRONOUS_BUFFER };
 
+
 template<typename Tconfiguration>
 class AlgorithmBuffer : public Algorithm<Tconfiguration>
 {
@@ -76,6 +78,15 @@ public:
 	using Coefficients = typename Base::Coefficients;
 	using Parameters = typename Base::Parameters;
 	using Setup = typename Base::Setup;
+
+	// check if conditions for Tconfiguration  and input/output are fulfilled in AlgorithmBuffer
+	static_assert(std::is_same<int, decltype(Coefficients::bufferSize)>::value); // Coefficients has integer member variable bufferSize
+	static_assert(std::is_same<int, decltype(Coefficients::nChannels)>::value); // Coefficients has integer member variable nChannels
+	static_assert(std::is_same<BufferMode, decltype(Coefficients::bufferMode)>::value); // Coefficients has BufferMode member variable bufferMode
+	static_assert(Eigen::Dynamic == I::getType<Input>::type::RowsAtCompileTime); // input rows at compile time is Dynamic
+	static_assert(Eigen::Dynamic == I::getType<Input>::type::ColsAtCompileTime); // input cols at compile time is Dynamic
+	static_assert(Eigen::Dynamic == O::getType<Output>::type::RowsAtCompileTime); // output rows at compile time is Dynamic
+	static_assert(Eigen::Dynamic == I::getType<Output>::type::ColsAtCompileTime); // output cols at compile time is Dynamic
 
 	AlgorithmBuffer() : AlgorithmBuffer(Coefficients()) {}
 	AlgorithmBuffer(const Coefficients& c) : Algorithm<Tconfiguration>(c) {}

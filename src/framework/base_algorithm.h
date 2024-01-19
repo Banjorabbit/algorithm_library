@@ -66,7 +66,7 @@ struct MultiBufferImplementation : public SingleBufferImplementation<Talgo, Tcon
 		if (remainingSamples > 0)
 		{
 			auto const c = Base::getCoefficients();
-			typename I::array<typename Algorithm<Tconfiguration>::Input>::type bufferIn(c.bufferSize, c.nChannels);
+			typename I::getType<typename Algorithm<Tconfiguration>::Input>::type bufferIn(c.bufferSize, c.nChannels);
 			bufferIn.topRows(remainingSamples) = input.middleRows(i, remainingSamples);
 			bufferIn.bottomRows(c.bufferSize - remainingSamples).setZero();
 			typename O::getType<typename Algorithm<Tconfiguration>::Output>::type bufferOut = Tconfiguration::initOutput(bufferIn, c);
@@ -119,7 +119,7 @@ struct AsynchronousBufferImplementation : public MultiBufferImplementation<Talgo
 	int getDelaySamples() const final { return Base::getDelaySamples() + Base::getBufferSize(); }
 
 	int index;
-	typename I::array<typename Algorithm<Tconfiguration>::Input>::type bufferIn;
+	typename I::getType<typename Algorithm<Tconfiguration>::Input>::type bufferIn;
 	typename O::getType<typename Algorithm<Tconfiguration>::Output>::type bufferOut;
 };
 
