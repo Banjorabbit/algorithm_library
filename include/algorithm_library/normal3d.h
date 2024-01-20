@@ -37,18 +37,20 @@ struct Normal3dConfiguration
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
-        int nValuesY = 10;
+        int nValuesY, nValuesX;
 
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c) : algo(c)
         {
-            input.resize(c.nValuesX, nValuesY);
+            nValuesX = c.nValuesX;
+            nValuesY = 10;
+            input.resize(nValuesX, nValuesY);
             input.setRandom();
             output = initOutput(input, c);
         }
     
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputFinite() const { return output.allFinite(); }
+        bool isTestOutputValid() const { return output.allFinite() && (output.cols() == nValuesY) && (output.rows() == 3 * nValuesX); }
     };
 };
 

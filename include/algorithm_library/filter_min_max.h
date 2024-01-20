@@ -47,18 +47,26 @@ struct BaseFilterMinMaxConfiguration
         Eigen::ArrayXXf minValue;
         Eigen::ArrayXXf maxValue;
         Eigen::ArrayXXf input;
+        int samples, nChannels;
 
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c) : algo(c)
         {
-            const int samples = 1000;
-            input.resize(samples, c.nChannels);
+            samples = 1000;
+            nChannels = c.nChannels;
+            input.resize(samples, nChannels);
             input.setRandom();
             std::tie(minValue, maxValue) = initOutput(input, c);
         }
 
         inline void processAlgorithm() { algo.process(input, { minValue, maxValue }); }
-        bool isTestOutputFinite() const { return minValue.allFinite() && maxValue.allFinite(); }
+        bool isTestOutputValid() const 
+        { 
+            bool test = minValue.allFinite() && maxValue.allFinite();
+            test &= (minValue.rows() == samples) && (maxValue.rows() == samples);
+            test &= (minValue.cols() == nChannels) && (maxValue.cols() == nChannels);
+            return test;
+        }
 
     };
 };
@@ -113,18 +121,20 @@ struct BaseFilterExtremumConfiguration
         Talgo algo;
         Eigen::ArrayXXf output;
         Eigen::ArrayXXf input;
+        int samples, nChannels;
 
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c) : algo(c)
         {
-            const int samples = 1000;
-            input.resize(samples, c.nChannels);
+            samples = 1000;
+            nChannels = c.nChannels;
+            input.resize(samples, nChannels);
             input.setRandom();
             output = initOutput(input, c);
         }
 
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputFinite() const { return output.allFinite(); }
+        bool isTestOutputValid() const { return output.allFinite() && (output.cols() == nChannels) && (output.rows() == samples); }
     };
 };
 

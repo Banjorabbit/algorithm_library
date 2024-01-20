@@ -38,17 +38,20 @@ struct FilterbankAnalysisConfiguration
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXcf output;
+        int fftSize, nChannels;
 
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c) : algo(c)
         {
-            input.resize(c.bufferSize, c.nChannels);
+            fftSize = c.fftSize;
+            nChannels = c.nChannels;
+            input.resize(c.bufferSize, nChannels);
             input.setRandom();
             output = initOutput(input, c);
         }
     
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputFinite() const { return output.allFinite(); }
+        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == fftSize/2 + 1) && (output.cols() == nChannels); }
     };
 };
 
@@ -98,17 +101,20 @@ struct FilterbankSynthesisConfiguration
         Talgo algo;
         Eigen::ArrayXXcf input;
         Eigen::ArrayXXf output;
+        int bufferSize, nChannels;
 
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c) : algo(c)
         {
-            input.resize(c.fftSize/2+1, c.nChannels);
+            bufferSize = c.bufferSize;
+            nChannels = c.nChannels;
+            input.resize(c.fftSize/2+1, nChannels);
             input.setRandom();
             output = initOutput(input, c);
         }
 
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputFinite() const { return output.allFinite(); }
+        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == bufferSize) && (output.cols() == nChannels); }
     };
 };
 

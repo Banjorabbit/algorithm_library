@@ -48,7 +48,7 @@ struct SolverToeplitzConfiguration
         }
 
         inline void processAlgorithm() { algo.process({ aToeplitz, BRighthand }, output); }
-        bool isTestOutputFinite() const { return output.allFinite(); }
+        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == 8) && (output.cols() == 8); }
     };
 };
 

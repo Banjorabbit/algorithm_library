@@ -43,7 +43,7 @@ struct InterpolationSampleConfiguration
         }
 
         void processAlgorithm() { algo.process({ samples, fractionalIndex }, output); }
-        bool isTestOutputFinite() const { return std::isfinite(output); }
+        bool isTestOutputValid() const { return std::isfinite(output); }
     };
 };
 
@@ -92,7 +92,7 @@ struct InterpolationConfiguration
         }
 
         inline void processAlgorithm() { algo.process({ samples, fractionalIndices }, output); }
-        bool isTestOutputFinite() const { return output.isFinite().all(); }
+        bool isTestOutputValid() const { return output.isFinite().all(); }
     };
 };
 
@@ -108,7 +108,6 @@ public:
 struct InterpolationConstantConfiguration
 {
     using Input = I::Real;
-
     using Output = O::Real;
 
     struct Coefficients
@@ -119,7 +118,7 @@ struct InterpolationConstantConfiguration
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.size() >= 4);	}
+    static auto validInput(Input input, const Coefficients& c) { return (input.size() >= 4); }
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.size() - 3); }
 
     template<typename Talgo>
@@ -128,17 +127,18 @@ struct InterpolationConstantConfiguration
         Talgo algo;
         Eigen::ArrayXf samples;
         Eigen::ArrayXf output;
+        int n;
 
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c) : algo(c)
         {
-            const int N = 256;
-            samples = Eigen::ArrayXf::Random(N);
+            n = 256;
+            samples = Eigen::ArrayXf::Random(n);
             output = initOutput(samples, c); // interpolation needs 4 values, so there will be 3 less outputs than inputs
         }
 
         inline void processAlgorithm() { algo.process(samples, output); }
-        bool isTestOutputFinite() const { return output.allFinite(); }
+        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == n-3); }
     };
 };
 

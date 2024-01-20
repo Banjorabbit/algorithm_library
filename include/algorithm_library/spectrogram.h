@@ -22,7 +22,7 @@ struct SpectrogramConfiguration
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == 1); }
+    static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0); }
     static auto initOutput(Input input, const Coefficients& c)
     {
         return Eigen::ArrayXXf(c.fftSize / 2 + 1, input.rows() / c.bufferSize);
@@ -34,18 +34,20 @@ struct SpectrogramConfiguration
         Talgo algo;
         Eigen::ArrayXf input;
         Eigen::ArrayXXf output;
+        int fftSize, nFrames;
 
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c) : algo(c)
         {
-            const int nFrames = 10;
+            nFrames = 10;
+            fftSize = c.fftSize;
             input.resize(nFrames * c.bufferSize);
             input.setRandom();
             output = initOutput(input, c);
         }
 
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputFinite() const { return output.allFinite(); }
+        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == fftSize/2 + 1) && (output.cols() == nFrames); }
     };
 };
 

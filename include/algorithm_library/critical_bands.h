@@ -26,7 +26,7 @@ struct CriticalBandsConfiguration
 
     static auto validInput(Input input, const Coefficients& c) 
     { 
-        return (input.rows() == c.nBands) && (input.cols() > 0);
+        return (input >= 0).all() && (input.rows() == c.nBands) && (input.cols() > 0);
     }
     
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(getNCriticalBands(c.sampleRate), input.cols()); }
@@ -36,6 +36,7 @@ struct CriticalBandsConfiguration
     {
         Talgo algo;
         int nChannels = 2;
+        int nCriticalBands;
         Eigen::ArrayXXf xPower;
         Eigen::ArrayXXf yPower;
 
@@ -44,10 +45,17 @@ struct CriticalBandsConfiguration
         {
             xPower = Eigen::ArrayXXf::Random(c.nBands, nChannels).abs2();
             yPower = initOutput(xPower, c);
+            nCriticalBands = algo.getNCriticalBands(c.sampleRate);
         }
 
         void processAlgorithm() { algo.process(xPower, yPower); }
-        bool isTestOutputFinite() const { return yPower.allFinite(); }
+        bool isTestOutputValid() const 
+        {
+            bool test = yPower.allFinite();
+            test &= (yPower >= 0).all();
+            test &= (yPower.cols() == nChannels) && (yPower.rows() == nCriticalBands);
+            return test; 
+        }
     };
 };
 

@@ -27,7 +27,7 @@ struct NoiseEstimationConfiguration
     { 
         return (input.rows() == c.nBands) && (input.cols() == c.nChannels);
     }
-    
+
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(c.nBands, c.nChannels); }
 
     template<typename Talgo>
@@ -36,16 +36,25 @@ struct NoiseEstimationConfiguration
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
+        int nBands, nChannels;
 
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c) : algo(c)
         {
-            input = Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2();
+            nChannels = c.nChannels;
+            nBands = c.nBands;
+            input = Eigen::ArrayXXf::Random(nBands, nChannels).abs2();
             output = initOutput(input, c);
         }
 
         void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputFinite() const { return output.allFinite(); }
+        bool isTestOutputValid() const 
+        { 
+            bool test = output.allFinite();
+            test &= (output >= 0).all();
+            test &= (output.rows() == nBands) && (output.cols() == nChannels);
+            return test;
+        }
     };
 };
 

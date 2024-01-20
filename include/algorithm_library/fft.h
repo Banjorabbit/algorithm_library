@@ -36,18 +36,20 @@ struct FFTConfiguration
     {
         Talgo algo;
         int nChannels = 2;
+        int fftSize;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXcf output;
 
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c) : algo(c)
         {
+            fftSize = c.fftSize;
             input = Eigen::ArrayXXf::Random(c.fftSize, nChannels);
             output = initOutput(input, c);
         }
 
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputFinite() const { return output.allFinite(); }
+        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == fftSize/2 + 1) && (output.cols() == nChannels); }
     };
 };
 

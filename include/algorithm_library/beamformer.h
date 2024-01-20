@@ -34,18 +34,20 @@ struct BeamformerConfiguration
         Talgo algo;
         Eigen::ArrayXXcf xFreq;
         bool speechActivity;
+        int nBands;
         Eigen::ArrayXcf yFreq;
 
         Test() : Test(Coefficients()) {}
         Test(Coefficients c): algo(c)
         {
-            xFreq = Eigen::ArrayXXcf::Random(c.nBands, c.nChannels);
+            nBands = c.nBands;
+            xFreq = Eigen::ArrayXXcf::Random(nBands, c.nChannels);
             speechActivity = true;
             yFreq = initOutput({xFreq, speechActivity}, c);
         }
 
         void processAlgorithm() { algo.process({xFreq, speechActivity}, yFreq); }
-        bool isTestOutputFinite() const { return yFreq.allFinite(); }
+        bool isTestOutputValid() const { return yFreq.allFinite() && (yFreq.rows() == nBands); }
     };  
 };
 

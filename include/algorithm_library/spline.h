@@ -36,13 +36,14 @@ struct SplineConfiguration
         Eigen::ArrayXXf yGiven;
         Eigen::ArrayXXf xDesired;
         Eigen::ArrayXXf yDesired;
+        int nOS, nChannels;
 
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c) : algo(c)
         {
             int n = 10; // number of input samples per channel
-            int nOS = 100; // number of output samples per channel
-            int nChannels = 2;
+            nOS = 100; // number of output samples per channel
+            nChannels = 2;
             xGiven = Eigen::ArrayXf::LinSpaced(n, 0, n - 1).replicate(1, nChannels);
             yGiven.resize(n, nChannels);
             yGiven.setRandom();
@@ -51,7 +52,7 @@ struct SplineConfiguration
         }
 
         inline void processAlgorithm() { algo.process({ xGiven, yGiven, xDesired }, yDesired); }
-        bool isTestOutputFinite() const { return yDesired.allFinite(); }
+        bool isTestOutputValid() const { return yDesired.allFinite() && (yDesired.rows() == nOS) && (yDesired.cols() == nChannels); }
     };
 };
 

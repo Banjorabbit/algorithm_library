@@ -59,6 +59,8 @@ public:
         }
     }
 
+    static int getNCriticalBands(float sampleRate) { return BarkScale::getNCriticalBands(sampleRate); }
+
 protected:
     size_t getDynamicSizeVariables() const
     { 

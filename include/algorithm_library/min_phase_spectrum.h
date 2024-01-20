@@ -30,19 +30,21 @@ struct MinPhaseSpectrumConfiguration
     struct Test
     {
         Talgo algo;
-        int nChannels = 2;
+        int nChannels, nBands;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXcf output;
 
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c) : algo(c)
         {
-            input = Eigen::ArrayXXf::Random(c.nBands, nChannels).abs2();
+            nBands = c.nBands;
+            nChannels = 2;
+            input = Eigen::ArrayXXf::Random(nBands, nChannels).abs2();
             output = initOutput(input, c);
         }
 
         void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputFinite() const { return output.allFinite(); }
+        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == nBands) && (output.cols() == nChannels); }
     };
 };
 

@@ -28,16 +28,19 @@ struct DelayConfiguration
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
+        int delayLength, nChannels;
 
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c) : algo(c)
         {
-            input = Eigen::ArrayXXf(c.delayLength, c.nChannels);
+            delayLength = c.delayLength;
+            nChannels = c.nChannels;
+            input = Eigen::ArrayXXf(delayLength, nChannels);
             output = initOutput(input, c);
         }
 
         void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputFinite() const { return output.allFinite(); }
+        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == delayLength) && (output.cols() == nChannels); }
     };
 };
 

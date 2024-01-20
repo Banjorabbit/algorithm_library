@@ -33,20 +33,22 @@ struct DCRemoverConfiguration
     struct Test
     {
         Talgo algo;
+        int nSamples, nChannels;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
 
         Test() : Test(Coefficients()) {}
         Test(const Coefficients& c)
         {
-            int nSamples = 100;
-            input.resize(nSamples, c.nChannels);
+            nSamples = 100;
+            nChannels = c.nChannels;
+            input.resize(nSamples, nChannels);
             input.setRandom();
             output = initOutput(input, c);
         }
 
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputFinite() const { return output.allFinite(); }
+        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == nSamples) && (output.cols() == nChannels); }
     };
 };
 

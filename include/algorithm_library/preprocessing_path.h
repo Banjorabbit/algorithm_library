@@ -37,16 +37,22 @@ struct PreprocessingPathConfiguration
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXf output;
+        int bufferSize, nChannels;
 
         Test() : Test(Coefficients()) {}
         Test(Coefficients c): algo(c)
         {
-            input = Eigen::ArrayXXf::Random(c.bufferSize, c.nChannels);
+            bufferSize = c.bufferSize;
+            nChannels = c.nChannels;
+            input = Eigen::ArrayXXf::Random(bufferSize, nChannels);
             output = initOutput(input, c);
         }
 
         void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputFinite() const { return output.allFinite(); }
+        bool isTestOutputValid() const 
+        { 
+            return output.allFinite() && (output.rows() == bufferSize);
+        }
     };  
 };
 

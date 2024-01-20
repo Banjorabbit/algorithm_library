@@ -155,7 +155,7 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 			durationMax = std::max(durationMax, time);
 		}
 		fmt::print("Execution time of processOn is (min - avg. - max): {:.3f} us - {:.3f} us - {:.3f} us.\n", durationMin, durationAvg, durationMax);
-		if (!test.isTestOutputFinite())
+		if (!test.isTestOutputValid())
 		{
 			fmt::print("processOnTest failed: output is not finite.\n");
 			return false;
