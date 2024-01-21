@@ -22,25 +22,25 @@ public:
     inline void processOn(Input input, Output output)
     {
         // activity detection
-        Eigen::ArrayXXf activity = (0.9693465699682844f * input / (powerNoise + 1e-20f) - 3.485010713180571f).cwiseMin(25.f);
+        output.activity = (0.9693465699682844f * input / (powerNoise + 1e-20f) - 3.485010713180571f).cwiseMin(25.f);
 
         // for-loop has been profiled to be faster in gcc than the commented line below:
-        // activity = activity.unaryExpr(std::ref(fasterExp));
-        float* ptr = activity.data();
-        for (auto i = 0; i < activity.size(); i++, ptr++)
+        // output.activity = output.activity.unaryExpr(std::ref(fasterExp));
+        float* ptr = output.activity.data();
+        for (auto i = 0; i < output.activity.size(); i++, ptr++)
         {
             *ptr = fasterExp(*ptr);
         }
         
-        activity /= (1.f + activity);
+        output.activity /= (1.f + output.activity);
 
         // smooth activity
-        activityMean += activityMeanLambda * (activity - activityMean);
-        activity = (activityMean > 0.99f).select(activity.cwiseMin(.99f), activity);
+        activityMean += activityMeanLambda * (output.activity - activityMean);
+        output.activity = (activityMean > 0.99f).select(output.activity.cwiseMin(.99f), output.activity);
 
         // update noise
-        powerNoise += smoothingLambda * (1.f - activity) * (input - powerNoise);
-        output = powerNoise;
+        powerNoise += smoothingLambda * (1.f - output.activity) * (input - powerNoise);
+        output.powerNoise = powerNoise;
     }
 
     void onParametersChanged()

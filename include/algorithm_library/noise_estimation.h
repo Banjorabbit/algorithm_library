@@ -7,7 +7,12 @@
 struct NoiseEstimationConfiguration
 {
     using Input = I::Real2D;
-    using Output = O::Real2D;
+    //using Output = O::Real2D;
+    struct Output
+    {
+        O::Real2D powerNoise;
+        O::Real2D activity;
+    };
 
     struct Coefficients
     {
@@ -28,7 +33,7 @@ struct NoiseEstimationConfiguration
         return (input.rows() == c.nBands) && (input.cols() == c.nChannels);
     }
 
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(c.nBands, c.nChannels); }
+    static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::ArrayXXf(c.nBands, c.nChannels), Eigen::ArrayXXf(c.nBands, c.nChannels)); }
 
     template<typename Talgo>
     struct Test
@@ -36,6 +41,7 @@ struct NoiseEstimationConfiguration
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
+        Eigen::ArrayXXf activity;
         int nBands, nChannels;
 
         Test() : Test(Coefficients()) {}
@@ -44,15 +50,15 @@ struct NoiseEstimationConfiguration
             nChannels = c.nChannels;
             nBands = c.nBands;
             input = Eigen::ArrayXXf::Random(nBands, nChannels).abs2();
-            output = initOutput(input, c);
+            std::tie(output, activity) = initOutput(input, c);
         }
 
-        void processAlgorithm() { algo.process(input, output); }
+        void processAlgorithm() { algo.process(input, {output, activity}); }
         bool isTestOutputValid() const 
         { 
-            bool test = output.allFinite();
-            test &= (output >= 0).all();
-            test &= (output.rows() == nBands) && (output.cols() == nChannels);
+            bool test = output.allFinite() && activity.allFinite();
+            test &= (output >= 0).all() && (activity >= 0).all();
+            test &= (output.rows() == nBands) && (output.cols() == nChannels) && (activity.rows() == nBands) && (activity.cols() == nChannels);
             return test;
         }
     };
