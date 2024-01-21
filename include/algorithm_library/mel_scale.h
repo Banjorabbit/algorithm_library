@@ -56,4 +56,6 @@ class MelScale : public Algorithm<MelScaleConfiguration>
 public:
     MelScale() = default;
     MelScale(const Coefficients& c);
+
+    Eigen::ArrayXf getCornerFrequencies() const;
 };
