@@ -15,6 +15,7 @@
 #include "noise_estimation/noise_estimation_activity_detection.h"
 #include "beamformer/beamformer_mvdr.h"
 #include "mel_scale/mel_scale_spectrogram.h"
+#include "activity_detection_frequency_domain/activity_detection_noise_estimation.h"
 
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
@@ -57,6 +58,7 @@ DEFINE_BENCHMARK_ALGORITHM(StreamingMaxLemire)
 DEFINE_BENCHMARK_ALGORITHM(StreamingMinLemire)
 DEFINE_BENCHMARK_ALGORITHM(DCRemoverFirstOrder)
 DEFINE_BENCHMARK_ALGORITHM(MelScaleSpectrogram)
+DEFINE_BENCHMARK_ALGORITHM(ActivityDetectionNoiseEstimation)
 
 
 
