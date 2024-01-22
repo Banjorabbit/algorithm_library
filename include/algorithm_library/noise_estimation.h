@@ -7,7 +7,6 @@
 struct NoiseEstimationConfiguration
 {
     using Input = I::Real2D;
-    //using Output = O::Real2D;
     struct Output
     {
         O::Real2D powerNoise;
@@ -24,13 +23,13 @@ struct NoiseEstimationConfiguration
 
     struct Parameters
     {
-        float smoothingTConstant = .72f;
+        float smoothingTConstant = .072f;
         DEFINE_TUNABLE_PARAMETERS(smoothingTConstant)
     };
 
     static auto validInput(Input input, const Coefficients& c) 
     { 
-        return (input.rows() == c.nBands) && (input.cols() == c.nChannels);
+        return (input >= 0.f).all() && (input.rows() == c.nBands) && (input.cols() == c.nChannels);
     }
 
     static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::ArrayXXf(c.nBands, c.nChannels), Eigen::ArrayXXf(c.nBands, c.nChannels)); }
