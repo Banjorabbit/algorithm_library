@@ -129,27 +129,12 @@
 		SELECT_SET_MEMBER_METHOD(setSetupTree, Setup, __VA_ARGS__ ) \
 	} 
 
-#define DECLARE_MANDATORY_METHODS \
-	void processOn(const Parameters& p, Input input, Output output) final; \
-	void processBypass(const Parameters& p, Input input, Output output) final; 
-
-#define DECLARE_MANDATORY_METHODS_WITH_MEMBERS( ...) \
-	friend AlgorithmImpl<Base<Configuration>, TypeAlgorithm>; \
-	DECLARE_MANDATORY_METHODS \
-	bool initializeMembers() final; \
-	DEFINE_MEMBER_ALGORITHMS(__VA_ARGS__) 
-	
-#define DECLARE_ASYNC_MANDATORY_METHODS_WITH_MEMBERS(...) \
-	friend AlgorithmImpl<AsynchronousBase<Configuration>, TypeAlgorithm>; \
-	DECLARE_MANDATORY_METHODS \
-	bool initializeMembers() final; \
-	DEFINE_MEMBER_ALGORITHMS(__VA_ARGS__) 
-	
-
-#define DECLARE_SIMPLE_METHODS \
-	friend SimpleAlgorithm<Configuration, TypeAlgorithm>; \
-	void processOn(Input input, Output output); \
-	void resetData();
+#define DEFINE_MEMBER_ALGORITHMS(...) \
+	DEFINE_MEMBER_SET_GET_FUNCTIONS(Parameters, parameters, __VA_ARGS__) \
+	DEFINE_MEMBER_SET_GET_FUNCTIONS(Coefficients, coefficients, __VA_ARGS__) \
+	DEFINE_MEMBER_SETUP_SET_GET_FUNCTIONS(__VA_ARGS__) \
+	size_t getDynamicSizeAlgorithms() const final { return SELECT_APPLY_MEMBER_METHOD(EVAL(getDynamicSize() + ), __VA_ARGS__ )0; } \
+	void resetAlgorithms() final     { SELECT_APPLY_MEMBER_METHOD( EVAL(reset();),      __VA_ARGS__ ) }
 
 #define DEFINE_ALGORITHM_CONSTRUCTOR(PublicAlgorithm, InternalAlgorithm, ConfigurationName) \
 using InternalAlgorithm##SingleBufferImpl = Implementation<InternalAlgorithm, ConfigurationName>; \
@@ -159,70 +144,3 @@ Algorithm<ConfigurationName>::Algorithm(const Coefficients& c) \
     pimpl = std::make_unique<InternalAlgorithm##SingleBufferImpl>(c); \
 } \
 PublicAlgorithm::PublicAlgorithm(const Coefficients& c) : Algorithm<ConfigurationName>(c) {}
-
-
-#define DEFINE_SOURCE_INTERFACE(ConfigurationName, InternalName) \
-template<> \
-struct Algorithm<ConfigurationName>::Implementation \
-{ \
-	template<typename T>\
-	Implementation(const T& t) : algo(t) {}\
-	Implementation() = default;\
-	InternalName algo; \
-};\
-template<> \
-void Algorithm<ConfigurationName>::process(Input input, Output output) \
-{ \
-	pimpl->algo.process(input, output); \
-} \
-template<> \
-Algorithm<ConfigurationName>::Algorithm() : pimpl{ std::make_unique<Implementation>() } {} \
-template<> \
-Algorithm<ConfigurationName>::~Algorithm() {} \
-template<> \
-template<typename T> \
-Algorithm<ConfigurationName>::Algorithm(const T& t) : pimpl{ std::make_unique<Implementation>(t) } {} \
-template<> \
-Algorithm<ConfigurationName>::Coefficients Algorithm<ConfigurationName>::getCoefficients() const \
-{ \
-	return pimpl->algo.getCoefficients(); \
-} \
-template<> \
-Algorithm<ConfigurationName>::Parameters Algorithm<ConfigurationName>::getParameters() const \
-{ \
-	return pimpl->algo.getParameters(); \
-} \
-template<> \
-Algorithm<ConfigurationName>::Setup Algorithm<ConfigurationName>::getSetup() const \
-{ \
-	return pimpl->algo.getSetup(); \
-} \
-template<> \
-void Algorithm<ConfigurationName>::setCoefficients(const Coefficients& c) \
-{ \
-	pimpl->algo.setCoefficients(c); \
-} \
-template<> \
-void Algorithm<ConfigurationName>::setParameters(const Parameters& p) \
-{ \
-	pimpl->algo.setParameters(p); \
-} \
-template<> \
-void Algorithm<ConfigurationName>::setSetup(const Setup& s) \
-{ \
-	pimpl->algo.setSetup(s); \
-} \
-template<> \
-void Algorithm<ConfigurationName>::reset() \
-{ \
-	pimpl->algo.reset(); \
-} \
-
-#define DEFINE_MEMBER_ALGORITHMS(...) \
-	DEFINE_MEMBER_SET_GET_FUNCTIONS(Parameters, parameters, __VA_ARGS__) \
-	DEFINE_MEMBER_SET_GET_FUNCTIONS(Coefficients, coefficients, __VA_ARGS__) \
-	DEFINE_MEMBER_SETUP_SET_GET_FUNCTIONS(__VA_ARGS__) \
-	size_t getDynamicSizeAlgorithms() const final { return SELECT_APPLY_MEMBER_METHOD(EVAL(getDynamicSize() + ), __VA_ARGS__ )0; } \
-	void resetAlgorithms() final     { SELECT_APPLY_MEMBER_METHOD( EVAL(reset();),      __VA_ARGS__ ) }
-
-	
