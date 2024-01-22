@@ -13,6 +13,7 @@
 #include <algorithm_library/spline.h>
 #include <algorithm_library/dc_remover.h>
 #include <algorithm_library/noise_estimation.h>
+#include <algorithm_library/activity_detection_frequency_domain.h>
 
 #include <pybind11_json/pybind11_json.hpp>
 #include <pfr.hpp>
@@ -199,5 +200,6 @@ PYBIND11_MODULE(PythonAlgorithmLibrary, m)
   DEFINE_PYTHON_INTERFACE(Spline);
   DEFINE_PYTHON_INTERFACE(DCRemover);
   DEFINE_PYTHON_INTERFACE(NoiseEstimation);
+  DEFINE_PYTHON_INTERFACE(ActivityDetectionFrequencyDomain); 
 }
 

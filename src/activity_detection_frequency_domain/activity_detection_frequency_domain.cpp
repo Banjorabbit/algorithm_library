@@ -1,0 +1,3 @@
+#include "activity_detection_frequency_domain/activity_detection_noise_estimation.h"
+
+DEFINE_ALGORITHM_CONSTRUCTOR(ActivityDetectionFrequencyDomain, ActivityDetectionNoiseEstimation, ActivityDetectionFrequencyDomainConfiguration)
