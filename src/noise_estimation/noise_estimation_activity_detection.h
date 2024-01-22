@@ -19,10 +19,10 @@ public:
         onParametersChanged();
      }
 
-    inline void processOn(Input input, Output output)
+    inline void processOn(Input powerNoisy, Output output)
     {
         // activity detection
-        output.activity = (0.9693465699682844f * input / (powerNoise + 1e-20f) - 3.485010713180571f).cwiseMin(25.f);
+        output.activity = (powerNoisy / (powerNoise + 1e-20f) - 1.5f).cwiseMin(25.f);
 
         // for-loop has been profiled to be faster in gcc than the commented line below:
         // output.activity = output.activity.unaryExpr(std::ref(fasterExp));
@@ -39,7 +39,7 @@ public:
         output.activity = (activityMean > 0.99f).select(output.activity.cwiseMin(.99f), output.activity);
 
         // update noise
-        powerNoise += smoothingLambda * (1.f - output.activity) * (input - powerNoise);
+        powerNoise += smoothingLambda * (1.f - output.activity) * (powerNoisy - powerNoise);
         output.powerNoise = powerNoise;
     }
 
