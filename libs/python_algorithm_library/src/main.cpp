@@ -18,6 +18,10 @@
 #include <pybind11_json/pybind11_json.hpp>
 #include <pfr.hpp>
 
+// Python wrapper library. The library replicates the C++ interface found in /include/algorithm_library/interface using templates and the pybind11 library
+//
+// author: Kristian Timm Andersen
+
 namespace py = pybind11;
 
 // remove Eigen::Ref<> from type
