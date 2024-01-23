@@ -12,7 +12,7 @@ Benchmarks are implemented using [Google benchmark](https://github.com/google/be
 Unit tests are implemented using [Google test](https://github.com/google/googletest) and are located [here](apps/test).
 
 ## Python wrapper library
-A Python library that wraps the C++ algorithms using [pybind11](https://github.com/pybind/pybind11) is found [here](libs/python_algorithm_library). With this wrapper library one can use the algorithms inside Python. Note that this library requires C++17.
+A Python library that wraps the C++ algorithms using [pybind11](https://github.com/pybind/pybind11) is found [here](libs/python_algorithm_library). With this wrapper library one can use the algorithms in Python. Note that the library requires C++17.
 
 ## Build System
 Cmake is used as build system and the project setup is inspired by [ModernCppStarter](https://github.com/TheLartians/ModernCppStarter).
