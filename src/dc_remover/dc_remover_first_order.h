@@ -4,6 +4,15 @@
 
 using namespace Eigen;
 
+// DC remover implemented as a first-order IIR filter:
+// H(z) = (1 + a) / 2 * (1 - z^-1) / (1 - a * z^-1)
+// where:
+// a = (1 - sqrt(1-b^2))/b
+// b = cos(2*pi*f/fs)
+// f = cutoff frequency
+// fs = sample rate
+//
+// author: Kristian Timm Andersen
 class DCRemoverFirstOrder : public AlgorithmImplementation<DCRemoverConfiguration, DCRemoverFirstOrder>
 {
 public:
