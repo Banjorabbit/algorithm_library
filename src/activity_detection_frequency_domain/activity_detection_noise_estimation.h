@@ -19,9 +19,8 @@ public:
         Eigen::ArrayXXf activity(C.nBands, C.nChannels);
         noiseActivityDetector.process(noisyPower, {noisePower, activity});
 
-        //activityFlag = (noisyPower.colwise().mean() > (noisePower.colwise().mean() * 1.5)).any(); // mean power of each channel is compared. ActivityFlag is true if any channel is above threshold
-        activityFlag = (noisyPower.col(0).mean() > (noisePower.col(0).mean() * 1.5)); // mean power of each channel is compared. ActivityFlag is true if any channel is above threshold
-        //activityFlag |= static_cast<float>((activity > 0.5f * P.activityThreshold).rowwise().any().count()) > (0.15f * P.activityThreshold * C.nBands); // (1) true if activity is above threshold in any channel, (2) then count over bands and compare with threshold
+        activityFlag = (noisyPower.colwise().mean().transpose() > (noisePower.colwise().mean().transpose() * 1.5)).any(); // mean power of each channel is compared. ActivityFlag is true if any channel is above threshold
+        activityFlag |= static_cast<float>((activity > 0.5f * P.activityThreshold).rowwise().any().count()) > (0.15f * P.activityThreshold * C.nBands); // (1) true if activity is above threshold in any channel, (2) then count over bands and compare with threshold
 	}
 
 private:

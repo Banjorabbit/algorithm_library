@@ -16,22 +16,24 @@ TEST(ActivityDetectionNoiseEstimation, ActivityDetect)
 			ActivityDetectionNoiseEstimation vad;
 			auto c = vad.getCoefficients();
 			c.nBands = 256;
+            c.nChannels = 2;
 			vad.setCoefficients(c);
 
 			// run for 3 seconds with random noise
 			int nEnd = int(3.0f * c.filterbankRate);
 			bool activity = false;
-            Eigen::ArrayXXf noise(c.nBands, c.nChannels);
 			for (auto n = 0; n < nEnd; n++)
 			{
 				ArrayXXcf noise = 1e-2f * ArrayXXcf::Random(c.nBands, c.nChannels);
-				vad.process(noise, activity);
+                ArrayXXf powerNoise = noise.abs2();
+				vad.process(powerNoise, activity);
 			}
 
 			// Add activity at certain times and test activity detection
 			for (auto n = 0; n < 51; n++)
 			{
 				ArrayXXcf noise = 1e-2f * ArrayXXcf::Random(c.nBands, c.nChannels);
+                
 				switch (n)
 				{
 				case 0: noise.col(0) = ArrayXcf::Ones(c.nBands); break;
@@ -42,7 +44,8 @@ TEST(ActivityDetectionNoiseEstimation, ActivityDetect)
 				case 50:noise.col(1).segment(201, 45) = ArrayXcf::Constant(45, 2.f); break;
 				default: break;
 				}
-				vad.process(noise, activity);
+                ArrayXXf powerNoise = noise.abs2();
+				vad.process(powerNoise, activity);
 
 				if (n % 10 == 0)
 				{
