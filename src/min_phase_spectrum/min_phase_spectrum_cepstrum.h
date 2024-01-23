@@ -3,6 +3,9 @@
 #include "algorithm_library/min_phase_spectrum.h"
 #include "fft/fft_real.h"
 
+// Calculate complex-valued minimum phase spectrum from a magnitude spectrum.
+//
+// author: Kristian Timm Andersen
 // --------------------------------------------------- MinPhaseSpectrumCepstrum ----------------------------------------------------------------
 
 class MinPhaseSpectrumCepstrum : public AlgorithmImplementation<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>

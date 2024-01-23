@@ -10,8 +10,6 @@
     //
     // author: Kristian Timm Andersen
 
-    // ----------------------------- Cubic interpolation ------------------------------------------------------
-
     class SolverToeplitzSystem : public AlgorithmImplementation<SolverToeplitzConfiguration, SolverToeplitzSystem>
     {
     public:
