@@ -1,22 +1,22 @@
-#include <pybind11/pybind11.h>
-#include <pybind11/eigen/matrix.h>
+#include "pybind11/pybind11.h"
+#include "pybind11/eigen/matrix.h"
 
-#include <algorithm_library/critical_bands.h>
-#include <algorithm_library/fft.h>
-#include <algorithm_library/filter_min_max.h>
-#include <algorithm_library/filterbank.h>
-#include <algorithm_library/interpolation.h>
-#include <algorithm_library/min_phase_spectrum.h>
-#include <algorithm_library/normal3d.h>
-#include <algorithm_library/solver_toeplitz.h>
-#include <algorithm_library/spectrogram.h>
-#include <algorithm_library/spline.h>
-#include <algorithm_library/dc_remover.h>
-#include <algorithm_library/noise_estimation.h>
-#include <algorithm_library/activity_detection_frequency_domain.h>
+#include "algorithm_library/critical_bands.h"
+#include "algorithm_library/fft.h"
+#include "algorithm_library/filter_min_max.h"
+#include "algorithm_library/filterbank.h"
+#include "algorithm_library/interpolation.h"
+#include "algorithm_library/min_phase_spectrum.h"
+#include "algorithm_library/normal3d.h"
+#include "algorithm_library/solver_toeplitz.h"
+#include "algorithm_library/spectrogram.h"
+#include "algorithm_library/spline.h"
+#include "algorithm_library/dc_remover.h"
+#include "algorithm_library/noise_estimation.h"
+#include "algorithm_library/activity_detection_frequency_domain.h"
 
-#include <pybind11_json/pybind11_json.hpp>
-#include <pfr.hpp>
+#include "pybind11_json/pybind11_json.hpp"
+#include "pfr.hpp"
 
 // Python wrapper library. The library replicates the C++ interface found in /include/algorithm_library/interface using templates and the pybind11 library
 //
