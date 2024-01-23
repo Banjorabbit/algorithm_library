@@ -9,6 +9,7 @@ ne = pal.NoiseEstimation(c)
 print(ne)
 
 nFrames = 1000
+powerInput = (np.random.rand(c['nBands'])+1)*.5 # array of random numbers between 0 and 1
 x = np.random.rand(c['nBands'], nFrames)
 x[:,300:400] = x[:,300:400] * .1
 
@@ -18,8 +19,14 @@ y = np.zeros((c['nBands'], nFrames))
 activity = np.zeros(nFrames)
 
 for i in np.arange(nFrames):
-    vact = vad.process(x[:,i])
-    z = ne.process(x[:,i])
+    if ((i>300 and i<400) or (i>800 and i<900)):
+        x[:,i] = powerInput*.01
+        vact = vad.process(powerInput*.01)
+        z = ne.process(powerInput*.01)
+    else:
+        x[:,i] = powerInput
+        vact = vad.process(powerInput)
+        z = ne.process(powerInput)
     y[:,i] = z[0][:,0]
     activity[i] = vact
 
