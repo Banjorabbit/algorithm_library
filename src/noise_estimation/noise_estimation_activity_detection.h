@@ -22,7 +22,7 @@ public:
     inline void processOn(Input powerNoisy, Output output)
     {
         // activity detection
-        output.activity = (powerNoisy / (powerNoise + 1e-20f) - 1.5f).cwiseMin(25.f);
+        output.activity = (powerNoisy / (powerNoise + 1e-20f) - 3.5f).cwiseMin(25.f);
 
         // for-loop has been profiled to be faster in gcc than the commented line below:
         // output.activity = output.activity.unaryExpr(std::ref(fasterExp));
