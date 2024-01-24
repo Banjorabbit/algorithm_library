@@ -1,7 +1,7 @@
 #pragma once
 #include "framework/framework.h"
 #include "algorithm_library/noise_estimation.h"
-#include "utilities/functions.h"
+#include "activity_detection/activity_detection_noise_estimation.h"
 
 // noise estimation based on an activity detector. The more activity in the power spectra, the more the output is smoothed.
 //
@@ -10,60 +10,95 @@ class NoiseEstimationActivityDetection : public AlgorithmImplementation<NoiseEst
 {
 public:
     NoiseEstimationActivityDetection(Coefficients c =  Coefficients()) :
-        AlgorithmImplementation<NoiseEstimationConfiguration, NoiseEstimationActivityDetection>{ c }
-    {
-        activityMean.resize(c.nBands, c.nChannels);
-        powerNoise.resize(c.nBands, c.nChannels);
-        activityMeanLambda = 1.f - expf(-1.f / (c.filterbankRate * .152f));
-        resetVariables();
-        onParametersChanged();
-     }
+        AlgorithmImplementation<NoiseEstimationConfiguration, NoiseEstimationActivityDetection>{ c },
+        activityDetection(convertToActivityDetectionCoefficients(c))
+    { }
+
+    ActivityDetectionNoiseEstimation activityDetection;
+    DEFINE_MEMBER_ALGORITHMS(activityDetection)
 
     inline void processOn(Input powerNoisy, Output output)
     {
-        // activity detection
-        output.activity = (powerNoisy / (powerNoise + 1e-20f) - 3.5f).cwiseMin(25.f);
-
-        // for-loop has been profiled to be faster in gcc than the commented line below:
-        // output.activity = output.activity.unaryExpr(std::ref(fasterExp));
-        float* ptr = output.activity.data();
-        for (auto i = 0; i < output.activity.size(); i++, ptr++)
-        {
-            *ptr = fasterExp(*ptr);
-        }
-        
-        output.activity /= (1.f + output.activity);
-
-        // smooth activity
-        activityMean += activityMeanLambda * (output.activity - activityMean);
-        output.activity = (activityMean > 0.99f).select(output.activity.cwiseMin(.99f), output.activity);
-
-        // update noise
-        powerNoise += smoothingLambda * (1.f - output.activity) * (powerNoisy - powerNoise);
-        output.powerNoise = powerNoise;
+        Eigen::ArrayXXf activity(C.nBands, C.nChannels);
+        activityDetection.processOn(powerNoisy, activity);
+        output = activityDetection.getPowerNoise();
     }
-
-    void onParametersChanged()
-    {
-        smoothingLambda = 1.f - expf(-1.f / (C.filterbankRate * P.smoothingTConstant));
-    } 
 
 private:
 
-    void resetVariables() final
+    ActivityDetectionNoiseEstimation::Coefficients convertToActivityDetectionCoefficients(const Coefficients& c)
     {
-        activityMean.setZero();
-        powerNoise.setZero();
+        ActivityDetectionNoiseEstimation::Coefficients c2;
+        c2.filterbankRate = c.filterbankRate;
+        c2.nBands = c.nBands;
+        c2.nChannels = c.nChannels;
+        return c2;
+    }
+};
+
+
+// noise estimation based on an activity detector. The more activity in the power spectra, the more the output is smoothed. This version also has an activity detector output
+//
+// author: Kristian Timm Andersen
+class NoiseEstimationOutputActivityDetection : public AlgorithmImplementation<NoiseEstimationActivityConfiguration, NoiseEstimationOutputActivityDetection>
+{
+public:
+    NoiseEstimationOutputActivityDetection(Coefficients c =  Coefficients()) :
+        AlgorithmImplementation<NoiseEstimationActivityConfiguration, NoiseEstimationOutputActivityDetection>{ c },
+        activityDetection(convertToActivityDetectionCoefficients(c))
+    { }
+
+    ActivityDetectionNoiseEstimation activityDetection;
+    DEFINE_MEMBER_ALGORITHMS(activityDetection)
+
+    inline void processOn(Input powerNoisy, Output output)
+    {
+        activityDetection.processOn(powerNoisy, output.activity);
+        output.powerNoise = activityDetection.getPowerNoise();
     }
 
-    size_t getDynamicSizeVariables() const final
+private:
+
+    ActivityDetectionNoiseEstimation::Coefficients convertToActivityDetectionCoefficients(const Coefficients& c)
     {
-        size_t size = activityMean.getDynamicMemorySize();
-        size += powerNoise.getDynamicMemorySize();
-        return size;
+        ActivityDetectionNoiseEstimation::Coefficients c2;
+        c2.filterbankRate = c.filterbankRate;
+        c2.nBands = c.nBands;
+        c2.nChannels = c.nChannels;
+        return c2;
+    }
+};
+
+
+
+// noise estimation based on an activity detector. The more activity in the power spectra, the more the output is smoothed. This version has an activity detector output as a single boolean value
+//
+// author: Kristian Timm Andersen
+class NoiseEstimationOutputFusedActivityDetection : public AlgorithmImplementation<NoiseEstimationActivityFusedConfiguration, NoiseEstimationOutputFusedActivityDetection>
+{
+public:
+    NoiseEstimationOutputFusedActivityDetection(Coefficients c =  Coefficients()) :
+        AlgorithmImplementation<NoiseEstimationActivityFusedConfiguration, NoiseEstimationOutputFusedActivityDetection>{ c },
+        activityDetection(convertToActivityDetectionCoefficients(c))
+    { }
+
+    ActivityDetectionFusedNoiseEstimation activityDetection;
+    DEFINE_MEMBER_ALGORITHMS(activityDetection)
+
+    inline void processOn(Input powerNoisy, Output output)
+    {
+        activityDetection.processOn(powerNoisy, output.activity);
+        output.powerNoise = activityDetection.getPowerNoise();
     }
 
-    Eigen::ArrayXXf activityMean;
-    Eigen::ArrayXXf powerNoise;
-    float activityMeanLambda, smoothingLambda;
+private:
+
+    ActivityDetectionFusedNoiseEstimation::Coefficients convertToActivityDetectionCoefficients(const Coefficients& c)
+    {
+        ActivityDetectionFusedNoiseEstimation::Coefficients c2;
+        c2.filterbankRate = c.filterbankRate;
+        c2.nBands = c.nBands;
+        c2.nChannels = c.nChannels;
+        return c2;
+    }
 };

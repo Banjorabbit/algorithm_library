@@ -14,9 +14,9 @@ TEST(NoiseEstimationActivityDetection, Interface)
 TEST(NoiseEstimationActivityDetection, NoiseStationaryConvergence)
 		{
 			srand(1);  // reset random generator to get consistent results
-			auto c = NoiseEstimationActivityDetection::Coefficients();
+			auto c = NoiseEstimationOutputActivityDetection::Coefficients();
 			c.nChannels = 1;
-			NoiseEstimationActivityDetection noiseEstimation(c);
+			NoiseEstimationOutputActivityDetection noiseEstimation(c);
 
 			ArrayXf powerInput = (ArrayXf::Random(c.nBands) + 1.f) * .5f; // array of random numbers between 0 and 1
 			ArrayXf activity = ArrayXf::Zero(c.nBands);
