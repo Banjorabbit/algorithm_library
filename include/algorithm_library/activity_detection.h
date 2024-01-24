@@ -53,7 +53,6 @@ struct ActivityDetectionConfiguration
     };
 };
 
-// ActivityDetectionFused is a version of ActivityDetection where the output is combined into a single boolean value
 class ActivityDetection : public Algorithm<ActivityDetectionConfiguration>
 {
 public:
@@ -61,6 +60,7 @@ public:
     ActivityDetection(const Coefficients& c);
 };
 
+// ActivityDetectionFused is a version of ActivityDetection where the output is combined into a single boolean value
 struct ActivityDetectionFusedConfiguration
 {
     using Input = I::Real2D;
