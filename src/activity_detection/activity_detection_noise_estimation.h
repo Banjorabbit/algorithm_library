@@ -1,3 +1,4 @@
+#pragma once
 #include "algorithm_library/activity_detection.h"
 #include "framework/framework.h"
 #include "utilities/functions.h"
