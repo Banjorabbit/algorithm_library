@@ -1,0 +1,5 @@
+#include "activity_detection/activity_detection_noise_estimation.h"
+
+DEFINE_ALGORITHM_CONSTRUCTOR(ActivityDetection, ActivityDetectionNoiseEstimation, ActivityDetectionConfiguration)
+
+DEFINE_ALGORITHM_CONSTRUCTOR(ActivityDetectionFused, ActivityDetectionFusedNoiseEstimation, ActivityDetectionFusedConfiguration)

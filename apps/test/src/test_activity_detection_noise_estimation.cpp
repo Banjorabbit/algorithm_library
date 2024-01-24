@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "framework/unit_test.h"
-#include "activity_detection_frequency_domain/activity_detection_noise_estimation.h"
+#include "activity_detection/activity_detection_noise_estimation.h"
 
 using namespace Eigen;
 
@@ -11,9 +11,9 @@ TEST(ActivityDetectionNoiseEstimation, Interface)
 	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<ActivityDetectionNoiseEstimation>());
 }
 
-TEST(ActivityDetectionNoiseEstimation, ActivityDetect)
+TEST(ActivityDetectionFusedNoiseEstimation, ActivityDetect)
 		{
-			ActivityDetectionNoiseEstimation vad;
+			ActivityDetectionFusedNoiseEstimation vad;
 			auto c = vad.getCoefficients();
 			c.nBands = 256;
             c.nChannels = 2;
