@@ -109,7 +109,7 @@ private:
     }
 
 	SpeechUpdateDecisions speechDecision = INPUT;
-    static constexpr float filterUpdateRate = 8.f; // how many times per second is the filter updated
+    static constexpr float filterUpdateRate = 4.f; // how many times per second is the filter updated
     static constexpr float covarianceUpdateTConstant = 5.f; // covariance update smoothing time constant in seconds
     int filterUpdatesPerFrame;
     float covarianceUpdateLambda;
