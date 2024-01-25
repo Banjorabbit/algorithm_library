@@ -9,11 +9,16 @@
 struct DesignIIRMinPhaseConfiguration
 {
     using Input = I::Real;
+ 
+    // sos is structured as:
+    // [b0  b1  b2  a0  a1  a2
+    //  bb0 bb1 bb2 aa0 aa1 aa2
+    //  ... ... ... ... ... ...]
     struct Output
     {
         O::RealX6 sos;
         O::Float gain;
-    }
+    };
 
     struct Coefficients
     {
@@ -39,7 +44,7 @@ struct DesignIIRMinPhaseConfiguration
     struct Test
     {
         Talgo algo;
-        int nBands;
+        int nBands, nOrder;
         Eigen::ArrayXf magnitudeSpectrum;
         Eigen::Array<float, Eigen::Dynamic, 6> sos;
         float gain;
@@ -48,12 +53,13 @@ struct DesignIIRMinPhaseConfiguration
         Test(const Coefficients& c) : algo(c)
         {
             nBands = c.nBands;
+            nOrder = c.nOrder;
             magnitudeSpectrum = Eigen::ArrayXf::Random(nBands).abs2();
-            std::tie(sos,gain) = initOutput(input, c);
+            std::tie(sos,gain) = initOutput(magnitudeSpectrum, c);
         }
 
-        void processAlgorithm() { algo.process(input, {sos, gain}); }
-        bool isTestOutputValid() const { return sos.allFinite() && std::is_finite(gain) && (sos.rows() == nBands) && (sos.cols() == 6); }
+        void processAlgorithm() { algo.process(magnitudeSpectrum, {sos, gain}); }
+        bool isTestOutputValid() const { return sos.allFinite() && std::isfinite(gain) && (sos.rows() == getNSos(nOrder)) && (sos.cols() == 6); }
     };
 };
 

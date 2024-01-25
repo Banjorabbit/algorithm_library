@@ -1,0 +1,3 @@
+#include "design_iir_min_phase/design_iir_min_phase_tf2sos.h"
+
+DEFINE_ALGORITHM_CONSTRUCTOR(DesignIIRMinPhase, DesignIIRMinPhaseTF2SOS, DesignIIRMinPhaseConfiguration)
