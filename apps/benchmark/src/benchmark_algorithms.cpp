@@ -17,6 +17,7 @@
 #include "mel_scale/mel_scale_spectrogram.h"
 #include "activity_detection/activity_detection_noise_estimation.h"
 #include "preprocessing_path/beamformer_path.h"
+#include "design_iir_min_phase/design_iir_min_phase_tf2sos.h"
 
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
@@ -33,6 +34,7 @@ BENCHMARK(algorithm##_process);
 // insert algorithms to be benchmarked
 
 DEFINE_BENCHMARK_ALGORITHM(CircularBuffer)
+DEFINE_BENCHMARK_ALGORITHM(DesignIIRMinPhaseTF2SOS)
 DEFINE_BENCHMARK_ALGORITHM(BeamformerMVDR)
 DEFINE_BENCHMARK_ALGORITHM(BeamformerPath)
 DEFINE_BENCHMARK_ALGORITHM(NoiseEstimationActivityDetection)
