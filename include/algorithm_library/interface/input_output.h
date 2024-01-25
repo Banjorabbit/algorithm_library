@@ -81,6 +81,8 @@ namespace O
 	using Complex2D = Out<Eigen::ArrayXXcf>;
 	using Bool2D = Out<Eigen::Array<bool, Eigen::Dynamic, Eigen::Dynamic>>;
 	
+    using RealX6 = Out<Eigen::Array<float, Eigen::Dynamic, 6>>;
+    
 	struct RealComplex { Real R; Complex C; };
 	struct RealReal { Real R1; Real R2; };
 	struct ComplexComplex { Complex C1; Complex C2; };
