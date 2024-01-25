@@ -1,3 +1,4 @@
+#pragma once
 #include "algorithm_library/beamformer.h"
 #include "framework/framework.h"
 
