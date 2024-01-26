@@ -1,0 +1,3 @@
+#include "design_iir_non_parametric/design_iir_spline.h"
+
+DEFINE_ALGORITHM_CONSTRUCTOR(DesignIIRNonParametric, DesignIIRSpline, DesignIIRNonParametricConfiguration)
