@@ -16,7 +16,7 @@ public:
         onParametersChanged();
      }
 
-    inline void processOn(Input powerNoisy, Output activity)
+    void processOn(Input powerNoisy, Output activity)
     {
         // activity detection
         activity = (powerNoisy / (powerNoise + 1e-20f) - 3.5f).cwiseMin(25.f);

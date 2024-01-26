@@ -13,7 +13,7 @@
 #include "algorithm_library/spline.h"
 #include "algorithm_library/dc_remover.h"
 #include "algorithm_library/noise_estimation.h"
-#include "algorithm_library/activity_detection_frequency_domain.h"
+#include "algorithm_library/activity_detection.h"
 
 #include "pybind11_json/pybind11_json.hpp"
 #include "pfr.hpp"
@@ -165,6 +165,11 @@ py::class_<AlgorithmName>(m,#AlgorithmName) \
     auto input = make_tuple_from_python<AlgorithmName::Input>(std::move(args)); \
     return validInput(algo, input); \
   }) \
+  .def("initOutput", [](const AlgorithmName& algo, py::args args) \
+  { \
+    auto input = make_tuple_from_python<AlgorithmName::Input>(std::move(args)); \
+    return initOutput(algo, input); \
+  }) \
   .def("process", [](AlgorithmName& algo, py::args args) \
   { \
       auto input = make_tuple_from_python<AlgorithmName::Input>(std::move(args)); \
@@ -203,7 +208,8 @@ PYBIND11_MODULE(PythonAlgorithmLibrary, m)
   DEFINE_PYTHON_INTERFACE(Spectrogram);
   DEFINE_PYTHON_INTERFACE(Spline);
   DEFINE_PYTHON_INTERFACE(DCRemover);
+  DEFINE_PYTHON_INTERFACE(ActivityDetection);
   DEFINE_PYTHON_INTERFACE(NoiseEstimation);
-  DEFINE_PYTHON_INTERFACE(ActivityDetectionFrequencyDomain); 
+  
 }
 

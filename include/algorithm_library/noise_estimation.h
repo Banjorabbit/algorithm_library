@@ -28,7 +28,7 @@ struct NoiseEstimationConfiguration
         return (input >= 0.f).all() && (input.rows() == c.nBands) && (input.cols() == c.nChannels);
     }
 
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(c.nBands, c.nChannels); }
+    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(c.nBands, c.nChannels); }
 
     template<typename Talgo>
     struct Test
