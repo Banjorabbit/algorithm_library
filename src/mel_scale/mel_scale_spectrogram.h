@@ -58,7 +58,7 @@ public:
     }
 
 protected:
-    size_t getDynamicSizeVariables() const
+    size_t getDynamicSizeVariables() const final
     { 
         size_t size = indexStart.getDynamicMemorySize();
         size += nBandsSum.getDynamicMemorySize();
