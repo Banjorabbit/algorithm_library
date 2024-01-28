@@ -19,6 +19,7 @@
 #include "preprocessing_path/beamformer_path.h"
 #include "design_iir_min_phase/design_iir_min_phase_tf2sos.h"
 #include "design_iir_non_parametric/design_iir_spline.h"
+#include "iir_filter/iir_filter_2nd_order.h"
 
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
@@ -32,13 +33,13 @@ static void algorithm##_process(benchmark::State& state) { \
 } \
 BENCHMARK(algorithm##_process);
 
-// insert algorithms to be benchmarked
-
+// insert algorithms to be benchmarked. Be very careful about interpreting these results since the time depends on where in the list an algorithm is placed!
 DEFINE_BENCHMARK_ALGORITHM(CircularBuffer)
 DEFINE_BENCHMARK_ALGORITHM(DesignIIRMinPhaseTF2SOS)
 DEFINE_BENCHMARK_ALGORITHM(DesignIIRSpline)
 DEFINE_BENCHMARK_ALGORITHM(BeamformerMVDR)
 DEFINE_BENCHMARK_ALGORITHM(BeamformerPath)
+DEFINE_BENCHMARK_ALGORITHM(IIRFilterCascaded)
 DEFINE_BENCHMARK_ALGORITHM(NoiseEstimationActivityDetection)
 DEFINE_BENCHMARK_ALGORITHM(CircularBufferSingleChannel)
 DEFINE_BENCHMARK_ALGORITHM(SplineCubic)
@@ -47,6 +48,7 @@ DEFINE_BENCHMARK_ALGORITHM(InterpolationSample)
 DEFINE_BENCHMARK_ALGORITHM(InterpolationCubic)
 DEFINE_BENCHMARK_ALGORITHM(InterpolationCubicConstant)
 DEFINE_BENCHMARK_ALGORITHM(FFTReal)
+DEFINE_BENCHMARK_ALGORITHM(IIRFilter2ndOrder)
 DEFINE_BENCHMARK_ALGORITHM(SolverToeplitzSystem)
 DEFINE_BENCHMARK_ALGORITHM(FilterbankAnalysisWOLA)
 DEFINE_BENCHMARK_ALGORITHM(FilterbankSynthesisWOLA)
@@ -66,6 +68,7 @@ DEFINE_BENCHMARK_ALGORITHM(DCRemoverFirstOrder)
 DEFINE_BENCHMARK_ALGORITHM(MelScaleSpectrogram)
 DEFINE_BENCHMARK_ALGORITHM(ActivityDetectionNoiseEstimation)
 DEFINE_BENCHMARK_ALGORITHM(ActivityDetectionFusedNoiseEstimation)
+
 
 
 
