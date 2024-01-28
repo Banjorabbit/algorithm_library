@@ -140,7 +140,6 @@ public:
 
 	AlgorithmImplementation() = default;
 	AlgorithmImplementation(const Coefficients& c) : C(c) {}
-	AlgorithmImplementation(const Parameters& p) : P(p) { }
 	AlgorithmImplementation(const Setup& s) : C(s.coefficients), P(s.parameters) { }
 	~AlgorithmImplementation() = default;
 	
