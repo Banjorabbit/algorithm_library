@@ -42,3 +42,16 @@ void IIRFilter::setFilter(I::Real sos)
         static_cast<Implementation<IIRFilter2ndOrder, IIRFilterConfiguration>*>(pimpl.get())->algo.setFilter(sos);
     }
 }
+
+// get power frequency response evaluated uniformly from 0 to pi in nBands points
+Eigen::ArrayXf IIRFilter::getPowerFrequencyReponse(int nBands)
+{
+    if (getCoefficients().nSos == 1)
+    {
+        return static_cast<Implementation<IIRFilter2ndOrder, IIRFilterConfiguration>*>(pimpl.get())->algo.getPowerFrequencyReponse(nBands);
+    }
+    else
+    {
+        return static_cast<Implementation<IIRFilterCascaded, IIRFilterConfiguration>*>(pimpl.get())->algo.getPowerFrequencyReponse(nBands);
+    }
+}

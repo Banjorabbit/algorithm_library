@@ -60,4 +60,7 @@ public:
     //  ... ... ... ... ... ...]
     void setFilter(I::Real2D sos, float gain);
     void setFilter(I::Real sos); // can be used when there is only one second-order-section. if nSos>1 then this method has no effect.
+
+    // get power frequency response evaluated uniformly from 0 to pi in nBands points
+    Eigen::ArrayXf getPowerFrequencyReponse(int nBands);
 };

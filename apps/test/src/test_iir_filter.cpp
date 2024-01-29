@@ -15,3 +15,23 @@ TEST(IIRFilter, InterfaceCascaded)
 {
 	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<IIRFilterCascaded>());
 }
+
+// test the default power frequency response is flat, also for a cascaded filter
+TEST(IIRFilter, PowerFrequencyResponse)
+{
+	IIRFilter filter;
+	int nBands=257;
+	Eigen::ArrayXf powR = filter.getPowerFrequencyReponse(nBands);
+
+	float error = (powR-1).abs2().sum() / nBands;
+	fmt::print("powR error: {}\n", error);
+	EXPECT_TRUE(error< 1e-12f);
+
+	auto c = filter.getCoefficients();
+	c.nSos = 10;
+	Eigen::ArrayXf powRCascaded = filter.getPowerFrequencyReponse(nBands);
+
+	error = (powR - powRCascaded).abs2().sum();
+	fmt::print("powR Cascaded: {}\n", error);
+	EXPECT_TRUE(error == 0);
+}
