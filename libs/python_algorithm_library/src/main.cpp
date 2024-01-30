@@ -14,6 +14,7 @@
 #include "algorithm_library/dc_remover.h"
 #include "algorithm_library/noise_estimation.h"
 #include "algorithm_library/activity_detection.h"
+#include "algorithm_library/iir_filter.h"
 
 #include "pybind11_json/pybind11_json.hpp"
 #include "pfr.hpp"
@@ -210,6 +211,9 @@ PYBIND11_MODULE(PythonAlgorithmLibrary, m)
   DEFINE_PYTHON_INTERFACE(DCRemover);
   DEFINE_PYTHON_INTERFACE(ActivityDetection);
   DEFINE_PYTHON_INTERFACE(NoiseEstimation);
+  DEFINE_PYTHON_INTERFACE(IIRFilter)
+    .def("setFilter", [](IIRFilter& algo, Eigen::ArrayXXf sos) { algo.setFilter(sos,1); })
+    .def("getFilter", [](IIRFilter& algo) { return algo.getFilter(); });
   
 }
 
