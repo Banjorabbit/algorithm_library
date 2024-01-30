@@ -28,7 +28,7 @@ struct IIRFilterTimeVaryingConfiguration
     { 
         enum FilterTypes { LowPass, HighPass, BandPass, BandStop, Peaking, LowShelf, HighShelf };
         FilterTypes filterType = LowPass;
-        float resonance = 1.f;
+        float resonance = 0.707106781186548f; // 1/sqrt(2) corresponds to a butterworth filter
         DEFINE_TUNABLE_PARAMETERS (filterType, resonance)
     };
 
@@ -58,7 +58,7 @@ struct IIRFilterTimeVaryingConfiguration
             nSos = c.nSos;
             nSamples = 512;
             xTime = Eigen::ArrayXXf::Random(nSamples, nChannels);
-            cutoff = 8000.f * Eigen::ArrayXXf::Random(nSamples, nSos).abs2();
+            cutoff = (8000.f * Eigen::ArrayXXf::Random(nSamples, nSos).abs2());
             gain = 10.f * Eigen::ArrayXXf::Random(nSamples, nSos).abs2();
             output = initOutput({xTime, cutoff, gain}, c);
         }
