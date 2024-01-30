@@ -136,6 +136,7 @@ public:
 	inline void resize(const size_t i) { vec = std::vector<Talgo>(i); } // algorithms might not have a copy or move constructor so resizing can only be done by allocating new vector
 	inline size_t size() const { return vec.size(); }
 	Talgo& operator[](const size_t i) { return vec[i]; }
+	const Talgo& operator[](const size_t i) const { return vec[i]; }
 	auto begin() { return vec.begin(); }
 	auto begin() const { return vec.begin(); }
 	auto end() { return vec.end(); }
