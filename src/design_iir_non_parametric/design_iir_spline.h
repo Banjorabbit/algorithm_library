@@ -3,7 +3,7 @@
 #include "algorithm_library/design_iir_non_parametric.h"
 #include "design_iir_min_phase/design_iir_min_phase_tf2sos.h"
 #include "spline/spline_cubic.h"
-#include "utilities/functions.h"
+#include "utilities/fastonebigheader.h"
 
 // Design minimum phase IIR filter from an array of frequency and gain pairs. The IIR filter is factorized in a cascade of 2nd order sections.
 //
@@ -39,7 +39,7 @@ public:
         splineCalculation.process({ frequencies, gaindB, freqsFFT }, gainFFT);
         // convert to linear scale
         gainFFT *= 0.166096404744368f; // 10^(gainFFT/20) = 2^(log2(10^(gainFFT/20))) = 2^(gainFFT/20*log2(10)) = 2^(gainFFT*0.166096404744368)
-        gainFFT = gainFFT.unaryExpr(std::ref(fasterPow2));
+        gainFFT = gainFFT.unaryExpr(std::ref(fasterpow2));
 
         // calculate minimum phase spectrum
         filterDesigner.process(gainFFT, {output.sos, output.gain});

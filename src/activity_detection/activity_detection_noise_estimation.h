@@ -1,7 +1,7 @@
 #pragma once
 #include "algorithm_library/activity_detection.h"
 #include "framework/framework.h"
-#include "utilities/functions.h"
+#include "utilities/fastonebigheader.h"
 
 class ActivityDetectionNoiseEstimation : public AlgorithmImplementation<ActivityDetectionConfiguration, ActivityDetectionNoiseEstimation>
 {
@@ -26,7 +26,7 @@ public:
         float* ptr = activity.data();
         for (auto i = 0; i < activity.size(); i++, ptr++)
         {
-            *ptr = fasterExp(*ptr);
+            *ptr = fasterexp(*ptr);
         }
             
         activity /= (1.f + activity);
