@@ -41,16 +41,28 @@ public:
         switch (P.filterType)
         {
             case P.LowPass:
-                output = lp;
+                for (auto i = 0; i < C.nChannels; i++)
+                {
+                    output.col(i) = input.gain.col(0) * lp.col(i);
+                }
                 break;
             case P.HighPass:
-                output = hp;
+                for (auto i = 0; i < C.nChannels; i++)
+                {
+                    output.col(i) = input.gain.col(0) * hp.col(i);
+                }
                 break;
             case P.BandPass:
-                output = bp;
+                for (auto i = 0; i < C.nChannels; i++)
+                {
+                    output.col(i) = input.gain.col(0) * bp.col(i);
+                }
                 break;
             case P.BandStop:
-                output = input.xTime - bp;
+                for (auto i = 0; i < C.nChannels; i++)
+                {
+                    output.col(i) = input.xTime.col(i) - bp.col(i);
+                }
                 break;
             case P.Peaking:
                 for (auto i = 0; i < C.nChannels; i++)
@@ -88,4 +100,63 @@ private:
 
     Eigen::ArrayXf z1;
     Eigen::ArrayXf z2;
+};
+
+
+// Cascade of StateVariableFilter
+// TODO: This algorithm is not finished!
+class StateVariableFilterCascaded : public AlgorithmImplementation<IIRFilterTimeVaryingConfiguration, StateVariableFilterCascaded>
+{
+public:
+    StateVariableFilterCascaded(Coefficients c = Coefficients()) :
+        AlgorithmImplementation<IIRFilterTimeVaryingConfiguration, StateVariableFilterCascaded>{ c },
+        filters(c.nSos,c)
+    { gain = 1.f; }
+
+    VectorAlgo<StateVariableFilter> filters;
+    DEFINE_MEMBER_ALGORITHMS(filters)
+
+    inline void processOn(Input input, Output output)
+    {
+        output = input.xTime * gain;
+		for (auto i = 0; i < C.nSos; i++) 
+        { 
+            filters[i].process({output, input.cutoff.col(i), input.gain.col(i)}, output); 
+        }
+    }
+
+    void setFilter(I::Real2D sos, float g)
+    {
+        gain = g;
+        for (auto i = 0; i < C.nSos; i++)
+        {
+            // filters[i].setFilter(sos.row(i).transpose());
+        }
+    }
+
+    // get power frequency response evaluated uniformly from 0 to pi in nBands points
+    Eigen::ArrayXf getPowerFrequencyReponse(int nBands)
+    {
+        Eigen::ArrayXf response = Eigen::ArrayXf::Ones(nBands);
+        for (auto i = 0; i < C.nSos; i++)
+        {
+            // response *= filters[i].getPowerFrequencyReponse(nBands);
+        }
+        return response;
+    }
+
+    // Eigen::ArrayXXf getFilter() const
+    // {
+    //     Eigen::ArrayXXf sos(C.nSos, 6);
+    //     for (auto i = 0; i < C.nSos; i++)
+    //     {
+    //         sos.row(i) = filters[i].getFilter();
+    //     }
+    //     return sos;
+    // }
+
+    float getGain() const { return gain; }
+
+private:
+    float gain;
 };
