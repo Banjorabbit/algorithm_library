@@ -20,6 +20,7 @@
 #include "design_iir_min_phase/design_iir_min_phase_tf2sos.h"
 #include "design_iir_non_parametric/design_iir_spline.h"
 #include "iir_filter/iir_filter_2nd_order.h"
+#include "iir_filter_time_varying/state_variable_filter.h"
 
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
@@ -37,6 +38,7 @@ BENCHMARK(algorithm##_process);
 DEFINE_BENCHMARK_ALGORITHM(CircularBuffer)
 DEFINE_BENCHMARK_ALGORITHM(DesignIIRMinPhaseTF2SOS)
 DEFINE_BENCHMARK_ALGORITHM(DesignIIRSpline)
+DEFINE_BENCHMARK_ALGORITHM(StateVariableFilter)
 DEFINE_BENCHMARK_ALGORITHM(BeamformerMVDR)
 DEFINE_BENCHMARK_ALGORITHM(BeamformerPath)
 DEFINE_BENCHMARK_ALGORITHM(IIRFilterCascaded)
