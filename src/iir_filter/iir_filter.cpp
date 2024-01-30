@@ -24,22 +24,13 @@ void IIRFilter::setFilter(I::Real2D sos, float gain)
 {
     if (getCoefficients().nSos == 1)
     {
-        Eigen::ArrayXf sos1 = sos.row(0).transpose(); // filter only has 1 sos
-        sos1.head(3) *= gain; // embed gain into sos
-        setFilter(sos1);
+        Eigen::ArrayXXf sos1 = sos.row(0); // filter only has 1 sos
+        sos1.row(0).head(3) *= gain; // embed gain into sos
+        static_cast<Implementation<IIRFilter2ndOrder, IIRFilterConfiguration>*>(pimpl.get())->algo.setFilter(sos);
     }
     else
     {
         static_cast<Implementation<IIRFilterCascaded, IIRFilterConfiguration>*>(pimpl.get())->algo.setFilter(sos, gain);
-    }
-}
-
-// This method can be used when there is only one second-order-section. if nSos>1 then this method has no effect.
-void IIRFilter::setFilter(I::Real sos) 
-{
-    if (getCoefficients().nSos == 1)
-    {
-        static_cast<Implementation<IIRFilter2ndOrder, IIRFilterConfiguration>*>(pimpl.get())->algo.setFilter(sos);
     }
 }
 
@@ -53,5 +44,26 @@ Eigen::ArrayXf IIRFilter::getPowerFrequencyReponse(int nBands)
     else
     {
         return static_cast<Implementation<IIRFilterCascaded, IIRFilterConfiguration>*>(pimpl.get())->algo.getPowerFrequencyReponse(nBands);
+    }
+}
+
+Eigen::ArrayXXf IIRFilter::getFilter() const
+{
+    if (getCoefficients().nSos == 1)
+    {
+        return static_cast<Implementation<IIRFilter2ndOrder, IIRFilterConfiguration>*>(pimpl.get())->algo.getFilter();
+    }
+    else
+    {
+        return static_cast<Implementation<IIRFilterCascaded, IIRFilterConfiguration>*>(pimpl.get())->algo.getFilter();
+    }
+}
+
+float IIRFilter::getGain() const
+{
+    if (getCoefficients().nSos == 1) { return 1.f;}
+    else
+    {
+        return static_cast<Implementation<IIRFilterCascaded, IIRFilterConfiguration>*>(pimpl.get())->algo.getGain();
     }
 }

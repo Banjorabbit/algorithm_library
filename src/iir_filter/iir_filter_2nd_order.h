@@ -60,10 +60,17 @@ public:
     }
 
     // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyReponse(int nBands)
+    Eigen::ArrayXf getPowerFrequencyReponse(int nBands) const
     {
         Eigen::ArrayXf freqs = Eigen::ArrayXf::LinSpaced(nBands, 0, 3.14159);
         return (b0*b0 + b1*b1 + b2*b2 + 2*(b0*b1+b1*b2)*freqs.cos() + 2*b0*b2*(2*freqs).cos()) / (1.f + a1*a1 + a2*a2 + 2*(a1+a1*a2)*freqs.cos() + 2*a2*(2*freqs).cos());
+    }
+
+    Eigen::ArrayXXf getFilter() const
+    {
+        Eigen::ArrayXXf sos(1,6);
+        sos << b0, b1, b2, 1.f, a1, a2;
+        return sos;
     }
 
 private:
@@ -91,8 +98,8 @@ class IIRFilterCascaded : public AlgorithmImplementation<IIRFilterConfiguration,
 public:
     IIRFilterCascaded(Coefficients c = Coefficients()) :
         AlgorithmImplementation<IIRFilterConfiguration, IIRFilterCascaded>{ c },
-        filters(c.nSos, c)
-    { }
+        filters(c.nSos,c)
+    { gain = 1.f; }
 
     VectorAlgo<IIRFilter2ndOrder> filters;
     DEFINE_MEMBER_ALGORITHMS(filters)
@@ -123,7 +130,18 @@ public:
         return response;
     }
 
+    Eigen::ArrayXXf getFilter() const
+    {
+        Eigen::ArrayXXf sos(C.nSos, 6);
+        for (auto i = 0; i < C.nSos; i++)
+        {
+            sos.row(i) = filters[i].getFilter();
+        }
+        return sos;
+    }
+
+    float getGain() const { return gain; }
+
 private:
     float gain;
-    int nSos;
 };
