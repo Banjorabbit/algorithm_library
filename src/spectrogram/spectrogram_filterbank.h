@@ -2,6 +2,9 @@
 #include "algorithm_library/spectrogram.h"
 #include "filterbank/filterbank_wola.h"
 
+// Spectrogram implemented using a weighted overlap-add (WOLA) filter bank. 
+//
+// author: Kristian Timm Andersen
 class SpectrogramFilterbank : public AlgorithmImplementation<SpectrogramConfiguration, SpectrogramFilterbank>
 {
 public:

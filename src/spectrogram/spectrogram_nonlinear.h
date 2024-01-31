@@ -2,6 +2,9 @@
 #include "algorithm_library/spectrogram.h"
 #include "filterbank/filterbank_wola.h"
 
+// Spectrogram implemented as a nonlinear combination of several standard spectrograms. The criteria used for selecting the best time/frequency bin is the minimum power.
+//
+// author: Kristian Timm Andersen
 class SpectrogramNonlinear: public AlgorithmImplementation<SpectrogramConfiguration, SpectrogramNonlinear>
 {
 public:
