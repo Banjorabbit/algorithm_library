@@ -83,6 +83,8 @@ public:
     IIRFilterTimeVarying() = default;
     IIRFilterTimeVarying(const Coefficients& c);
 
+    Eigen::ArrayXf getFilter(float cutoff, float gain, float resonance) const;
+    Eigen::ArrayXf getPowerFrequencyResponse(int nBands, float cutoff, float gain, float resonance) const;
 };
 
 // Configuration of cascade of time-varying IIR filters that can be modified at each new time sample.
@@ -163,4 +165,20 @@ public:
     IIRFilterCascadeTimeVarying() = default;
     IIRFilterCascadeTimeVarying(const Coefficients& c);
 
+    // set/get filter type of all filters in cascade 
+    void setFilterTypes(const std::vector<IIRFilterTimeVaryingConfiguration::Parameters::FilterTypes>& vec);
+    std::vector<IIRFilterTimeVaryingConfiguration::Parameters::FilterTypes> getFilterTypes() const;
+
+    // set/get filter type of one filter in cascade
+    void setFilterType(int index, IIRFilterTimeVaryingConfiguration::Parameters::FilterTypes type);
+    IIRFilterTimeVaryingConfiguration::Parameters::FilterTypes getFilterType(int index) const;
+
+    // get overall power frequency response  given filter characteristics (uses internal filter types and sample rate)
+    Eigen::ArrayXf getPowerFrequencyResponse(int nBands, I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const;
+
+    // get all sos filter coefficients given filter characteristics (uses internal filter types and sample rate)
+    Eigen::ArrayXXf getFilter(I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const;
+
+    // get overall gain
+    float getGain() const;
 };

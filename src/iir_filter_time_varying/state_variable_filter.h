@@ -97,7 +97,7 @@ public:
         float a1 = 2*(c0*c1*c2 + c0*c1*c3 - 1);
         float a2 = 2*c0*c1*c2 - 2*c0*c1*c3 + 1;
 
-        float b0,b1,b2;
+        float b0{},b1{},b2{};
         switch (P.filterType)
         {
         case P.LowPass:
@@ -206,13 +206,28 @@ public:
         }
     }
 
+    std::vector<StateVariableFilter::Parameters::FilterTypes> getFilterTypes() const 
+    {
+        std::vector<StateVariableFilter::Parameters::FilterTypes> filterTypes(C.nSos);
+        for (auto i = 0; i < C.nSos; i++)
+        {
+            filterTypes[i] = filters[i].getParameters().filterType;
+        }
+        return filterTypes;
+    }
+
     void setFilterType(int index, StateVariableFilter::Parameters::FilterTypes type)
     {
         if (index < C.nSos && index >= 0) { filters[index].setParameters({type}); }
     }
 
+    StateVariableFilter::Parameters::FilterTypes getFilterType(int index) const 
+    {
+        return filters[index].getParameters().filterType;
+    }
+
     // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyResponse(int nBands, I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos)
+    Eigen::ArrayXf getPowerFrequencyResponse(int nBands, I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const
     {
         Eigen::ArrayXf response = Eigen::ArrayXf::Constant(nBands, gain);
         for (auto i = 0; i < C.nSos; i++)
