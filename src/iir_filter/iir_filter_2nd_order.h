@@ -67,9 +67,9 @@ public:
         return (b0*b0 + b1*b1 + b2*b2 + 2*(b0*b1+b1*b2)*freqs.cos() + 2*b0*b2*(2*freqs).cos()) / (1.f + a1*a1 + a2*a2 + 2*(a1+a1*a2)*freqs.cos() + 2*a2*(2*freqs).cos());
     }
 
-    Eigen::ArrayXXf getFilter() const
+    Eigen::ArrayXf getFilter() const
     {
-        Eigen::ArrayXXf sos(1,6);
+        Eigen::ArrayXf sos(6);
         sos << b0, b1, b2, 1.f, a1, a2;
         return sos;
     }
@@ -116,7 +116,7 @@ public:
         gain = g;
         for (auto i = 0; i < C.nSos; i++)
         {
-            filters[i].setFilter(sos.row(i).transpose());
+            filters[i].setFilter(sos.col(i));
         }
     }
 
@@ -133,10 +133,10 @@ public:
 
     Eigen::ArrayXXf getFilter() const
     {
-        Eigen::ArrayXXf sos(C.nSos, 6);
+        Eigen::ArrayXXf sos(6, C.nSos);
         for (auto i = 0; i < C.nSos; i++)
         {
-            sos.row(i) = filters[i].getFilter();
+            sos.col(i) = filters[i].getFilter();
         }
         return sos;
     }

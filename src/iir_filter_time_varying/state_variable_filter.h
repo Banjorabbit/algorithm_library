@@ -41,52 +41,52 @@ public:
         
         switch (P.filterType)
         {
-            case P.LowPass:
-                for (auto i = 0; i < C.nChannels; i++)
-                {
-                    output.col(i) = input.gain * lp.col(i);
-                }
-                break;
-            case P.HighPass:
-                for (auto i = 0; i < C.nChannels; i++)
-                {
-                    output.col(i) = input.gain * hp.col(i);
-                }
-                break;
-            case P.BandPass:
-                for (auto i = 0; i < C.nChannels; i++)
-                {
-                    output.col(i) = input.gain * bp.col(i);
-                }
-                break;
-            case P.BandStop:
-                for (auto i = 0; i < C.nChannels; i++)
-                {
-                    output.col(i) = input.xTime.col(i) - bp.col(i);
-                }
-                break;
-            case P.Peaking:
-                for (auto i = 0; i < C.nChannels; i++)
-                {
-                    output.col(i) = input.xTime.col(i) + input.gain * bp.col(i);
-                }
-                break;
-            case P.LowShelf:
-                for (auto i = 0; i < C.nChannels; i++)
-                {
-                    output.col(i) = input.gain * (bp.col(i) + hp.col(i)) + lp.col(i);
-                }
-                break;
-            case P.HighShelf:
-                for (auto i = 0; i < C.nChannels; i++)
-                {
-                    output.col(i) = input.gain * (bp.col(i) + lp.col(i)) + hp.col(i);
-                }
-                break;
+        case P.LowPass:
+            for (auto i = 0; i < C.nChannels; i++)
+            {
+                output.col(i) = input.gain * lp.col(i);
+            }
+            break;
+        case P.HighPass:
+            for (auto i = 0; i < C.nChannels; i++)
+            {
+                output.col(i) = input.gain * hp.col(i);
+            }
+            break;
+        case P.BandPass:
+            for (auto i = 0; i < C.nChannels; i++)
+            {
+                output.col(i) = input.gain * bp.col(i);
+            }
+            break;
+        case P.BandStop:
+            for (auto i = 0; i < C.nChannels; i++)
+            {
+                output.col(i) = input.xTime.col(i) - bp.col(i);
+            }
+            break;
+        case P.Peaking:
+            for (auto i = 0; i < C.nChannels; i++)
+            {
+                output.col(i) = input.xTime.col(i) + input.gain * bp.col(i);
+            }
+            break;
+        case P.LowShelf:
+            for (auto i = 0; i < C.nChannels; i++)
+            {
+                output.col(i) = input.gain * (bp.col(i) + hp.col(i)) + lp.col(i);
+            }
+            break;
+        case P.HighShelf:
+            for (auto i = 0; i < C.nChannels; i++)
+            {
+                output.col(i) = input.gain * (bp.col(i) + lp.col(i)) + hp.col(i);
+            }
+            break;
         }
     }
 
-    std::array<float,6> getDFCoefficients(float cutoff, float gain, float resonance) const
+    Eigen::ArrayXf getFilter(float cutoff, float gain, float resonance) const
     {
         float g = fastertan(3.14159f * cutoff / C.sampleRate);
 		float c1 = g / resonance;
@@ -100,44 +100,59 @@ public:
         float b0,b1,b2;
         switch (P.filterType)
         {
-            case P.LowPass:
-                b0 = c0*c1*c2;
-                b1 = 2*c0*c1*c2;
-                b2 = c0*c1*c2;
-                break;
-            case P.HighPass:
-                b0 = c0;
-                b1 = -2*c0;
-                b2 = c0;
-                break;
-            case P.BandPass:
-                b0 = c0*c1;
-                b1 = 0;
-                b2 = -c0*c1;
-                break;
-            case P.BandStop:
-                b0 = 1 - c0*c1;
-                b1 = 2*(c0*c1*c2 + c0*c1*c3 - 1);
-                b2 = 2*c0*c1*c2 - 2*c0*c1*c3 + c0*c1 + 1;
-                break;
-            case P.Peaking:
-                b0 = 1 + c0*c1*gain;
-                b1 = 2*(c0*c1*c2 + c0*c1*c3 - 1);
-                b2 = 2*c0*c1*c2 - 2*c0*c1*c3 - c0*c1*gain + 1;
-                break;
-            case P.LowShelf:
-                b0 = c0*(c1*c2 + gain*c1 + gain);
-                b1 = 2*c0*(c1*c2 - gain);
-                b2 = c0*(c1*c2 - gain*c1 + gain);
-                break;
-            case P.HighShelf:
-                b0 = c0*(c1*c2*gain + c1*gain + c1);
-                b1 = 2*c0*(c1*c2*gain - 1);
-                b2 = c0*(c1*c2*gain - c1*gain + 1);
-                break;
+        case P.LowPass:
+            b0 = c0*c1*c2;
+            b1 = 2*c0*c1*c2;
+            b2 = c0*c1*c2;
+            break;
+        case P.HighPass:
+            b0 = c0;
+            b1 = -2*c0;
+            b2 = c0;
+            break;
+        case P.BandPass:
+            b0 = c0*c1;
+            b1 = 0;
+            b2 = -c0*c1;
+            break;
+        case P.BandStop:
+            b0 = 1 - c0*c1;
+            b1 = 2*(c0*c1*c2 + c0*c1*c3 - 1);
+            b2 = 2*c0*c1*c2 - 2*c0*c1*c3 + c0*c1 + 1;
+            break;
+        case P.Peaking:
+            b0 = 1 + c0*c1*gain;
+            b1 = 2*(c0*c1*c2 + c0*c1*c3 - 1);
+            b2 = 2*c0*c1*c2 - 2*c0*c1*c3 - c0*c1*gain + 1;
+            break;
+        case P.LowShelf:
+            b0 = c0*(c1*c2 + gain*c1 + gain);
+            b1 = 2*c0*(c1*c2 - gain);
+            b2 = c0*(c1*c2 - gain*c1 + gain);
+            break;
+        case P.HighShelf:
+            b0 = c0*(c1*c2*gain + c1*gain + c1);
+            b1 = 2*c0*(c1*c2*gain - 1);
+            b2 = c0*(c1*c2*gain - c1*gain + 1);
+            break;
         }
 
-        return {b0, b1, b2, 1.f, a1, a2};
+        Eigen::ArrayXf c(6);
+        c << b0, b1, b2, 1.f, a1, a2;
+        return c;
+    }
+
+        // get power frequency response evaluated uniformly from 0 to pi in nBands points
+    Eigen::ArrayXf getPowerFrequencyResponse(int nBands, float cutoff, float gain, float resonance) const
+    {
+        Eigen::ArrayXf c = getFilter(cutoff, gain, resonance);
+        const float b0 = c(0); 
+        const float b1 = c(1);
+        const float b2 = c(2);
+        const float a1 = c(4);
+        const float a2 = c(5);
+        Eigen::ArrayXf freqs = Eigen::ArrayXf::LinSpaced(nBands, 0, 3.14159f);
+        return (b0*b0 + b1*b1 + b2*b2 + 2*(b0*b1+b1*b2)*freqs.cos() + 2*b0*b2*(2*freqs).cos()) / (1.f + a1*a1 + a2*a2 + 2*(a1+a1*a2)*freqs.cos() + 2*a2*(2*freqs).cos());
     }
     
 private:
@@ -197,25 +212,25 @@ public:
     }
 
     // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyResponse(int nBands)
+    Eigen::ArrayXf getPowerFrequencyResponse(int nBands, I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos)
     {
-        Eigen::ArrayXf response = Eigen::ArrayXf::Ones(nBands);
+        Eigen::ArrayXf response = Eigen::ArrayXf::Constant(nBands, gain);
         for (auto i = 0; i < C.nSos; i++)
         {
-            // response *= filters[i].getPowerFrequencyReponse(nBands);
+            response *= filters[i].getPowerFrequencyResponse(nBands, cutoffSos(i), gainSos(i), resonanceSos(i));
         }
         return response;
     }
 
-    // Eigen::ArrayXXf getFilter() const
-    // {
-    //     Eigen::ArrayXXf sos(C.nSos, 6);
-    //     for (auto i = 0; i < C.nSos; i++)
-    //     {
-    //         sos.row(i) = filters[i].getFilter();
-    //     }
-    //     return sos;
-    // }
+    Eigen::ArrayXXf getFilter(I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const
+    {
+        Eigen::ArrayXXf sos(6, C.nSos);
+        for (auto i = 0; i < C.nSos; i++)
+        {
+            sos.col(i) = filters[i].getFilter(cutoffSos(i), gainSos(i), resonanceSos(i));
+        }
+        return sos;
+    }
 
     float getGain() const { return gain; }
 
@@ -223,10 +238,10 @@ private:
 
     StateVariableFilter::Coefficients convertToStateVariableFilterCoefficients(const Coefficients& c)
     {
-        StateVariableFilter::Coefficients cv;
-        cv.nChannels = c.nChannels;
-        cv.sampleRate = c.sampleRate;
-        return cv;
+        StateVariableFilter::Coefficients cSV;
+        cSV.nChannels = c.nChannels;
+        cSV.sampleRate = c.sampleRate;
+        return cSV;
     }
 
     float gain;

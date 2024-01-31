@@ -17,15 +17,18 @@ IIRFilter::IIRFilter(const Coefficients& c) : Algorithm<IIRFilterConfiguration>(
 {}
 
 // sos is structured as:
-// [b0  b1  b2  a0  a1  a2
-//  bb0 bb1 bb2 aa0 aa1 aa2
-//  ... ... ... ... ... ...]
+// [b0 bb0 ... ]
+// [b1 bb1 ... ]
+// [b2 bb2 ... ]
+// [a0 aa0 ... ]
+// [a1 aa1 ... ]
+// [a2 aa2 ... ]
 void IIRFilter::setFilter(I::Real2D sos, float gain)
 {
     if (getCoefficients().nSos == 1)
     {
-        Eigen::ArrayXXf sos1 = sos.row(0); // filter only has 1 sos
-        sos1.row(0).head(3) *= gain; // embed gain into sos
+        Eigen::ArrayXf sos1 = sos.col(0); // filter only has 1 sos
+        sos1.head(3) *= gain; // embed gain into sos
         static_cast<Implementation<IIRFilter2ndOrder, IIRFilterConfiguration>*>(pimpl.get())->algo.setFilter(sos);
     }
     else

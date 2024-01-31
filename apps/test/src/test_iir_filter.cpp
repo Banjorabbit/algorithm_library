@@ -21,7 +21,7 @@ TEST(IIRFilter, PowerFrequencyResponse)
 {
 	IIRFilter filter;
 	int nBands=257;
-	Eigen::ArrayXf powR = filter.getPowerFrequencyReponse(nBands);
+	Eigen::ArrayXf powR = filter.getPowerFrequencyResponse(nBands);
 
 	float error = (powR-1).abs2().sum() / nBands;
 	fmt::print("powR error: {}\n", error);
@@ -29,7 +29,7 @@ TEST(IIRFilter, PowerFrequencyResponse)
 
 	auto c = filter.getCoefficients();
 	c.nSos = 10;
-	Eigen::ArrayXf powRCascaded = filter.getPowerFrequencyReponse(nBands);
+	Eigen::ArrayXf powRCascaded = filter.getPowerFrequencyResponse(nBands);
 
 	error = (powR - powRCascaded).abs2().sum();
 	fmt::print("powR Cascaded: {}\n", error);
