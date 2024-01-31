@@ -60,8 +60,9 @@ public:
     }
 
     // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyReponse(int nBands) const
+    Eigen::ArrayXf getPowerFrequencyResponse(int nBands) const
     {
+
         Eigen::ArrayXf freqs = Eigen::ArrayXf::LinSpaced(nBands, 0, 3.14159);
         return (b0*b0 + b1*b1 + b2*b2 + 2*(b0*b1+b1*b2)*freqs.cos() + 2*b0*b2*(2*freqs).cos()) / (1.f + a1*a1 + a2*a2 + 2*(a1+a1*a2)*freqs.cos() + 2*a2*(2*freqs).cos());
     }
@@ -120,12 +121,12 @@ public:
     }
 
     // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyReponse(int nBands)
+    Eigen::ArrayXf getPowerFrequencyResponse(int nBands)
     {
-        Eigen::ArrayXf response = Eigen::ArrayXf::Ones(nBands);
+        Eigen::ArrayXf response = Eigen::ArrayXf::Constant(nBands, gain);
         for (auto i = 0; i < C.nSos; i++)
         {
-            response *= filters[i].getPowerFrequencyReponse(nBands);
+            response *= filters[i].getPowerFrequencyResponse(nBands);
         }
         return response;
     }

@@ -64,5 +64,5 @@ public:
     float getGain() const;
 
     // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyReponse(int nBands);
+    Eigen::ArrayXf getPowerFrequencyResponse(int nBands);
 };

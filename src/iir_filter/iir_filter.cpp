@@ -35,15 +35,15 @@ void IIRFilter::setFilter(I::Real2D sos, float gain)
 }
 
 // get power frequency response evaluated uniformly from 0 to pi in nBands points
-Eigen::ArrayXf IIRFilter::getPowerFrequencyReponse(int nBands)
+Eigen::ArrayXf IIRFilter::getPowerFrequencyResponse(int nBands)
 {
     if (getCoefficients().nSos == 1)
     {
-        return static_cast<Implementation<IIRFilter2ndOrder, IIRFilterConfiguration>*>(pimpl.get())->algo.getPowerFrequencyReponse(nBands);
+        return static_cast<Implementation<IIRFilter2ndOrder, IIRFilterConfiguration>*>(pimpl.get())->algo.getPowerFrequencyResponse(nBands);
     }
     else
     {
-        return static_cast<Implementation<IIRFilterCascaded, IIRFilterConfiguration>*>(pimpl.get())->algo.getPowerFrequencyReponse(nBands);
+        return static_cast<Implementation<IIRFilterCascaded, IIRFilterConfiguration>*>(pimpl.get())->algo.getPowerFrequencyResponse(nBands);
     }
 }
 
