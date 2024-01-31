@@ -10,3 +10,9 @@ TEST(StateVariableFilter, Interface)
 {
 	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<StateVariableFilter>());
 }
+
+
+TEST(StateVariableFilter, InterfaceCascade)
+{
+	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<StateVariableFilterCascade>());
+}
