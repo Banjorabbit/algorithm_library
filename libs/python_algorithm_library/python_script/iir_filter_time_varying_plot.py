@@ -16,32 +16,30 @@ resonance = .7071
 filterTVSos = filterTV.getFilter(cutoff, gain, resonance)
 print(filterTVSos)
 
-
-
 # get frequency responses for each type of filter
 filterTVPow = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
 
-pTV["filterType"] = 1
+pTV["filterType"] = "HighPass"
 filterTV.setParameters(pTV)
 filterTVPow1 = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
 
-pTV["filterType"] = 2
+pTV["filterType"] = "BandPass"
 filterTV.setParameters(pTV)
 filterTVPow2 = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
 
-pTV["filterType"] = 3
+pTV["filterType"] = "BandStop"
 filterTV.setParameters(pTV)
 filterTVPow3 = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
 
-pTV["filterType"] = 4
+pTV["filterType"] = "Peaking"
 filterTV.setParameters(pTV)
 filterTVPow4 = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
 
-pTV["filterType"] = 5
+pTV["filterType"] = "LowShelf"
 filterTV.setParameters(pTV)
 filterTVPow5 = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
 
-pTV["filterType"] = 6
+pTV["filterType"] = "HighShelf"
 filterTV.setParameters(pTV)
 filterTVPow6 = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
 
@@ -64,15 +62,16 @@ cCTV = filterCTV.getCoefficients()
 cCTV['nSos'] = 7
 filterCTV.setCoefficients(cCTV)
 filterType = filterCTV.getFilterTypes()
-filterType[0] = 0
-filterType[1] = 1
-filterType[2] = 2
-filterType[3] = 3
-filterType[4] = 4
-filterType[5] = 5
-filterType[6] = 6
+print("Filter type initial: ", filterType)
+filterType[0] = "LowPass"
+filterType[1] = "HighPass"
+filterType[2] = "BandPass"
+filterType[3] = "BandStop"
+filterType[4] = "Peaking"
+filterType[5] = "LowShelf"
+filterType[6] = "HighShelf"
 filterCTV.setFilterTypes(filterType)
-filterType = filterCTV.getFilterTypes() #{0,1,2,3,4,5,6}
+filterType = filterCTV.getFilterTypes() 
 print("Filter type: ", filterType)
 
 filterCTVPow = filterCTV.getPowerFrequencyResponse(257, [cutoff,cutoff,cutoff,cutoff,cutoff,cutoff,cutoff], [gain,gain,gain,gain,gain,gain,gain], [resonance,resonance,resonance,resonance,resonance,resonance,resonance])
