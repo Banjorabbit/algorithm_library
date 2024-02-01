@@ -68,7 +68,7 @@ public:
         case P.Peaking:
             for (auto i = 0; i < C.nChannels; i++)
             {
-                output.col(i) = input.xTime.col(i) + input.gain * bp.col(i);
+                output.col(i) = input.xTime.col(i) + (input.gain - 1.f) * bp.col(i);
             }
             break;
         case P.LowShelf:
@@ -98,12 +98,15 @@ public:
         float a2 = 2*c0*c1*c2 - 2*c0*c1*c3 + 1;
 
         float b0{},b1{},b2{};
+        const float c01 = c0 * c1;
+        const float c012 = c01 * c2;
+        const float c013 = c01 * c3;
         switch (P.filterType)
         {
         case P.LowPass:
-            b0 = c0*c1*c2;
-            b1 = 2*c0*c1*c2;
-            b2 = c0*c1*c2;
+            b0 = c012;
+            b1 = 2*c012;
+            b2 = c012;
             break;
         case P.HighPass:
             b0 = c0;
@@ -111,29 +114,29 @@ public:
             b2 = c0;
             break;
         case P.BandPass:
-            b0 = c0*c1;
+            b0 = c01;
             b1 = 0;
-            b2 = -c0*c1;
+            b2 = -c01;
             break;
         case P.BandStop:
-            b0 = 1 - c0*c1;
-            b1 = 2*(c0*c1*c2 + c0*c1*c3 - 1);
-            b2 = 2*c0*c1*c2 - 2*c0*c1*c3 + c0*c1 + 1;
+            b0 = 1 - c01;
+            b1 = 2*(c012 + c013 - 1);
+            b2 = 2*(c012 - c013) + c01 + 1;
             break;
         case P.Peaking:
-            b0 = 1 + c0*c1*gain;
-            b1 = 2*(c0*c1*c2 + c0*c1*c3 - 1);
-            b2 = 2*c0*c1*c2 - 2*c0*c1*c3 - c0*c1*gain + 1;
+            b0 = 1 + c01*(gain - 1.f);
+            b1 = 2*(c012 + c013 - 1);
+            b2 = 2*c012 - 2*c013 - c01*(gain - 1.f) + 1;
             break;
         case P.LowShelf:
-            b0 = c0*(c1*c2 + gain*c1 + gain);
-            b1 = 2*c0*(c1*c2 - gain);
-            b2 = c0*(c1*c2 - gain*c1 + gain);
+            b0 = c012 + gain*(c01 + c0);
+            b1 = 2*(c012 - c0*gain);
+            b2 = (c012 - gain*(c01 - c0));
             break;
         case P.HighShelf:
-            b0 = c0*(c1*c2*gain + c1*gain + c1);
-            b1 = 2*c0*(c1*c2*gain - 1);
-            b2 = c0*(c1*c2*gain - c1*gain + 1);
+            b0 = (gain*(c012 + c01) + c0);
+            b1 = 2*(c012*gain - c0);
+            b2 = (gain*(c012 - c01) + c0);
             break;
         }
 
