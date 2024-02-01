@@ -11,9 +11,12 @@ struct DesignIIRMinPhaseConfiguration
     using Input = I::Real;
  
     // sos is structured as:
-    // [b0  b1  b2  a0  a1  a2
-    //  bb0 bb1 bb2 aa0 aa1 aa2
-    //  ... ... ... ... ... ...]
+    // [b0 bb0 ... ]
+    // [b1 bb1 ... ]
+    // [b2 bb2 ... ]
+    // [a0 aa0 ... ]
+    // [a1 aa1 ... ]
+    // [a2 aa2 ... ]
     struct Output
     {
         O::RealX6 sos;
