@@ -9,7 +9,7 @@ eq3 = c1 * h + b - d1
 eq4 = c2 * b + l - d2
 
 eq5 = x - b - bstop
-eq6 = x + gain*b - peak
+eq6 = x + (gain-1)*b - peak
 eq7 = gain * (b + h) + l - lshelf
 eq8 = gain * (b + l) + h - hshelf
 
