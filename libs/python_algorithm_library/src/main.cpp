@@ -15,6 +15,7 @@
 #include "algorithm_library/noise_estimation.h"
 #include "algorithm_library/activity_detection.h"
 #include "algorithm_library/iir_filter.h"
+#include "algorithm_library/iir_filter_time_varying.h"
 
 #include "pybind11_json/pybind11_json.hpp"
 #include "pfr.hpp"
@@ -213,7 +214,13 @@ PYBIND11_MODULE(PythonAlgorithmLibrary, m)
   DEFINE_PYTHON_INTERFACE(NoiseEstimation);
   DEFINE_PYTHON_INTERFACE(IIRFilter)
     .def("setFilter", [](IIRFilter& algo, Eigen::ArrayXXf sos) { algo.setFilter(sos,1); })
-    .def("getFilter", [](IIRFilter& algo) { return algo.getFilter(); });
-  
+    .def("getFilter", [](IIRFilter& algo) { return algo.getFilter(); })
+    .def("getPowerFrequencyResponse", [](IIRFilter& algo, int nBands) { return algo.getPowerFrequencyResponse(nBands); });
+  DEFINE_PYTHON_INTERFACE(IIRFilterTimeVarying)
+    .def("getFilter", [](IIRFilterTimeVarying& algo, float cutoff, float gain, float resonance) { return algo.getFilter(cutoff, gain, resonance); })
+    .def("getPowerFrequencyResponse", [](IIRFilterTimeVarying& algo, int nBands, float cutoff, float gain, float resonance) { return algo.getPowerFrequencyResponse(nBands, cutoff, gain, resonance); });
+  DEFINE_PYTHON_INTERFACE(IIRFilterCascadeTimeVarying)
+    .def("getFilter", [](IIRFilterCascadeTimeVarying& algo, I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) { return algo.getFilter(cutoffSos, gainSos, resonanceSos); })
+    .def("getPowerFrequencyResponse", [](IIRFilterCascadeTimeVarying& algo, int nBands, I::Real cutoff, I::Real gain, I::Real resonance) { return algo.getPowerFrequencyResponse(nBands, cutoff, gain, resonance); });
 }
 
