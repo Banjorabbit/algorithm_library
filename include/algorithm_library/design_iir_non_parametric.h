@@ -18,7 +18,7 @@ struct DesignIIRNonParametricConfiguration
     // [b0 bb0 ... ]
     // [b1 bb1 ... ]
     // [b2 bb2 ... ]
-    // [a0 aa0 ... ]
+    // [1  1   ... ]
     // [a1 aa1 ... ]
     // [a2 aa2 ... ]
     struct Output
