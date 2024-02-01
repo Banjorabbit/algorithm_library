@@ -1,5 +1,6 @@
 #include "pybind11/pybind11.h"
 #include "pybind11/eigen/matrix.h"
+#include <pybind11/stl.h>
 
 #include "algorithm_library/critical_bands.h"
 #include "algorithm_library/fft.h"
@@ -221,6 +222,8 @@ PYBIND11_MODULE(PythonAlgorithmLibrary, m)
     .def("getPowerFrequencyResponse", [](IIRFilterTimeVarying& algo, int nBands, float cutoff, float gain, float resonance) { return algo.getPowerFrequencyResponse(nBands, cutoff, gain, resonance); });
   DEFINE_PYTHON_INTERFACE(IIRFilterCascadeTimeVarying)
     .def("getFilter", [](IIRFilterCascadeTimeVarying& algo, I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) { return algo.getFilter(cutoffSos, gainSos, resonanceSos); })
-    .def("getPowerFrequencyResponse", [](IIRFilterCascadeTimeVarying& algo, int nBands, I::Real cutoff, I::Real gain, I::Real resonance) { return algo.getPowerFrequencyResponse(nBands, cutoff, gain, resonance); });
+    .def("getPowerFrequencyResponse", [](IIRFilterCascadeTimeVarying& algo, int nBands, I::Real cutoff, I::Real gain, I::Real resonance) { return algo.getPowerFrequencyResponse(nBands, cutoff, gain, resonance); })
+    .def("setFilterTypes", [](IIRFilterCascadeTimeVarying& algo, const nlohmann::json& vec) { algo.setFilterTypes(vec); })
+    .def("getFilterTypes", [](IIRFilterCascadeTimeVarying& algo) { nlohmann::json temp =  algo.getFilterTypes(); return temp; });
 }
 
