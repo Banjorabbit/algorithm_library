@@ -2,6 +2,9 @@
 #include "algorithm_library/beamformer.h"
 #include "framework/framework.h"
 
+// Minimum variance distortionless response beamformer.
+//
+// author: Kristian Timm Andersen
 class BeamformerMVDR : public AlgorithmImplementation<BeamformerConfiguration, BeamformerMVDR>
 {
 public:
