@@ -4,7 +4,7 @@
 #include "design_iir_non_parametric/design_iir_spline.h"
 #include "iir_filter/iir_filter_2nd_order.h"
 
-// IIR filter where the coefficients are set by giving a set of frequency and gain pairs. The filter is designed using the class DesignIIRNonParametric
+// IIR filter where the coefficients are set by giving a set of frequency and gain pairs. The filter is designed using the class DesignIIRSpline
 //
 // author: Kristian Timm Andersen
 
