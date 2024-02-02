@@ -21,6 +21,7 @@
 #include "design_iir_non_parametric/design_iir_spline.h"
 #include "iir_filter/iir_filter_2nd_order.h"
 #include "iir_filter_time_varying/state_variable_filter.h"
+#include "iir_filter_non_parametric/iir_filter_design_non_parametric.h"
 
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
@@ -40,6 +41,7 @@ DEFINE_BENCHMARK_ALGORITHM(DesignIIRMinPhaseTF2SOS)
 DEFINE_BENCHMARK_ALGORITHM(DesignIIRSpline)
 DEFINE_BENCHMARK_ALGORITHM(StateVariableFilter)
 DEFINE_BENCHMARK_ALGORITHM(StateVariableFilterCascade)
+DEFINE_BENCHMARK_ALGORITHM(IIRFilterTDFNonParametric)
 DEFINE_BENCHMARK_ALGORITHM(BeamformerMVDR)
 DEFINE_BENCHMARK_ALGORITHM(BeamformerPath)
 DEFINE_BENCHMARK_ALGORITHM(IIRFilterCascaded)

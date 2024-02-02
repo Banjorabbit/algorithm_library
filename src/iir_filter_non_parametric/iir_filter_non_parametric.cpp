@@ -1,0 +1,3 @@
+#include "iir_filter_non_parametric/iir_filter_design_non_parametric.h"
+
+DEFINE_ALGORITHM_CONSTRUCTOR(IIRFilterNonParametric, IIRFilterTDFNonParametric, IIRFilterNonParametricConfiguration)
