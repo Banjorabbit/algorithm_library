@@ -121,7 +121,7 @@ public:
     }
 
     // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyResponse(int nBands)
+    Eigen::ArrayXf getPowerFrequencyResponse(int nBands) const
     {
         Eigen::ArrayXf response = Eigen::ArrayXf::Constant(nBands, gain);
         for (auto i = 0; i < C.nSos; i++)
