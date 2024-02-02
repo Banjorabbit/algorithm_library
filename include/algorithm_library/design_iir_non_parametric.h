@@ -23,7 +23,7 @@ struct DesignIIRNonParametricConfiguration
     // [a2 aa2 ... ]
     struct Output
     {
-        O::RealX6 sos;
+        O::Real6X sos;
         O::Float gain;
     };
 
@@ -43,7 +43,7 @@ struct DesignIIRNonParametricConfiguration
     static int getNSos(int nOrder) { return static_cast<int>(std::ceil(static_cast<float>(nOrder) / 2)); } // get number of second-order sections from filter order
 
     static auto validInput(Input input, const Coefficients& c) { return (input.frequencies.rows() > 0) && (input.frequencies > 0).all() && (input.frequencies.rows() == input.gaindB.rows()); }
-    static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::Array<float, Eigen::Dynamic, 6>::Zero(getNSos(c.nOrder), 6), float()); }
+    static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::Array<float, 6, Eigen::Dynamic>::Zero(6, getNSos(c.nOrder)), float()); }
 
     template<typename Talgo>
     struct Test
@@ -51,7 +51,7 @@ struct DesignIIRNonParametricConfiguration
         Talgo algo;
         int nBands, nOrder;
         Eigen::ArrayXf frequencies, gaindB;
-        Eigen::Array<float, Eigen::Dynamic, 6> sos;
+        Eigen::Array<float, 6, Eigen::Dynamic> sos;
         float gain;
 
         Test() : Test(Coefficients()) {}
@@ -67,7 +67,7 @@ struct DesignIIRNonParametricConfiguration
         }
 
         void processAlgorithm() { algo.process({frequencies, gaindB}, {sos, gain}); }
-        bool isTestOutputValid() const { return sos.allFinite() && std::isfinite(gain) && (sos.rows() == getNSos(nOrder)) && (sos.cols() == 6); }
+        bool isTestOutputValid() const { return sos.allFinite() && std::isfinite(gain) && (sos.cols() == getNSos(nOrder)) && (sos.rows() == 6); }
     };
 };
 

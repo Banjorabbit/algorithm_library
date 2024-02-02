@@ -74,19 +74,19 @@ public:
 			}
 		}
 
-		auto nSections = sos.rows();
-		sos.col(0).setOnes();
+		auto nSections = sos.cols();
+		sos.row(0).setOnes();
 		for (auto i = 0; i < N - 1; i += 2)
 		{
-			sos(i / 2, 1) = -std::real(rootsStable(i) + rootsStable(i + 1));
-			sos(i / 2, 2) = std::real(rootsStable(i) * rootsStable(i + 1));
+			sos(1, i / 2) = -std::real(rootsStable(i) + rootsStable(i + 1));
+			sos(2, i / 2) = std::real(rootsStable(i) * rootsStable(i + 1));
 		}
 		if (N & 1) // if odd number of roots
 		{
-			sos(nSections - 1, 1) = -std::real(rootsStable(N1));
-			sos(nSections - 1, 2) = 0.f;
+			sos(1, nSections - 1) = -std::real(rootsStable(N1));
+			sos(2, nSections - 1) = 0.f;
 		}
-		float gainSOS = sos.rowwise().sum().prod();
+		float gainSOS = sos.colwise().sum().prod();
 		float gainA = tf.sum();
 		gain = gainA / gainSOS;
     }
@@ -134,9 +134,9 @@ public:
 		B = th.tail(C.nOrder + 1);
 
 		// convert to sos matrix and gain
-		TF2SOS(B, output.sos.leftCols(3), output.gain);
+		TF2SOS(B, output.sos.topRows(3), output.gain);
 		float gainDen;
-		TF2SOS(A, output.sos.rightCols(3), gainDen);
+		TF2SOS(A, output.sos.bottomRows(3), gainDen);
 		output.gain /= gainDen;
     }
 

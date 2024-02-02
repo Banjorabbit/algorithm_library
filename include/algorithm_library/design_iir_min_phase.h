@@ -19,7 +19,7 @@ struct DesignIIRMinPhaseConfiguration
     // [a2 aa2 ... ]
     struct Output
     {
-        O::RealX6 sos;
+        O::Real6X sos;
         O::Float gain;
     };
 
@@ -41,7 +41,7 @@ struct DesignIIRMinPhaseConfiguration
     static int getNSos(int nOrder) { return static_cast<int>(std::ceil(static_cast<float>(nOrder) / 2)); } // get number of second-order sections from filter order
 
     static auto validInput(Input input, const Coefficients& c) { return input.rows() == c.nBands; }
-    static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::Array<float, Eigen::Dynamic, 6>::Zero(getNSos(c.nOrder), 6), float()); }
+    static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::Array<float, 6, Eigen::Dynamic>::Zero(6, getNSos(c.nOrder)), float()); }
 
     template<typename Talgo>
     struct Test
@@ -49,7 +49,7 @@ struct DesignIIRMinPhaseConfiguration
         Talgo algo;
         int nBands, nOrder;
         Eigen::ArrayXf magnitudeSpectrum;
-        Eigen::Array<float, Eigen::Dynamic, 6> sos;
+        Eigen::Array<float, 6, Eigen::Dynamic> sos;
         float gain;
 
         Test() : Test(Coefficients()) {}
@@ -62,7 +62,7 @@ struct DesignIIRMinPhaseConfiguration
         }
 
         void processAlgorithm() { algo.process(magnitudeSpectrum, {sos, gain}); }
-        bool isTestOutputValid() const { return sos.allFinite() && std::isfinite(gain) && (sos.rows() == getNSos(nOrder)) && (sos.cols() == 6); }
+        bool isTestOutputValid() const { return sos.allFinite() && std::isfinite(gain) && (sos.cols() == getNSos(nOrder)) && (sos.rows() == 6); }
     };
 };
 
