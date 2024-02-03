@@ -45,7 +45,7 @@ struct IIRFilterTimeVaryingConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.xTime.rows(), c.nChannels); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf xTime;
@@ -55,8 +55,8 @@ struct IIRFilterTimeVaryingConfiguration
         Eigen::ArrayXXf output;
         int nChannels, nSamples;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             nChannels = c.nChannels;
             nSamples = 512;
@@ -68,7 +68,7 @@ struct IIRFilterTimeVaryingConfiguration
         }
 
         void processAlgorithm() { algo.process({xTime, cutoff, gain, resonance}, output); }
-        bool isTestOutputValid() const 
+        bool isExampleOutputValid() const 
         { 
             bool test = output.allFinite();
             test &= (output.rows() == nSamples) && (output.cols() == nChannels);
@@ -126,7 +126,7 @@ struct IIRFilterCascadeTimeVaryingConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.xTime.rows(), c.nChannels); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf xTime;
@@ -136,8 +136,8 @@ struct IIRFilterCascadeTimeVaryingConfiguration
         Eigen::ArrayXXf output;
         int nChannels, nSos, nSamples;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             nChannels = c.nChannels;
             nSos = c.nSos;
@@ -150,7 +150,7 @@ struct IIRFilterCascadeTimeVaryingConfiguration
         }
 
         void processAlgorithm() { algo.process({xTime, cutoff, gain, resonance}, output); }
-        bool isTestOutputValid() const 
+        bool isExampleOutputValid() const 
         { 
             bool test = output.allFinite();
             test &= (output.rows() == nSamples) && (output.cols() == nChannels);

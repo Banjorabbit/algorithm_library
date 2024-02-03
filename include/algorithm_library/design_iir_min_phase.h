@@ -44,7 +44,7 @@ struct DesignIIRMinPhaseConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::Array<float, 6, Eigen::Dynamic>::Zero(6, getNSos(c.nOrder)), float()); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         int nBands, nOrder;
@@ -52,8 +52,8 @@ struct DesignIIRMinPhaseConfiguration
         Eigen::Array<float, 6, Eigen::Dynamic> sos;
         float gain;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             nBands = c.nBands;
             nOrder = c.nOrder;
@@ -62,7 +62,7 @@ struct DesignIIRMinPhaseConfiguration
         }
 
         void processAlgorithm() { algo.process(magnitudeSpectrum, {sos, gain}); }
-        bool isTestOutputValid() const { return sos.allFinite() && std::isfinite(gain) && (sos.cols() == getNSos(nOrder)) && (sos.rows() == 6); }
+        bool isExampleOutputValid() const { return sos.allFinite() && std::isfinite(gain) && (sos.cols() == getNSos(nOrder)) && (sos.rows() == 6); }
     };
 };
 

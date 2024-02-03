@@ -24,15 +24,15 @@ struct IIRFilterNonParametricConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.rows(), c.nChannels); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
         int nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             nChannels = 2;
             input = Eigen::ArrayXXf::Random(512, nChannels);
@@ -40,7 +40,7 @@ struct IIRFilterNonParametricConfiguration
         }
 
         void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const 
+        bool isExampleOutputValid() const 
         { 
             bool test = output.allFinite();
             test &= (output.rows() > 0) && (output.cols() == nChannels);

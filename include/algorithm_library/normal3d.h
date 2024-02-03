@@ -32,15 +32,15 @@ struct Normal3dConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(3 * c.nValuesX, input.cols()); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
         int nValuesY, nValuesX;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             nValuesX = c.nValuesX;
             nValuesY = 10;
@@ -50,7 +50,7 @@ struct Normal3dConfiguration
         }
     
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const { return output.allFinite() && (output.cols() == nValuesY) && (output.rows() == 3 * nValuesX); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.cols() == nValuesY) && (output.rows() == 3 * nValuesX); }
     };
 };
 

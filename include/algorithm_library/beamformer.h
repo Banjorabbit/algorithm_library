@@ -29,7 +29,7 @@ struct BeamformerConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXcf(c.nBands); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXcf xFreq;
@@ -37,8 +37,8 @@ struct BeamformerConfiguration
         int nBands;
         Eigen::ArrayXcf yFreq;
 
-        Test() : Test(Coefficients()) {}
-        Test(Coefficients c): algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(Coefficients c): algo(c)
         {
             nBands = c.nBands;
             xFreq = Eigen::ArrayXXcf::Random(nBands, c.nChannels);
@@ -47,7 +47,7 @@ struct BeamformerConfiguration
         }
 
         void processAlgorithm() { algo.process({xFreq, speechActivity}, yFreq); }
-        bool isTestOutputValid() const { return yFreq.allFinite() && (yFreq.rows() == nBands); }
+        bool isExampleOutputValid() const { return yFreq.allFinite() && (yFreq.rows() == nBands); }
     };  
 };
 

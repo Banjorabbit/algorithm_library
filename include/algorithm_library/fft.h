@@ -32,7 +32,7 @@ struct FFTConfiguration
     };
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         int nChannels = 2;
@@ -40,8 +40,8 @@ struct FFTConfiguration
         Eigen::ArrayXXf input;
         Eigen::ArrayXXcf output;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             fftSize = c.fftSize;
             input = Eigen::ArrayXXf::Random(c.fftSize, nChannels);
@@ -49,7 +49,7 @@ struct FFTConfiguration
         }
 
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == fftSize/2 + 1) && (output.cols() == nChannels); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == fftSize/2 + 1) && (output.cols() == nChannels); }
     };
 };
 

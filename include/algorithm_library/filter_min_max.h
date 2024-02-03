@@ -41,7 +41,7 @@ struct BaseFilterMinMaxConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple( Eigen::ArrayXXf(input.rows(), c.nChannels), Eigen::ArrayXXf(input.rows(), c.nChannels) ); }
     
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf minValue;
@@ -49,8 +49,8 @@ struct BaseFilterMinMaxConfiguration
         Eigen::ArrayXXf input;
         int samples, nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             samples = 1000;
             nChannels = c.nChannels;
@@ -60,7 +60,7 @@ struct BaseFilterMinMaxConfiguration
         }
 
         inline void processAlgorithm() { algo.process(input, { minValue, maxValue }); }
-        bool isTestOutputValid() const 
+        bool isExampleOutputValid() const 
         { 
             bool test = minValue.allFinite() && maxValue.allFinite();
             test &= (minValue.rows() == samples) && (maxValue.rows() == samples);
@@ -116,15 +116,15 @@ struct BaseFilterExtremumConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.rows(), c.nChannels); }
     
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf output;
         Eigen::ArrayXXf input;
         int samples, nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             samples = 1000;
             nChannels = c.nChannels;
@@ -134,7 +134,7 @@ struct BaseFilterExtremumConfiguration
         }
 
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const { return output.allFinite() && (output.cols() == nChannels) && (output.rows() == samples); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.cols() == nChannels) && (output.rows() == samples); }
     };
 };
 

@@ -27,15 +27,15 @@ struct MinPhaseSpectrumConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(c.nBands, input.cols()); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         int nChannels, nBands;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXcf output;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             nBands = c.nBands;
             nChannels = 2;
@@ -44,7 +44,7 @@ struct MinPhaseSpectrumConfiguration
         }
 
         void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == nBands) && (output.cols() == nChannels); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == nBands) && (output.cols() == nChannels); }
     };
 };
 

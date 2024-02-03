@@ -29,7 +29,7 @@ struct SplineConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.xDesired.rows(), input.xDesired.cols()); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf xGiven;
@@ -38,8 +38,8 @@ struct SplineConfiguration
         Eigen::ArrayXXf yDesired;
         int nOS, nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             int n = 10; // number of input samples per channel
             nOS = 100; // number of output samples per channel
@@ -52,7 +52,7 @@ struct SplineConfiguration
         }
 
         inline void processAlgorithm() { algo.process({ xGiven, yGiven, xDesired }, yDesired); }
-        bool isTestOutputValid() const { return yDesired.allFinite() && (yDesired.rows() == nOS) && (yDesired.cols() == nChannels); }
+        bool isExampleOutputValid() const { return yDesired.allFinite() && (yDesired.rows() == nOS) && (yDesired.cols() == nChannels); }
     };
 };
 

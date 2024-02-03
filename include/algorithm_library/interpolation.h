@@ -27,15 +27,15 @@ struct InterpolationSampleConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return 0.f; }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::Array4f samples;
         float fractionalIndex; // index must be between 0.0 - 1.0
         float output; // output has same size as fractionalIndices
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c)
         {
             samples.setRandom();
             fractionalIndex = 0.3f;
@@ -43,7 +43,7 @@ struct InterpolationSampleConfiguration
         }
 
         void processAlgorithm() { algo.process({ samples, fractionalIndex }, output); }
-        bool isTestOutputValid() const { return std::isfinite(output); }
+        bool isExampleOutputValid() const { return std::isfinite(output); }
     };
 };
 
@@ -75,14 +75,14 @@ struct InterpolationConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.fractionalIndices.size()); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXf samples;
         Eigen::ArrayXf fractionalIndices; // indices must be between 1.0 and samples.size()-2.0 and in non-decreasing order
         Eigen::ArrayXf output; // output has same size as fractionalIndices
 
-        Test(const Coefficients& c = {})
+        Example(const Coefficients& c = {})
         {
             const int N = 256;
             samples = Eigen::ArrayXf::Random(N);
@@ -92,7 +92,7 @@ struct InterpolationConfiguration
         }
 
         inline void processAlgorithm() { algo.process({ samples, fractionalIndices }, output); }
-        bool isTestOutputValid() const { return output.isFinite().all(); }
+        bool isExampleOutputValid() const { return output.isFinite().all(); }
     };
 };
 
@@ -122,15 +122,15 @@ struct InterpolationConstantConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.size() - 3); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXf samples;
         Eigen::ArrayXf output;
         int n;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             n = 256;
             samples = Eigen::ArrayXf::Random(n);
@@ -138,7 +138,7 @@ struct InterpolationConstantConfiguration
         }
 
         inline void processAlgorithm() { algo.process(samples, output); }
-        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == n-3); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == n-3); }
     };
 };
 

@@ -31,15 +31,15 @@ struct NoiseEstimationConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(c.nBands, c.nChannels); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
         int nBands, nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             nChannels = c.nChannels;
             nBands = c.nBands;
@@ -48,7 +48,7 @@ struct NoiseEstimationConfiguration
         }
 
         void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const 
+        bool isExampleOutputValid() const 
         { 
             bool test = output.allFinite();
             test &= (output >= 0).all();
@@ -99,7 +99,7 @@ struct NoiseEstimationActivityConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::ArrayXXf(c.nBands, c.nChannels), Eigen::ArrayXXf(c.nBands, c.nChannels)); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf input;
@@ -107,8 +107,8 @@ struct NoiseEstimationActivityConfiguration
         Eigen::ArrayXXf activity;
         int nBands, nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             nChannels = c.nChannels;
             nBands = c.nBands;
@@ -117,7 +117,7 @@ struct NoiseEstimationActivityConfiguration
         }
 
         void processAlgorithm() { algo.process(input, {output, activity}); }
-        bool isTestOutputValid() const 
+        bool isExampleOutputValid() const 
         { 
             bool test = output.allFinite() && activity.allFinite();
             test &= (output >= 0).all() && (activity >= 0).all();
@@ -168,7 +168,7 @@ struct NoiseEstimationActivityFusedConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::ArrayXXf::Zero(c.nBands, c.nChannels), bool()); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf input;
@@ -176,8 +176,8 @@ struct NoiseEstimationActivityFusedConfiguration
         bool activity;
         int nBands, nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             nChannels = c.nChannels;
             nBands = c.nBands;
@@ -186,7 +186,7 @@ struct NoiseEstimationActivityFusedConfiguration
         }
 
         void processAlgorithm() { algo.process(input, {output, activity}); }
-        bool isTestOutputValid() const 
+        bool isExampleOutputValid() const 
         { 
             bool test = output.allFinite();
             test &= (output >= 0).all();

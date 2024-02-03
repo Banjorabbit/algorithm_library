@@ -29,15 +29,15 @@ struct SpectrogramConfiguration
     }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXf input;
         Eigen::ArrayXXf output;
         int fftSize, nFrames;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             nFrames = 10;
             fftSize = c.fftSize;
@@ -47,7 +47,7 @@ struct SpectrogramConfiguration
         }
 
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == fftSize/2 + 1) && (output.cols() == nFrames); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == fftSize/2 + 1) && (output.cols() == nFrames); }
     };
 };
 

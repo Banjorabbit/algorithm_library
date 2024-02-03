@@ -23,15 +23,15 @@ struct DelayConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.rows(), c.nChannels); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
         int delayLength, nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             delayLength = c.delayLength;
             nChannels = c.nChannels;
@@ -40,7 +40,7 @@ struct DelayConfiguration
         }
 
         void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == delayLength) && (output.cols() == nChannels); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == delayLength) && (output.cols() == nChannels); }
     };
 };
 

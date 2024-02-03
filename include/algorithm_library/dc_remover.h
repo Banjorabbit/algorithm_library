@@ -30,15 +30,15 @@ struct DCRemoverConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.rows(), c.nChannels); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         int nSamples, nChannels;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c)
         {
             nSamples = 100;
             nChannels = c.nChannels;
@@ -48,7 +48,7 @@ struct DCRemoverConfiguration
         }
 
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == nSamples) && (output.cols() == nChannels); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == nSamples) && (output.cols() == nChannels); }
     };
 };
 

@@ -26,11 +26,11 @@
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
 static void algorithm##_process(benchmark::State& state) { \
-	algorithm::Configuration::Test<algorithm> test; \
+	algorithm::Configuration::Example<algorithm> example; \
 	for (auto _ : state) \
     { \
-		test.processAlgorithm(); \
-		benchmark::DoNotOptimize(test); \
+		example.processAlgorithm(); \
+		benchmark::DoNotOptimize(example); \
 	} \
 } \
 BENCHMARK(algorithm##_process);
@@ -81,11 +81,11 @@ DEFINE_BENCHMARK_ALGORITHM(ActivityDetectionFusedNoiseEstimation)
 static void FFTInverse_process(benchmark::State& state) {
 	
 		FFTReal algo; 
-		FFT::Configuration::Test<FFT> test; 
+		FFT::Configuration::Example<FFT> example; 
 		for (auto _ : state) 
 		{ 
-			algo.inverse(test.output, test.input);
-			benchmark::DoNotOptimize(test); 
+			algo.inverse(example.output, example.input);
+			benchmark::DoNotOptimize(example); 
 		} 
 } 
 BENCHMARK(FFTInverse_process);

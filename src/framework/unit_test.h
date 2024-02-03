@@ -136,10 +136,10 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 	}
 
 	template<typename Talgo>
-	bool processTest()
+	bool processExampleTest()
 	{
-		typename Talgo::Configuration::template Test<Talgo> test;
-		test.processAlgorithm();
+		typename Talgo::Configuration::template Example<Talgo> example;
+		example.processAlgorithm();
 
 		double durationMin = 1e10;
 		double durationAvg = 0;
@@ -147,7 +147,7 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 		for (auto i = 0; i < 100; i++)
 		{
 			auto start = std::chrono::steady_clock::now();
-			test.processAlgorithm();
+			example.processAlgorithm();
 			auto end = std::chrono::steady_clock::now();
 			auto time = std::chrono::duration<double, std::micro>(end - start).count();
 			durationMin = std::min(durationMin, time);
@@ -155,9 +155,9 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 			durationMax = std::max(durationMax, time);
 		}
 		fmt::print("Execution time of processOn is (min - avg. - max): {:.3f} us - {:.3f} us - {:.3f} us.\n", durationMin, durationAvg, durationMax);
-		if (!test.isTestOutputValid())
+		if (!example.isExampleOutputValid())
 		{
-			fmt::print("processOnTest failed: output is not finite.\n");
+			fmt::print("processExampleTest failed: output is not valid.\n");
 			return false;
 		}
 		return true;
@@ -200,7 +200,7 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 		auto successFlag = coefficientsTest<Talgo>();
 		successFlag &= parametersTest<Talgo>();
 		successFlag &= versionAlgorithmTest<Talgo>();
-		successFlag &= processTest<Talgo>();
+		successFlag &= processExampleTest<Talgo>();
 		successFlag &= resetTest<Talgo>();
 		successFlag &= getSetTest<Talgo>();
 		successFlag &= assertInterfaceTest<Talgo>();

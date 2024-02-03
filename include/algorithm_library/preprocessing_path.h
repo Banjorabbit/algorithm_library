@@ -32,15 +32,15 @@ struct PreprocessingPathConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.rows()); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXf output;
         int bufferSize, nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(Coefficients c): algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(Coefficients c): algo(c)
         {
             bufferSize = c.bufferSize;
             nChannels = c.nChannels;
@@ -49,7 +49,7 @@ struct PreprocessingPathConfiguration
         }
 
         void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const 
+        bool isExampleOutputValid() const 
         { 
             return output.allFinite() && (output.rows() == bufferSize);
         }

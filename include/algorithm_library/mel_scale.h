@@ -24,15 +24,15 @@ struct MelScaleConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(c.nMels, input.cols()); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
         int nMels, nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             nMels = c.nMels;
             nChannels = 2;
@@ -41,7 +41,7 @@ struct MelScaleConfiguration
         }
 
         void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const 
+        bool isExampleOutputValid() const 
         { 
             bool test = output.allFinite();
             test &= (output >= 0).all();

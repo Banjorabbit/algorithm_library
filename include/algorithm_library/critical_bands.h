@@ -32,7 +32,7 @@ struct CriticalBandsConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(getNCriticalBands(c.sampleRate), input.cols()); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         int nChannels = 2;
@@ -40,8 +40,8 @@ struct CriticalBandsConfiguration
         Eigen::ArrayXXf xPower;
         Eigen::ArrayXXf yPower;
 
-        Test() : Test(Coefficients()) {}
-        Test(Coefficients c): algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(Coefficients c): algo(c)
         {
             xPower = Eigen::ArrayXXf::Random(c.nBands, nChannels).abs2();
             yPower = initOutput(xPower, c);
@@ -49,7 +49,7 @@ struct CriticalBandsConfiguration
         }
 
         void processAlgorithm() { algo.process(xPower, yPower); }
-        bool isTestOutputValid() const 
+        bool isExampleOutputValid() const 
         {
             bool test = yPower.allFinite();
             test &= (yPower >= 0).all();

@@ -32,15 +32,15 @@ struct ActivityDetectionConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(c.nBands, c.nChannels); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXf output;
         int nBands, nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             nChannels = c.nChannels;
             nBands = c.nBands;
@@ -49,7 +49,7 @@ struct ActivityDetectionConfiguration
         }
 
         void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const { return (output>=0).all() && (output.rows() == nBands) && (output.cols() == nChannels); }
+        bool isExampleOutputValid() const { return (output>=0).all() && (output.rows() == nBands) && (output.cols() == nChannels); }
     };
 };
 
@@ -88,15 +88,15 @@ struct ActivityDetectionFusedConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return bool(); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf input;
         bool output;
         int nBands, nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             nChannels = c.nChannels;
             nBands = c.nBands;
@@ -105,7 +105,7 @@ struct ActivityDetectionFusedConfiguration
         }
 
         void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const { return true; } // output is a bool so it is always valid
+        bool isExampleOutputValid() const { return true; } // output is a bool so it is always valid
     };
 };
 

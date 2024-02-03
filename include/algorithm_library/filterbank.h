@@ -33,15 +33,15 @@ struct FilterbankAnalysisConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(c.fftSize/2 + 1, c.nChannels); }
     
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXf input;
         Eigen::ArrayXXcf output;
         int fftSize, nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             fftSize = c.fftSize;
             nChannels = c.nChannels;
@@ -51,7 +51,7 @@ struct FilterbankAnalysisConfiguration
         }
     
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == fftSize/2 + 1) && (output.cols() == nChannels); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == fftSize/2 + 1) && (output.cols() == nChannels); }
     };
 };
 
@@ -96,15 +96,15 @@ struct FilterbankSynthesisConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(c.bufferSize, c.nChannels); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXXcf input;
         Eigen::ArrayXXf output;
         int bufferSize, nChannels;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c) : algo(c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c) : algo(c)
         {
             bufferSize = c.bufferSize;
             nChannels = c.nChannels;
@@ -114,7 +114,7 @@ struct FilterbankSynthesisConfiguration
         }
 
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == bufferSize) && (output.cols() == nChannels); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == bufferSize) && (output.cols() == nChannels); }
     };
 };
 

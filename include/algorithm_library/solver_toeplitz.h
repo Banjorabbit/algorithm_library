@@ -29,15 +29,15 @@ struct SolverToeplitzConfiguration
     static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(input.BRighthand.rows(), input.BRighthand.cols()); }
 
     template<typename Talgo>
-    struct Test
+    struct Example
     {
         Talgo algo;
         Eigen::ArrayXcf aToeplitz;
         Eigen::ArrayXXcf BRighthand;
         Eigen::ArrayXXcf output;
 
-        Test() : Test(Coefficients()) {}
-        Test(const Coefficients& c)
+        Example() : Example(Coefficients()) {}
+        Example(const Coefficients& c)
         {
             aToeplitz.resize(8);
             aToeplitz.setRandom();
@@ -48,7 +48,7 @@ struct SolverToeplitzConfiguration
         }
 
         inline void processAlgorithm() { algo.process({ aToeplitz, BRighthand }, output); }
-        bool isTestOutputValid() const { return output.allFinite() && (output.rows() == 8) && (output.cols() == 8); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == 8) && (output.cols() == 8); }
     };
 };
 
