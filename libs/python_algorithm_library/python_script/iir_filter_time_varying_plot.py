@@ -1,3 +1,4 @@
+
 import PythonAlgorithmLibrary as pal
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,7 +11,7 @@ print(filterTV)
 print(pTV)
 
 # set filter and plot coefficients
-cutoff = 4000
+cutoff = np.tan(np.pi * 4000/16000)
 gain = .25
 resonance = .7071
 filterTVSos = filterTV.getFilter(cutoff, gain, resonance)
