@@ -62,7 +62,7 @@ public:
         case P.BandStop:
             for (auto i = 0; i < C.nChannels; i++)
             {
-                output.col(i) = input.xTime.col(i) - bp.col(i);
+                output.col(i) = input.gain * (input.xTime.col(i) - bp.col(i));
             }
             break;
         case P.Peaking:
@@ -94,13 +94,14 @@ public:
 		float c3 = c2 + 1.f;
 		float c0 = 1.f / (1.f + c1 * (c2 + 1.f));
 
-        float a1 = 2*(c0*c1*c2 + c0*c1*c3 - 1);
-        float a2 = 2*c0*c1*c2 - 2*c0*c1*c3 + 1;
-
         float b0{},b1{},b2{};
         const float c01 = c0 * c1;
         const float c012 = c01 * c2;
         const float c013 = c01 * c3;
+
+        const float a1 = 2*(c012 + c013 - 1);
+        const float a2 = 2*c012 - 2*c013 + 1;
+
         switch (P.filterType)
         {
         case P.LowPass:
@@ -156,6 +157,23 @@ public:
         const float a2 = c(5);
         Eigen::ArrayXf freqs = Eigen::ArrayXf::LinSpaced(nBands, 0, 3.14159f);
         return (b0*b0 + b1*b1 + b2*b2 + 2*(b0*b1+b1*b2)*freqs.cos() + 2*b0*b2*(2*freqs).cos()) / (1.f + a1*a1 + a2*a2 + 2*(a1+a1*a2)*freqs.cos() + 2*a2*(2*freqs).cos());
+    }
+
+    Eigen::ArrayXf CalculateGeneralizedFilterCoefficients(Eigen::ArrayXf sos)
+    {
+        const std::complex<float> negSqrt = std::sqrt(static_cast<std::complex<float>>(-1-sos(4)-sos(5)));
+        const std::complex<float> posSqrt = std::sqrt(static_cast<std::complex<float>>(-1+sos(4)-sos(5)));
+
+        float g = (negSqrt / posSqrt).real();
+        float den = (negSqrt * posSqrt).real();
+        float resonance = den / (2 * (sos(5) - 1));
+        float cHP = (sos(0) - sos(1) + sos(2)) / (1 - sos(4) + sos(5));
+        float cBP = -2*(sos(0) - sos(2)) / den;
+        float cLP = (sos(0) + sos(1) + sos(2)) / (1 + sos(4) + sos(5));
+
+        Eigen::ArrayXf genC(5);
+        genC << g,resonance, cHP, cBP, cLP;
+        return genC;
     }
     
 private:
