@@ -11,7 +11,7 @@ struct IIRFilterTimeVaryingConfiguration
     struct Input
     {
         I::Real2D xTime; // each column is a channel. The number of columns must be equal to C.nChannels.
-        I::Real cutoff; //cutoff frequency in Hz
+        I::Real cutoff; // prewarped cutoff frequency in Hz: cutoff = tan(pi*f/fs)
         I::Real gain; // linear gain
         I::Real resonance; // resonance/Q-value
     };
@@ -21,8 +21,7 @@ struct IIRFilterTimeVaryingConfiguration
     struct Coefficients 
     { 
         int nChannels = 2;
-        float sampleRate = 16000.f;
-        DEFINE_TUNABLE_COEFFICIENTS(nChannels, sampleRate)
+        DEFINE_TUNABLE_COEFFICIENTS(nChannels)
     };
 
     struct Parameters 
@@ -36,7 +35,7 @@ struct IIRFilterTimeVaryingConfiguration
     static auto validInput(Input input, const Coefficients& c) 
     { 
         bool test = (input.xTime.cols() == c.nChannels) && (input.xTime.rows() > 0);
-        test &= (input.cutoff.rows() == input.xTime.rows()) && (input.cutoff >= 0.f).all() && (input.cutoff <= 0.5f * c.sampleRate).all();
+        test &= (input.cutoff.rows() == input.xTime.rows()) && (input.cutoff >= 0.f).all();
         test &= (input.gain.rows() == input.xTime.rows()) && (input.gain >= 0.f).all();
         test &= (input.resonance.rows() == input.xTime.rows()) && (input.resonance >= 0.f).all();
         return test;
@@ -61,7 +60,7 @@ struct IIRFilterTimeVaryingConfiguration
             nChannels = c.nChannels;
             nSamples = 512;
             xTime = Eigen::ArrayXXf::Random(nSamples, nChannels);
-            cutoff = (8000.f * Eigen::ArrayXf::Random(nSamples).abs2());
+            cutoff = (3.14159f * 8000.f / 16000.f * Eigen::ArrayXf::Random(nSamples).abs2()).tan();
             gain = 10.f * Eigen::ArrayXf::Random(nSamples).abs2();
             resonance = 5.f * Eigen::ArrayXf::Random(nSamples).abs2();
             output = initOutput({xTime, cutoff, gain, resonance}, c);
@@ -94,7 +93,7 @@ struct IIRFilterCascadeTimeVaryingConfiguration
     struct Input
     {
         I::Real2D xTime; // each column is a channel. The number of columns must be equal to C.nChannels.
-        I::Real2D cutoff; // each column is a cutoff frequency in Hz for the corresponding filter in the cascade section. The number of columns must be equal to C.nSos.
+        I::Real2D cutoff; // each column is a prewarped cutoff frequency in Hz for the corresponding filter in the cascade section: cutoff = tan(pi*f/fs). The number of columns must be equal to C.nSos.
         I::Real2D gain; // each column is a linear gain for the corresponding filter in the cascade section. The number of columns must be equal to C.nSos.
         I::Real2D resonance; // each column is a resonance/Q-value for the corresponding filter in the cascade section. The number of columns must be equal to C.nSos.
     };
@@ -105,8 +104,7 @@ struct IIRFilterCascadeTimeVaryingConfiguration
     { 
         int nChannels = 2;
         int nSos = 3;
-        float sampleRate = 16000.f;
-        DEFINE_TUNABLE_COEFFICIENTS(nChannels, nSos, sampleRate)
+        DEFINE_TUNABLE_COEFFICIENTS(nChannels, nSos)
     };
 
     struct Parameters 
@@ -117,7 +115,7 @@ struct IIRFilterCascadeTimeVaryingConfiguration
     static auto validInput(Input input, const Coefficients& c) 
     { 
         bool test = (input.xTime.cols() == c.nChannels) && (input.xTime.rows() > 0);
-        test &= (input.cutoff.cols() == c.nSos) && (input.cutoff.rows() == input.xTime.rows()) && (input.cutoff >= 0.f).all() && (input.cutoff <= 0.5f * c.sampleRate).all();
+        test &= (input.cutoff.cols() == c.nSos) && (input.cutoff.rows() == input.xTime.rows()) && (input.cutoff >= 0.f).all();
         test &= (input.gain.cols() == c.nSos) && (input.gain.rows() == input.xTime.rows()) && (input.gain >= 0.f).all();
         test &= (input.resonance.cols() == c.nSos) && (input.resonance.rows() == input.xTime.rows()) && (input.resonance >= 0.f).all();
         return test;
@@ -143,7 +141,7 @@ struct IIRFilterCascadeTimeVaryingConfiguration
             nSos = c.nSos;
             nSamples = 512;
             xTime = Eigen::ArrayXXf::Random(nSamples, nChannels);
-            cutoff = (8000.f * Eigen::ArrayXXf::Random(nSamples, nSos).abs2());
+            cutoff = (3.14159f * 8000.f / 16000.f * Eigen::ArrayXXf::Random(nSamples, nSos).abs2()).tan();
             gain = 10.f * Eigen::ArrayXXf::Random(nSamples, nSos).abs2();
             resonance = 5.f * Eigen::ArrayXXf::Random(nSamples, nSos).abs2();
             output = initOutput({xTime, cutoff, gain, resonance}, c);
@@ -174,10 +172,10 @@ public:
     void setFilterType(int index, IIRFilterTimeVaryingConfiguration::Parameters::FilterTypes type);
     IIRFilterTimeVaryingConfiguration::Parameters::FilterTypes getFilterType(int index) const;
 
-    // get overall power frequency response  given filter characteristics (uses internal filter types and sample rate)
+    // get overall power frequency response  given filter characteristics (uses internal filter types)
     Eigen::ArrayXf getPowerFrequencyResponse(int nBands, I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const;
 
-    // get all sos filter coefficients given filter characteristics (uses internal filter types and sample rate)
+    // get all sos filter coefficients given filter characteristics (uses internal filter types)
     Eigen::ArrayXXf getFilter(I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const;
 
     // get overall gain

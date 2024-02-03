@@ -1,7 +1,6 @@
 #pragma once
 #include "framework/framework.h"
 #include "algorithm_library/iir_filter_time_varying.h"
-#include "utilities/fastonebigheader.h"
 
 class StateVariableFilter : public AlgorithmImplementation<IIRFilterTimeVaryingConfiguration, StateVariableFilter>
 {
@@ -16,9 +15,8 @@ public:
     
     inline void processOn(Input input, Output output) 
     {
-        Eigen::ArrayXf g = (3.14159f * input.cutoff / C.sampleRate).unaryExpr(std::ref(fastertan));
-		Eigen::ArrayXf c1 = g / input.resonance;
-		Eigen::ArrayXf c2 = g * input.resonance;
+		Eigen::ArrayXf c1 = input.cutoff / input.resonance;
+		Eigen::ArrayXf c2 = input.cutoff * input.resonance;
 		Eigen::ArrayXf c3 = c2 + 1.f;
 		Eigen::ArrayXf c0 = 1.f / (1.f + c1 * (c2 + 1.f));
 
@@ -88,9 +86,8 @@ public:
 
     Eigen::ArrayXf getFilter(float cutoff, float gain, float resonance) const
     {
-        float g = fastertan(3.14159f * cutoff / C.sampleRate);
-		float c1 = g / resonance;
-		float c2 = g * resonance;
+		float c1 = cutoff / resonance;
+		float c2 = cutoff * resonance;
 		float c3 = c2 + 1.f;
 		float c0 = 1.f / (1.f + c1 * (c2 + 1.f));
 
@@ -201,7 +198,7 @@ class StateVariableFilterCascade : public AlgorithmImplementation<IIRFilterCasca
 public:
     StateVariableFilterCascade(Coefficients c = Coefficients()) :
         AlgorithmImplementation<IIRFilterCascadeTimeVaryingConfiguration, StateVariableFilterCascade>{ c },
-        filters(c.nSos, convertToStateVariableFilterCoefficients(c))
+        filters(c.nSos, {c.nChannels})
     { gain = 1.f; }
 
     VectorAlgo<StateVariableFilter> filters;
@@ -271,14 +268,6 @@ public:
     float getGain() const { return gain; }
 
 private:
-
-    StateVariableFilter::Coefficients convertToStateVariableFilterCoefficients(const Coefficients& c)
-    {
-        StateVariableFilter::Coefficients cSV;
-        cSV.nChannels = c.nChannels;
-        cSV.sampleRate = c.sampleRate;
-        return cSV;
-    }
 
     float gain;
 };
