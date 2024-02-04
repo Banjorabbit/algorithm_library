@@ -178,11 +178,13 @@ public:
     // set P.filterType to USER_DEFINED, return cutoff, gain and resonance, and set cLP, cBP and cHP
     Eigen::Array3f setUserDefinedFilter (I::Real sos)
     {
-        float cutoff = std::sqrt(-sos(4)*sos(4) + sos(5)*sos(5) + 2*sos(5) + 1)/(sos(4) - sos(5) - 1);
-        float resonance = std::sqrt((-sos(4) + sos(5) + 1)*(sos(4) + sos(5) + 1))/(2*(sos(5) - 1)); 
-        cHP = (sos(0) - sos(1) + sos(2))/(-sos(4) + sos(5) + 1);
+        const float c45m = sos(4) - sos(5) - 1;
+        const float c45p = sos(4) + sos(5) + 1;
+        const float cutoff = std::sqrt(-sos(4)*sos(4) + sos(5)*sos(5) + 2*sos(5) + 1)/c45m;
+        const float resonance = std::sqrt(-c45m*c45p)/(2*(sos(5) - 1)); 
+        cHP = -(sos(0) - sos(1) + sos(2))/c45m;
         cBP = (-sos(0) + sos(2))/(sos(5) - 1);
-        cLP = (sos(0) + sos(1) + sos(2))/(sos(4) + sos(5) + 1);
+        cLP = (sos(0) + sos(1) + sos(2))/c45p;
 
         setParameters({P.USER_DEFINED});
         Eigen::Array3f cgr;
