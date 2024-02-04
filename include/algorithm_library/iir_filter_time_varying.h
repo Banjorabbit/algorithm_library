@@ -26,9 +26,9 @@ struct IIRFilterTimeVaryingConfiguration
 
     struct Parameters 
     { 
-        enum FilterTypes { LowPass, HighPass, BandPass, BandStop, Peaking, LowShelf, HighShelf };
-        FilterTypes filterType = LowPass;
-        DEFINE_TUNABLE_ENUM(FilterTypes, {{LowPass, "LowPass"}, {HighPass, "HighPass"}, {BandPass, "BandPass"}, {BandStop, "BandStop"}, {Peaking, "Peaking"}, {LowShelf, "LowShelf"}, {HighShelf, "HighShelf"}})
+        enum FilterTypes { LOWPASS, HIGHPASS, BANDPASS, BANDSTOP, PEAKING, LOWSHELF, HIGHSHELF, USER_DEFINED};
+        FilterTypes filterType = LOWPASS;
+        DEFINE_TUNABLE_ENUM(FilterTypes, {{LOWPASS, "LowPass"}, {HIGHPASS, "HighPass"}, {BANDPASS, "BandPass"}, {BANDSTOP, "BandStop"}, {PEAKING, "Peaking"}, {LOWSHELF, "LowShelf"}, {HIGHSHELF, "HighShelf"}, {USER_DEFINED, "UserDefined"}})
         DEFINE_TUNABLE_PARAMETERS(filterType)
     };
 

@@ -11,6 +11,9 @@ public:
         z1.resize(c.nChannels);
         z2.resize(c.nChannels);
         resetVariables();
+        cLP = 1.f;
+        cBP = 1.f;
+        cHP = 1.f;
     }
     
     inline void processOn(Input input, Output output) 
@@ -39,46 +42,52 @@ public:
         
         switch (P.filterType)
         {
-        case P.LowPass:
+        case P.LOWPASS:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.gain * lp.col(i);
             }
             break;
-        case P.HighPass:
+        case P.HIGHPASS:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.gain * hp.col(i);
             }
             break;
-        case P.BandPass:
+        case P.BANDPASS:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.gain * bp.col(i);
             }
             break;
-        case P.BandStop:
+        case P.BANDSTOP:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.gain * (input.xTime.col(i) - bp.col(i));
             }
             break;
-        case P.Peaking:
+        case P.PEAKING:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.xTime.col(i) + (input.gain - 1.f) * bp.col(i);
             }
             break;
-        case P.LowShelf:
+        case P.LOWSHELF:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.gain * (bp.col(i) + hp.col(i)) + lp.col(i);
             }
             break;
-        case P.HighShelf:
+        case P.HIGHSHELF:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.gain * (bp.col(i) + lp.col(i)) + hp.col(i);
+            }
+            break;
+        case P.USER_DEFINED:
+            for (auto i = 0; i < C.nChannels; i++)
+            {
+                output.col(i) = input.gain * (cLP * lp.col(i) + cBP * bp.col(i) + cHP * hp.col(i));
             }
             break;
         }
@@ -96,45 +105,50 @@ public:
         const float c012 = c01 * c2;
         const float c013 = c01 * c3;
 
-        const float a1 = 2*(c012 + c013 - 1);
-        const float a2 = 2*c012 - 2*c013 + 1;
+        const float a1 = 2 * (c012 + c013 - 1);
+        const float a2 = 2 * c012 - 2 * c013 + 1;
 
         switch (P.filterType)
         {
-        case P.LowPass:
-            b0 = c012;
-            b1 = 2*c012;
-            b2 = c012;
+        case P.LOWPASS:
+            b0 = gain * c012;
+            b1 = gain * 2 * c012;
+            b2 = gain * c012;
             break;
-        case P.HighPass:
-            b0 = c0;
-            b1 = -2*c0;
-            b2 = c0;
+        case P.HIGHPASS:
+            b0 = gain * c0;
+            b1 = -gain * 2 * c0;
+            b2 = gain * c0;
             break;
-        case P.BandPass:
-            b0 = c01;
+        case P.BANDPASS:
+            b0 = gain * c01;
             b1 = 0;
-            b2 = -c01;
+            b2 = -gain * c01;
             break;
-        case P.BandStop:
-            b0 = 1 - c01;
-            b1 = 2*(c012 + c013 - 1);
-            b2 = 2*(c012 - c013) + c01 + 1;
+        case P.BANDSTOP:
+            b0 = gain * (1 - c01);
+            b1 = 2 * gain * (c012 + c013 - 1);
+            b2 = gain * (2 * (c012 - c013) + c01 + 1);
             break;
-        case P.Peaking:
-            b0 = 1 + c01*(gain - 1.f);
-            b1 = 2*(c012 + c013 - 1);
-            b2 = 2*c012 - 2*c013 - c01*(gain - 1.f) + 1;
+        case P.PEAKING:
+            b0 = 1 + c01 * (gain - 1.f);
+            b1 = 2 * (c012 + c013 - 1);
+            b2 = 2 * c012 - 2 * c013 - c01 * (gain - 1.f) + 1;
             break;
-        case P.LowShelf:
-            b0 = c012 + gain*(c01 + c0);
-            b1 = 2*(c012 - c0*gain);
-            b2 = (c012 - gain*(c01 - c0));
+        case P.LOWSHELF:
+            b0 = c012 + gain * (c01 + c0);
+            b1 = 2 * (c012 - c0 * gain);
+            b2 = (c012 - gain * (c01 - c0));
             break;
-        case P.HighShelf:
-            b0 = (gain*(c012 + c01) + c0);
-            b1 = 2*(c012*gain - c0);
-            b2 = (gain*(c012 - c01) + c0);
+        case P.HIGHSHELF:
+            b0 = (gain * (c012 + c01) + c0);
+            b1 = 2 * (c012 * gain - c0);
+            b2 = (gain * (c012 - c01) + c0);
+            break;
+        case P.USER_DEFINED:
+            b0 = gain * (cLP * c012 + cBP * c01 + cHP * c0);
+            b1 = 2 * gain * (cLP * c012 - cHP * c0);
+            b2 = gain * (cLP * c012 - cBP * c01 + cHP * c0);
             break;
         }
 
@@ -156,7 +170,10 @@ public:
         return (b0*b0 + b1*b1 + b2*b2 + 2*(b0*b1+b1*b2)*freqs.cos() + 2*b0*b2*(2*freqs).cos()) / (1.f + a1*a1 + a2*a2 + 2*(a1+a1*a2)*freqs.cos() + 2*a2*(2*freqs).cos());
     }
 
-    Eigen::ArrayXf CalculateGeneralizedFilterCoefficients(Eigen::ArrayXf sos)
+    // Given a second order section of the type:
+    // s0s = [b0 b1, b2, 1.f, a1, a2]
+    // set P.filterType to USER_DEFINED, return g and resonance, and set cLP, cBP and cHP
+    std::pair<float, float> setUserDefinedFilter (Eigen::ArrayXf sos)
     {
         const std::complex<float> negSqrt = std::sqrt(static_cast<std::complex<float>>(-1-sos(4)-sos(5)));
         const std::complex<float> posSqrt = std::sqrt(static_cast<std::complex<float>>(-1+sos(4)-sos(5)));
@@ -164,13 +181,13 @@ public:
         float g = (negSqrt / posSqrt).real();
         float den = (negSqrt * posSqrt).real();
         float resonance = den / (2 * (sos(5) - 1));
-        float cHP = (sos(0) - sos(1) + sos(2)) / (1 - sos(4) + sos(5));
-        float cBP = -2*(sos(0) - sos(2)) / den;
-        float cLP = (sos(0) + sos(1) + sos(2)) / (1 + sos(4) + sos(5));
+        cHP = (sos(0) - sos(1) + sos(2)) / (1 - sos(4) + sos(5));
+        cBP = -2*(sos(0) - sos(2)) / den;
+        cLP = (sos(0) + sos(1) + sos(2)) / (1 + sos(4) + sos(5));
 
-        Eigen::ArrayXf genC(5);
-        genC << g,resonance, cHP, cBP, cLP;
-        return genC;
+        setParameters({P.USER_DEFINED});
+        std::pair<float, float> c = {g, resonance};
+        return c;
     }
     
 private:
@@ -188,6 +205,7 @@ private:
 
     Eigen::ArrayXf z1;
     Eigen::ArrayXf z2;
+    float cLP, cBP, cHP;
 };
 
 
