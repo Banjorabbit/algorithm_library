@@ -2,6 +2,9 @@
 #include "framework/framework.h"
 #include "algorithm_library/iir_filter_time_varying.h"
 
+// State Variable Filter 
+//
+// author: Kristian Timm Andersen
 class StateVariableFilter : public AlgorithmImplementation<IIRFilterTimeVaryingConfiguration, StateVariableFilter>
 {
 public:
