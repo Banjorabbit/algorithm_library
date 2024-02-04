@@ -84,7 +84,7 @@ public:
         }
     }
 
-    Eigen::ArrayXf getFilter(float cutoff, float gain, float resonance) const
+    Eigen::ArrayXf getSosFilter(float cutoff, float gain, float resonance) const
     {
 		float c1 = cutoff / resonance;
 		float c2 = cutoff * resonance;
@@ -146,7 +146,7 @@ public:
         // get power frequency response evaluated uniformly from 0 to pi in nBands points
     Eigen::ArrayXf getPowerFrequencyResponse(int nBands, float cutoff, float gain, float resonance) const
     {
-        Eigen::ArrayXf c = getFilter(cutoff, gain, resonance);
+        Eigen::ArrayXf c = getSosFilter(cutoff, gain, resonance);
         const float b0 = c(0); 
         const float b1 = c(1);
         const float b2 = c(2);
@@ -255,12 +255,12 @@ public:
         return response;
     }
 
-    Eigen::ArrayXXf getFilter(I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const
+    Eigen::ArrayXXf getSosFilter(I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const
     {
         Eigen::ArrayXXf sos(6, C.nSos);
         for (auto i = 0; i < C.nSos; i++)
         {
-            sos.col(i) = filters[i].getFilter(cutoffSos(i), gainSos(i), resonanceSos(i));
+            sos.col(i) = filters[i].getSosFilter(cutoffSos(i), gainSos(i), resonanceSos(i));
         }
         return sos;
     }

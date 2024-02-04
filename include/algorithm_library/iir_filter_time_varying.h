@@ -83,7 +83,8 @@ public:
     IIRFilterTimeVarying() = default;
     IIRFilterTimeVarying(const Coefficients& c);
 
-    Eigen::ArrayXf getFilter(float cutoff, float gain, float resonance) const;
+    // return filter as second-order section
+    Eigen::ArrayXf getSosFilter(float cutoff, float gain, float resonance) const;
     Eigen::ArrayXf getPowerFrequencyResponse(int nBands, float cutoff, float gain, float resonance) const;
 };
 
@@ -176,7 +177,7 @@ public:
     Eigen::ArrayXf getPowerFrequencyResponse(int nBands, I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const;
 
     // get all sos filter coefficients given filter characteristics (uses internal filter types)
-    Eigen::ArrayXXf getFilter(I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const;
+    Eigen::ArrayXXf getSosFilter(I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const;
 
     // get overall gain
     float getGain() const;

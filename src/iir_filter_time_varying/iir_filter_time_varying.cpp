@@ -4,9 +4,9 @@
 
 DEFINE_ALGORITHM_CONSTRUCTOR(IIRFilterTimeVarying, StateVariableFilter, IIRFilterTimeVaryingConfiguration)
 
-Eigen::ArrayXf IIRFilterTimeVarying::getFilter(float cutoff, float gain, float resonance) const
+Eigen::ArrayXf IIRFilterTimeVarying::getSosFilter(float cutoff, float gain, float resonance) const
 {
-    return static_cast<Implementation<StateVariableFilter, IIRFilterTimeVaryingConfiguration>*>(pimpl.get())->algo.getFilter(cutoff, gain, resonance);
+    return static_cast<Implementation<StateVariableFilter, IIRFilterTimeVaryingConfiguration>*>(pimpl.get())->algo.getSosFilter(cutoff, gain, resonance);
 }
 
 Eigen::ArrayXf IIRFilterTimeVarying::getPowerFrequencyResponse(int nBands, float cutoff, float gain, float resonance) const
@@ -47,9 +47,9 @@ Eigen::ArrayXf IIRFilterCascadeTimeVarying::getPowerFrequencyResponse(int nBands
 }
 
 // get all sos filter coefficients given filter characteristics (uses internal filter types and sample rate)
-Eigen::ArrayXXf IIRFilterCascadeTimeVarying::getFilter(I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const
+Eigen::ArrayXXf IIRFilterCascadeTimeVarying::getSosFilter(I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const
 {
-    return static_cast<Implementation<StateVariableFilterCascade, IIRFilterCascadeTimeVaryingConfiguration>*>(pimpl.get())->algo.getFilter(cutoffSos, gainSos, resonanceSos);
+    return static_cast<Implementation<StateVariableFilterCascade, IIRFilterCascadeTimeVaryingConfiguration>*>(pimpl.get())->algo.getSosFilter(cutoffSos, gainSos, resonanceSos);
 }
 
 // get overall gain
