@@ -185,7 +185,7 @@ public:
         float den = (negSqrt * posSqrt).real();
         float resonance = den / (2 * (sos(5) - 1));
         cHP = (sos(0) - sos(1) + sos(2)) / (1 - sos(4) + sos(5));
-        cBP = -2*(sos(0) - sos(2)) / den;
+        cBP = 2*(sos(0) - sos(2)) / den;
         cLP = (sos(0) + sos(1) + sos(2)) / (1 + sos(4) + sos(5));
 
         setParameters({P.USER_DEFINED});
