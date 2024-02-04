@@ -84,6 +84,7 @@ sosCascade = filterCTV.getSosFilter([cutoff,cutoff,cutoff,cutoff,cutoff,cutoff,c
 print(sosCascade)
 cgr = filterCTV.setUserDefinedFilter(sosCascade)
 filter2CTVPow = filterCTV.getPowerFrequencyResponse(nBands, cgr[0,:], cgr[1,:], cgr[2,:])
+print("error2: ", np.sum((filter2CTVPow-filterCTVPow)**2) / np.sum((filterCTVPow)**2))
 plt.plot(10*np.log10(filter2CTVPow))
 
 # create TDF filter -> input sos -> check power frequency response is the same as for SVF 
@@ -94,6 +95,7 @@ filterIIR.setCoefficients(cIIR)
 print(filterIIR)
 filterIIR.setFilter(sosCascade)
 filter3CTVPow = filterIIR.getPowerFrequencyResponse(nBands)
+print("error3: ", np.sum((filter3CTVPow-filterCTVPow)**2) / np.sum((filterCTVPow)**2))
 plt.plot(10*np.log10(filter3CTVPow))
 
 plt.show()

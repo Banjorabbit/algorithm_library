@@ -174,19 +174,15 @@ public:
     }
 
     // Given a second order section of the type:
-    // sos = [b0 b1, b2, 1.f, a1, a2]
-    // set P.filterType to USER_DEFINED, return cutoff, resonance and gain, and set cLP, cBP and cHP
+    // sos = [b0, b1, b2, 1.f, a1, a2]
+    // set P.filterType to USER_DEFINED, return cutoff, gain and resonance, and set cLP, cBP and cHP
     Eigen::Array3f setUserDefinedFilter (I::Real sos)
     {
-        const std::complex<float> negSqrt = std::sqrt(static_cast<std::complex<float>>(-1-sos(4)-sos(5)));
-        const std::complex<float> posSqrt = std::sqrt(static_cast<std::complex<float>>(-1+sos(4)-sos(5)));
-
-        float cutoff = (negSqrt / posSqrt).real();
-        float den = (negSqrt * posSqrt).real();
-        float resonance = den / (2 * (sos(5) - 1));
-        cHP = (sos(0) - sos(1) + sos(2)) / (1 - sos(4) + sos(5));
-        cBP = 2*(sos(0) - sos(2)) / den;
-        cLP = (sos(0) + sos(1) + sos(2)) / (1 + sos(4) + sos(5));
+        float cutoff = std::sqrt(-sos(4)*sos(4) + sos(5)*sos(5) + 2*sos(5) + 1)/(sos(4) - sos(5) - 1);
+        float resonance = std::sqrt((-sos(4) + sos(5) + 1)*(sos(4) + sos(5) + 1))/(2*(sos(5) - 1)); 
+        cHP = (sos(0) - sos(1) + sos(2))/(-sos(4) + sos(5) + 1);
+        cBP = (-sos(0) + sos(2))/(sos(5) - 1);
+        cLP = (sos(0) + sos(1) + sos(2))/(sos(4) + sos(5) + 1);
 
         setParameters({P.USER_DEFINED});
         Eigen::Array3f cgr;

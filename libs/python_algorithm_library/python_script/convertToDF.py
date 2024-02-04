@@ -14,7 +14,7 @@ eq7 = gain * (b + h) + l - lshelf
 eq8 = gain * (b + l) + h - hshelf
 
 sol = solve([eq0,eq1,eq2,eq3,eq4,eq5,eq6,eq7,eq8],[h,l,b,d1,d2,bstop,peak,lshelf,hshelf])
-
+print(sol)
 print("solution for l: ",sol[l])
 Num,Den = fraction(factor(sol[l]))
 Num1 = simplify(collect(expand(Num),z))
@@ -79,3 +79,24 @@ Den7 = simplify(collect(expand(Den),z))
 # print resulting numerator and denominator
 print("Numerator of transfer function (m/x): \n", Num7)
 print("Denominator of transfer function (m/x): \n", Den7)
+
+# find cutoff, resonance, cLP, cBP, cHP from second-order-section representation
+cutoff, resonance, c0, c1, c2, c3 = symbols('cutoff, resonance, c0, c1, c2, c3', real = True)
+
+eq10 = cutoff / resonance - c1
+eq11 = cutoff * resonance - c2
+eq12 = c2 + 1 - c3
+eq13 = 1 / (1+c1*(c2+1)) - c0
+
+cLP, cBP, cHP, b0, b1, b2, a1, a2 = symbols('cLP, cBP, cHP, b0, b1, b2, a1, a2', real=True)
+
+eq15 = cLP*c0*c1*c2 + cBP*c0*c1 + cHP*c0 - b0
+eq16 = cLP*2*c0*c1*c2 -2*cHP*c0 - b1
+eq17 = cLP*c0*c1*c2 - cBP*c0*c1 + cHP*c0 - b2
+
+eq18 = 2*(c0*c1*c2 + c0*c1*(c2+1) - 1) - a1
+eq19 = (2*c0*c1*c2 - 2*c0*c1*(c2+1) + 1) - a2
+ 
+solc = solve([eq10,eq11,eq13,eq15,eq16,eq17,eq18,eq19],[c0,c1,c2,cLP,cBP,cHP,cutoff,resonance])
+print(solc)
+
