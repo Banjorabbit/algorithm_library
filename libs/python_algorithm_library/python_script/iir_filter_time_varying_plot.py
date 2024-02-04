@@ -18,7 +18,7 @@ filterTVSos = filterTV.getSosFilter(cutoff, gain, resonance)
 print(filterTVSos)
 
 # get frequency responses for each type of filter
-nBands = 513
+nBands = 2049
 filterTVPow = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
 
 pTV["filterType"] = "HighPass"
@@ -78,4 +78,22 @@ print("Filter type: ", filterType)
 
 filterCTVPow = filterCTV.getPowerFrequencyResponse(nBands, [cutoff,cutoff,cutoff,cutoff,cutoff,cutoff,cutoff], [gain,gain,gain,gain,gain,gain,gain], [resonance,resonance,resonance,resonance,resonance,resonance,resonance])
 plt.plot(10*np.log10(filterCTVPow))
+
+# Check conversion between sos and TDF is correct: convert cutoff, resonance and gain to sos representation -> convert back again and check power frequency response is the same.
+sosCascade = filterCTV.getSosFilter([cutoff,cutoff,cutoff,cutoff,cutoff,cutoff,cutoff], [gain,gain,gain,gain,gain,gain,gain], [resonance,resonance,resonance,resonance,resonance,resonance,resonance])
+print(sosCascade)
+cgr = filterCTV.setUserDefinedFilter(sosCascade)
+filter2CTVPow = filterCTV.getPowerFrequencyResponse(nBands, cgr[0,:], cgr[1,:], cgr[2,:])
+plt.plot(10*np.log10(filter2CTVPow))
+
+# create TDF filter -> input sos -> check power frequency response is the same as for SVF 
+filterIIR = pal.IIRFilter()
+cIIR = filterIIR.getCoefficients()
+cIIR["nSos"] = 7
+filterIIR.setCoefficients(cIIR)
+print(filterIIR)
+filterIIR.setFilter(sosCascade)
+filter3CTVPow = filterIIR.getPowerFrequencyResponse(nBands)
+plt.plot(10*np.log10(filter3CTVPow))
+
 plt.show()
