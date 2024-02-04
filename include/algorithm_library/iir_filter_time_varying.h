@@ -86,6 +86,11 @@ public:
     // return filter as second-order section
     Eigen::ArrayXf getSosFilter(float cutoff, float gain, float resonance) const;
     Eigen::ArrayXf getPowerFrequencyResponse(int nBands, float cutoff, float gain, float resonance) const;
+    
+    // Given a second order section of the type:
+    // sos = [b0 b1, b2, 1.f, a1, a2]
+    // set P.filterType to USER_DEFINED and convert sos to internal representation. Return cutoff, gain and resonance in a std::tuple.
+    std::tuple<float, float, float> setUserDefinedFilter(I::Real sos);
 };
 
 // Configuration of cascade of time-varying IIR filters that can be modified at each new time sample.

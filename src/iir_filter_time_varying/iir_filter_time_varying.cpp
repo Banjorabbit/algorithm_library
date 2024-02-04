@@ -14,6 +14,11 @@ Eigen::ArrayXf IIRFilterTimeVarying::getPowerFrequencyResponse(int nBands, float
     return static_cast<Implementation<StateVariableFilter, IIRFilterTimeVaryingConfiguration>*>(pimpl.get())->algo.getPowerFrequencyResponse(nBands, cutoff, gain, resonance);
 }
 
+std::tuple<float, float, float> IIRFilterTimeVarying::setUserDefinedFilter(I::Real sos)
+{
+    return static_cast<Implementation<StateVariableFilter, IIRFilterTimeVaryingConfiguration>*>(pimpl.get())->algo.setUserDefinedFilter(sos);
+}
+
 // ------------------------------------------ IIRFilterCascadeTimeVarying and StateVariableFilterCascade glue layer ----------------------------------------------------------------
 
 DEFINE_ALGORITHM_CONSTRUCTOR(IIRFilterCascadeTimeVarying, StateVariableFilterCascade, IIRFilterCascadeTimeVaryingConfiguration)

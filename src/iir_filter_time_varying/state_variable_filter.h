@@ -175,13 +175,13 @@ public:
 
     // Given a second order section of the type:
     // s0s = [b0 b1, b2, 1.f, a1, a2]
-    // set P.filterType to USER_DEFINED, return g and resonance, and set cLP, cBP and cHP
-    std::pair<float, float> setUserDefinedFilter (Eigen::ArrayXf sos)
+    // set P.filterType to USER_DEFINED, return cutoff, resonance and gain, and set cLP, cBP and cHP
+    std::tuple<float, float, float> setUserDefinedFilter (I::Real sos)
     {
         const std::complex<float> negSqrt = std::sqrt(static_cast<std::complex<float>>(-1-sos(4)-sos(5)));
         const std::complex<float> posSqrt = std::sqrt(static_cast<std::complex<float>>(-1+sos(4)-sos(5)));
 
-        float g = (negSqrt / posSqrt).real();
+        float cutoff = (negSqrt / posSqrt).real();
         float den = (negSqrt * posSqrt).real();
         float resonance = den / (2 * (sos(5) - 1));
         cHP = (sos(0) - sos(1) + sos(2)) / (1 - sos(4) + sos(5));
@@ -189,8 +189,7 @@ public:
         cLP = (sos(0) + sos(1) + sos(2)) / (1 + sos(4) + sos(5));
 
         setParameters({P.USER_DEFINED});
-        std::pair<float, float> c = {g, resonance};
-        return c;
+        return std::make_tuple(cutoff, 1.f, resonance);
     }
     
 private:
