@@ -14,35 +14,36 @@ print(pTV)
 cutoff = np.tan(np.pi * 4000/16000)
 gain = .25
 resonance = .7071
-filterTVSos = filterTV.getFilter(cutoff, gain, resonance)
+filterTVSos = filterTV.getSosFilter(cutoff, gain, resonance)
 print(filterTVSos)
 
 # get frequency responses for each type of filter
-filterTVPow = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
+nBands = 513
+filterTVPow = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
 
 pTV["filterType"] = "HighPass"
 filterTV.setParameters(pTV)
-filterTVPow1 = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
+filterTVPow1 = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
 
 pTV["filterType"] = "BandPass"
 filterTV.setParameters(pTV)
-filterTVPow2 = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
+filterTVPow2 = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
 
 pTV["filterType"] = "BandStop"
 filterTV.setParameters(pTV)
-filterTVPow3 = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
+filterTVPow3 = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
 
 pTV["filterType"] = "Peaking"
 filterTV.setParameters(pTV)
-filterTVPow4 = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
+filterTVPow4 = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
 
 pTV["filterType"] = "LowShelf"
 filterTV.setParameters(pTV)
-filterTVPow5 = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
+filterTVPow5 = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
 
 pTV["filterType"] = "HighShelf"
 filterTV.setParameters(pTV)
-filterTVPow6 = filterTV.getPowerFrequencyResponse(257, cutoff, gain, resonance)
+filterTVPow6 = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
 
 plt.plot(10*np.log10(filterTVPow))
 plt.plot(10*np.log10(filterTVPow))
@@ -75,6 +76,6 @@ filterCTV.setFilterTypes(filterType)
 filterType = filterCTV.getFilterTypes() 
 print("Filter type: ", filterType)
 
-filterCTVPow = filterCTV.getPowerFrequencyResponse(257, [cutoff,cutoff,cutoff,cutoff,cutoff,cutoff,cutoff], [gain,gain,gain,gain,gain,gain,gain], [resonance,resonance,resonance,resonance,resonance,resonance,resonance])
+filterCTVPow = filterCTV.getPowerFrequencyResponse(nBands, [cutoff,cutoff,cutoff,cutoff,cutoff,cutoff,cutoff], [gain,gain,gain,gain,gain,gain,gain], [resonance,resonance,resonance,resonance,resonance,resonance,resonance])
 plt.plot(10*np.log10(filterCTVPow))
 plt.show()
