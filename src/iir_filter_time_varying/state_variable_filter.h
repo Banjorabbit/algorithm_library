@@ -174,9 +174,9 @@ public:
     }
 
     // Given a second order section of the type:
-    // s0s = [b0 b1, b2, 1.f, a1, a2]
+    // sos = [b0 b1, b2, 1.f, a1, a2]
     // set P.filterType to USER_DEFINED, return cutoff, resonance and gain, and set cLP, cBP and cHP
-    std::tuple<float, float, float> setUserDefinedFilter (I::Real sos)
+    Eigen::Array3f setUserDefinedFilter (I::Real sos)
     {
         const std::complex<float> negSqrt = std::sqrt(static_cast<std::complex<float>>(-1-sos(4)-sos(5)));
         const std::complex<float> posSqrt = std::sqrt(static_cast<std::complex<float>>(-1+sos(4)-sos(5)));
@@ -189,7 +189,9 @@ public:
         cLP = (sos(0) + sos(1) + sos(2)) / (1 + sos(4) + sos(5));
 
         setParameters({P.USER_DEFINED});
-        return std::make_tuple(cutoff, 1.f, resonance);
+        Eigen::Array3f cgr;
+        cgr << cutoff, 1.f, resonance;
+        return cgr;
     }
     
 private:
@@ -286,6 +288,24 @@ public:
     }
 
     float getGain() const { return gain; }
+
+    // Given a second order section of the type:
+    // [b0 bb0 ... ]
+    // [b1 bb1 ... ]
+    // [b2 bb2 ... ]
+    // [1  1   ... ]
+    // [a1 aa1 ... ]
+    // [a2 aa2 ... ]
+    // set P.filterType to USER_DEFINED, return cutoff, resonance and gain, and set cLP, cBP and cHP for each second order section
+    Eigen::Array3Xf setUserDefinedFilter (I::Real2D sos)
+    {
+        Eigen::Array3Xf cgr(3, C.nSos);
+        for (auto i = 0; i < C.nSos; i++)
+        {
+            cgr.col(i) = filters[i].setUserDefinedFilter(sos.col(i));
+        }
+        return cgr;
+    }
 
 private:
 

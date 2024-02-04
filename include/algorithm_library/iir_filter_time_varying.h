@@ -89,8 +89,8 @@ public:
     
     // Given a second order section of the type:
     // sos = [b0 b1, b2, 1.f, a1, a2]
-    // set P.filterType to USER_DEFINED and convert sos to internal representation. Return cutoff, gain and resonance in a std::tuple.
-    std::tuple<float, float, float> setUserDefinedFilter(I::Real sos);
+    // set P.filterType to USER_DEFINED and convert sos to internal representation. Return cutoff, gain and resonance in an array.
+    Eigen::Array3f setUserDefinedFilter(I::Real sos);
 };
 
 // Configuration of cascade of time-varying IIR filters that can be modified at each new time sample.
@@ -186,4 +186,14 @@ public:
 
     // get overall gain
     float getGain() const;
+
+    // Given a second order section of the type:
+    // [b0 bb0 ... ]
+    // [b1 bb1 ... ]
+    // [b2 bb2 ... ]
+    // [1  1   ... ]
+    // [a1 aa1 ... ]
+    // [a2 aa2 ... ]
+    // set P.filterType to USER_DEFINED, return cutoff, resonance and gain, and set cLP, cBP and cHP for each second order section
+    Eigen::Array3Xf setUserDefinedFilter(I::Real2D sos);
 };

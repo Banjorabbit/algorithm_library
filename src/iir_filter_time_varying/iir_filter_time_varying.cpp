@@ -14,7 +14,7 @@ Eigen::ArrayXf IIRFilterTimeVarying::getPowerFrequencyResponse(int nBands, float
     return static_cast<Implementation<StateVariableFilter, IIRFilterTimeVaryingConfiguration>*>(pimpl.get())->algo.getPowerFrequencyResponse(nBands, cutoff, gain, resonance);
 }
 
-std::tuple<float, float, float> IIRFilterTimeVarying::setUserDefinedFilter(I::Real sos)
+Eigen::Array3f IIRFilterTimeVarying::setUserDefinedFilter(I::Real sos)
 {
     return static_cast<Implementation<StateVariableFilter, IIRFilterTimeVaryingConfiguration>*>(pimpl.get())->algo.setUserDefinedFilter(sos);
 }
@@ -61,4 +61,10 @@ Eigen::ArrayXXf IIRFilterCascadeTimeVarying::getSosFilter(I::Real cutoffSos, I::
 float IIRFilterCascadeTimeVarying::getGain() const
 {
     return static_cast<Implementation<StateVariableFilterCascade, IIRFilterCascadeTimeVaryingConfiguration>*>(pimpl.get())->algo.getGain();
+}
+
+// set P.filterType to USER_DEFINED, return cutoff, resonance and gain, and set cLP, cBP and cHP for each second order section
+Eigen::Array3Xf IIRFilterCascadeTimeVarying::setUserDefinedFilter(I::Real2D sos)
+{
+    return static_cast<Implementation<StateVariableFilterCascade, IIRFilterCascadeTimeVaryingConfiguration>*>(pimpl.get())->algo.setUserDefinedFilter(sos);
 }
