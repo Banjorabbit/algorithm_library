@@ -18,7 +18,7 @@ struct IIRFilterNonParametricConfiguration
         enum FilterImplementations {TDF, SVF};
         FilterImplementations filterImplementation = TDF;
         DEFINE_TUNABLE_ENUM(FilterImplementations, {{TDF, "TDF"}, {SVF, "SVF}"}})
-        DEFINE_TUNABLE_COEFFICIENTS(nChannels, nSos, filterImplementation)
+        DEFINE_TUNABLE_COEFFICIENTS(nChannels, nSos, sampleRate, filterImplementation)
     };
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
