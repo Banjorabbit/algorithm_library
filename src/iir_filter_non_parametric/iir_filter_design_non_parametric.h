@@ -15,13 +15,13 @@ class IIRFilterTDFNonParametric : public AlgorithmImplementation<IIRFilterNonPar
 public:
     IIRFilterTDFNonParametric(Coefficients c = Coefficients()) :
         AlgorithmImplementation<IIRFilterNonParametricConfiguration, IIRFilterTDFNonParametric>{ c },
-        filterDesigner(convertToDesignIIRSplineCoefficients(c)),
+        filterDesignerNonParametric(convertToDesignIIRSplineCoefficients(c)),
         filter({ c.nChannels, c.nSos})
     { }
 
-    DesignIIRSpline filterDesigner;
+    DesignIIRSpline filterDesignerNonParametric;
     IIRFilterCascaded filter;
-    DEFINE_MEMBER_ALGORITHMS(filter, filterDesigner)
+    DEFINE_MEMBER_ALGORITHMS(filter, filterDesignerNonParametric)
 
     inline void processOn(Input input, Output output)
     {
@@ -32,7 +32,7 @@ public:
     {
         Eigen::ArrayXXf sos(6, C.nSos);
         float gain;
-        filterDesigner.process({frequencies, gains}, {sos, gain});
+        filterDesignerNonParametric.process({frequencies, gains}, {sos, gain});
         filter.setFilter(sos, gain);
     }
 
@@ -67,7 +67,7 @@ class IIRFilterSVFNonParametric : public AlgorithmImplementation<IIRFilterNonPar
 public:
     IIRFilterSVFNonParametric(Coefficients c = Coefficients()) :
         AlgorithmImplementation<IIRFilterNonParametricConfiguration, IIRFilterSVFNonParametric>{ c },
-        filterDesigner(convertToDesignIIRSplineCoefficients(c)),
+        filterDesignerNonParametric(convertToDesignIIRSplineCoefficients(c)),
         filter({ c.nChannels, c.nSos})
     { 
         filter.setFilterTypes({static_cast<long unsigned int>(c.nSos), StateVariableFilter::Parameters::USER_DEFINED});
@@ -76,9 +76,9 @@ public:
         resonance = Eigen::ArrayXf::Ones(c.nSos, .7071f); // 1/sqrt(2) = 0.7071 corresponds to a Butterworth filter
     }
 
-    DesignIIRSpline filterDesigner;
+    DesignIIRSpline filterDesignerNonParametric;
     StateVariableFilterCascade filter;
-    DEFINE_MEMBER_ALGORITHMS(filter, filterDesigner)
+    DEFINE_MEMBER_ALGORITHMS(filter, filterDesignerNonParametric)
 
     inline void processOn(Input input, Output output)
     {
@@ -89,7 +89,7 @@ public:
     {
         Eigen::ArrayXXf sos(6, C.nSos);
         float g;
-        filterDesigner.process({frequencies, gains}, {sos, g});
+        filterDesignerNonParametric.process({frequencies, gains}, {sos, g});
         Eigen::Array3Xf cgr = filter.setUserDefinedFilter(sos);
         cutoff = cgr.row(0).transpose();
         gain = cgr.row(1).transpose();
@@ -109,6 +109,7 @@ public:
     }
 
     float getGain() const { return filter.getGain(); }
+    
 private:
 
     DesignIIRSpline::Coefficients convertToDesignIIRSplineCoefficients(const Coefficients & c)
