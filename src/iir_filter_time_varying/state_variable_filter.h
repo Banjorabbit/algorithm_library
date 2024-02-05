@@ -286,6 +286,7 @@ public:
     }
 
     float getGain() const { return gain; }
+    void setGain(float g) { gain = g; }
 
     // Given a second order section of the type:
     // [b0 bb0 ... ]
@@ -304,8 +305,7 @@ public:
         }
         return cgr;
     }
-
+   
 private:
-
     float gain;
 };
