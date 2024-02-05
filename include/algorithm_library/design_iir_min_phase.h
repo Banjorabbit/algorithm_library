@@ -30,6 +30,7 @@ struct DesignIIRMinPhaseConfiguration
         int nOrder = 8; // filter order. High orders are not numerically stable when calculating roots (about >32)
         enum WeightTypes {LINEAR, MELSCALE};
         WeightTypes weightType = MELSCALE;
+        DEFINE_TUNABLE_ENUM(WeightTypes, {{LINEAR, "Linear"}, {MELSCALE, "MelScale"}})
         DEFINE_TUNABLE_COEFFICIENTS(nBands, sampleRate, nOrder, weightType)
     };
 
