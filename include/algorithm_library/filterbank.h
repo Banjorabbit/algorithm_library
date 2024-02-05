@@ -26,6 +26,7 @@ struct FilterbankAnalysisConfiguration
     {
         enum WindowTypes { HANN_WINDOW, SQRT_HANN_WINDOW, RECTANGULAR, USER_DEFINED };
         WindowTypes windowType = HANN_WINDOW;
+        DEFINE_TUNABLE_ENUM(WindowTypes,{{HANN_WINDOW, "HannWindow"}, {SQRT_HANN_WINDOW, "SqrtHannWindow"}, {RECTANGULAR, "Rectangular"}, {USER_DEFINED, "UserDefined"} })
         DEFINE_TUNABLE_PARAMETERS(windowType)
     };
 
@@ -89,6 +90,7 @@ struct FilterbankSynthesisConfiguration
     {
         enum WindowTypes { HANN_WINDOW, SQRT_HANN_WINDOW, RECTANGULAR, USER_DEFINED };
         WindowTypes windowType = HANN_WINDOW;
+        DEFINE_TUNABLE_ENUM(WindowTypes,{{HANN_WINDOW, "HannWindow"}, {SQRT_HANN_WINDOW, "SqrtHannWindow"}, {RECTANGULAR, "Rectangular"}, {USER_DEFINED, "UserDefined"} })
         DEFINE_TUNABLE_PARAMETERS(windowType)
     };
 
