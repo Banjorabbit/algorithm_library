@@ -15,7 +15,10 @@ struct IIRFilterNonParametricConfiguration
         int nChannels = 2;
         int nSos = 3;
         float sampleRate = 16000.f;
-        DEFINE_TUNABLE_COEFFICIENTS(nChannels, nSos)
+        enum FilterImplementations {TDF, SVF};
+        FilterImplementations filterImplementation = TDF;
+        DEFINE_TUNABLE_ENUM(FilterImplementations, {{TDF, "TDF"}, {SVF, "SVF}"}})
+        DEFINE_TUNABLE_COEFFICIENTS(nChannels, nSos, filterImplementation)
     };
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
@@ -69,5 +72,5 @@ public:
     float getGain() const;
 
     // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyResponse(int nBands);
+    Eigen::ArrayXf getPowerFrequencyResponse(int nBands) const;
 };

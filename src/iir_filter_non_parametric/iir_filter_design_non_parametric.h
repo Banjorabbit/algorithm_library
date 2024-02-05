@@ -47,6 +47,8 @@ public:
         return filter.getFilter();
     }
 
+    float getGain() const { return filter.getGain(); }
+
 private:
 
     DesignIIRSpline::Coefficients convertToDesignIIRSplineCoefficients(const Coefficients & c)
@@ -68,10 +70,10 @@ public:
         filterDesigner(convertToDesignIIRSplineCoefficients(c)),
         filter({ c.nChannels, c.nSos})
     { 
-        filter.setFilterTypes({c.nSos, StateVariableFilter::Parameters::USER_DEFINED});
+        filter.setFilterTypes({static_cast<long unsigned int>(c.nSos), StateVariableFilter::Parameters::USER_DEFINED});
         gain = Eigen::ArrayXf::Ones(c.nSos);
-        cutoff = Eigen::ArrayXf::Constant(c.nSos, std::tan(3.14158 * 1000 / c.sampleRate));
-        resonance = Eigen::ArrayXf::Ones(c.nSos, .7071f);
+        cutoff = Eigen::ArrayXf::Constant(c.nSos, std::tan(3.14158f * 0.25f)); // tan(pi * f / fs)
+        resonance = Eigen::ArrayXf::Ones(c.nSos, .7071f); // 1/sqrt(2) = 0.7071 corresponds to a Butterworth filter
     }
 
     DesignIIRSpline filterDesigner;
@@ -106,6 +108,7 @@ public:
         return filter.getSosFilter(cutoff, gain, resonance);
     }
 
+    float getGain() const { return filter.getGain(); }
 private:
 
     DesignIIRSpline::Coefficients convertToDesignIIRSplineCoefficients(const Coefficients & c)
