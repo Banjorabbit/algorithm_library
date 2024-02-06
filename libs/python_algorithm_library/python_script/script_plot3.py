@@ -38,7 +38,6 @@ fig, ax = plt.subplots()
 canvas = FigureCanvasTkAgg(fig, master=None)
 
 window = sg.Window('Waveform Plotter', layout, finalize=True)
-plot_waveforms(waveforms, ax)  # Initial plot
 
 while True:
     event, values = window.read()
@@ -62,8 +61,8 @@ while True:
             canvas.draw()
             canvas.get_tk_widget().pack(side='top', fill='both', expand=1)
     elif event == 'Remove Waveform':
-        selected_index = values['-WAVEFORMS-'][0]
-        if selected_index is not None:
+        if len(values['-WAVEFORMS-']) > 0:
+            selected_index = values['-WAVEFORMS-'][0],
             waveforms.pop(window['-WAVEFORMS-'].get_indexes()[0])
             window['-WAVEFORMS-'].update([f"{waveform['type']} {waveform['frequency']} Hz" for waveform in waveforms])
             plot_waveforms(waveforms, ax)
