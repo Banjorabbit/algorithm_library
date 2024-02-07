@@ -24,18 +24,7 @@ def create_waveforms(waveforms):
     plt.grid(True)
     return plt.gcf()
 
-# ----------------------------- The draw figure helpful function -----------------------------
-
 def draw_figure(element, figure):
-    """
-    Draws the previously created "figure" in the supplied Image Element
-
-    :param element: an Image Element
-    :param figure: a Matplotlib figure
-    :return: The figure canvas
-    """
-
-
     plt.close('all')        # erases previously drawn plots
     canv = FigureCanvasAgg(figure)
     buf = io.BytesIO()
@@ -46,8 +35,6 @@ def draw_figure(element, figure):
     element.update(data=buf.read())
     return canv
 
-
-
 layout = [
     [sg.Button('Add Sinusoid'), sg.Button('Add Squarewave'), sg.Button('Remove Waveform')],
     [sg.Listbox(values=[], size=(30, 6), key='-WAVEFORMS-'), sg.Image(key='-IMAGE-')],
@@ -55,9 +42,12 @@ layout = [
     [sg.Button('Save Figure'), sg.Button('Exit')]
 ]
 
+# create start window
 waveforms = []
 window = sg.Window('Waveform Plotter', layout, finalize=True)
 image_element = window['-IMAGE-']   
+fig = create_waveforms(waveforms)
+draw_figure(image_element, fig)
 
 while True:
     event, values = window.read()
