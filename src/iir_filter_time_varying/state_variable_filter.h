@@ -1,7 +1,7 @@
 #pragma once
 #include "framework/framework.h"
 #include "algorithm_library/iir_filter_time_varying.h"
-
+#include "fmt/core.h"
 // State Variable Filter 
 //
 // author: Kristian Timm Andersen
@@ -170,7 +170,7 @@ public:
         const float a1 = c(4);
         const float a2 = c(5);
         Eigen::ArrayXf freqs = Eigen::ArrayXf::LinSpaced(nBands, 0, 3.14159f);
-        return (b0*b0 + b1*b1 + b2*b2 + 2*(b0*b1+b1*b2)*freqs.cos() + 2*b0*b2*(2*freqs).cos()) / (1.f + a1*a1 + a2*a2 + 2*(a1+a1*a2)*freqs.cos() + 2*a2*(2*freqs).cos());
+        return (b0*b0 + b1*b1 + b2*b2 + 2*(b0*b1+b1*b2)*freqs.cos() + 2*b0*b2*(2*freqs).cos()) / (1.f + a1*a1 + a2*a2 + 2*(a1+a1*a2)*freqs.cos() + 2*a2*(2*freqs).cos()).max(1e-20f);
     }
 
     // Given a second order section of the type:
