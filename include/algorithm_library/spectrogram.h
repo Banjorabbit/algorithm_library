@@ -17,6 +17,7 @@ struct SpectrogramConfiguration
         int fftSize = 512;
         enum SpectrogramAlgorithm { FILTERBANK, NONLINEAR};
         SpectrogramAlgorithm algorithm = FILTERBANK; // choose algorithm to use for calculating spectrogram
+        DEFINE_TUNABLE_ENUM(SpectrogramAlgorithm, {{FILTERBANK, "Filterbank"}, {NONLINEAR, "NonLinear"}})
         DEFINE_TUNABLE_COEFFICIENTS(bufferSize, fftSize, algorithm)
     };
 
