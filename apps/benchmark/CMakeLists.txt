@@ -33,6 +33,10 @@ CPMAddPackage(
 
 add_executable(${PROJECT_NAME} src/benchmark_algorithms.cpp)
 
+if (NOT MSVC)
+  target_compile_options(${PROJECT_NAME} PRIVATE "$<$<CONFIG:Release>:-ffast-math>")
+endif()
+
 # We need to include this path in our search path
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/../../include ${PROJECT_SOURCE_DIR}/../../src)
 
