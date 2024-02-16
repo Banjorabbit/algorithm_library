@@ -141,7 +141,7 @@ public:
 	AlgorithmImplementation() = default;
 	AlgorithmImplementation(const Coefficients& c) : C(c) {}
 	AlgorithmImplementation(const Setup& s) : C(s.coefficients), P(s.parameters) { }
-	~AlgorithmImplementation() = default;
+	virtual ~AlgorithmImplementation() = default;
 	
 	size_t getStaticSize() const { return sizeof(Talgo); }
 
