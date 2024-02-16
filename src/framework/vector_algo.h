@@ -22,7 +22,7 @@ public:
 	VectorAlgo(int size, const Setup& s) : vec(size, s) {} 		// initialize with size and Setup S
 	VectorAlgo(const std::vector<Coefficients>& c) : vec(c.begin(), c.end()) {} 	// initialize with vector of Coefficients
 	VectorAlgo(const std::vector<Setup>& s) : vec(s.begin(), s.end()) {} 			// initialize with vector of Setups
-	~VectorAlgo() = default;
+	virtual ~VectorAlgo() = default;
 
 	size_t getDynamicSize() const
 	{
