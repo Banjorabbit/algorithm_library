@@ -45,49 +45,49 @@ public:
         
         switch (P.filterType)
         {
-        case P.LOWPASS:
+        case Parameters::LOWPASS:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.gain * lp.col(i);
             }
             break;
-        case P.HIGHPASS:
+        case Parameters::HIGHPASS:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.gain * hp.col(i);
             }
             break;
-        case P.BANDPASS:
+        case Parameters::BANDPASS:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.gain * bp.col(i);
             }
             break;
-        case P.BANDSTOP:
+        case Parameters::BANDSTOP:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.gain * (input.xTime.col(i) - bp.col(i));
             }
             break;
-        case P.PEAKING:
+        case Parameters::PEAKING:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.xTime.col(i) + (input.gain - 1.f) * bp.col(i);
             }
             break;
-        case P.LOWSHELF:
+        case Parameters::LOWSHELF:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.gain * (bp.col(i) + hp.col(i)) + lp.col(i);
             }
             break;
-        case P.HIGHSHELF:
+        case Parameters::HIGHSHELF:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.gain * (bp.col(i) + lp.col(i)) + hp.col(i);
             }
             break;
-        case P.USER_DEFINED:
+        case Parameters::USER_DEFINED:
             for (auto i = 0; i < C.nChannels; i++)
             {
                 output.col(i) = input.gain * (cLP * lp.col(i) + cBP * bp.col(i) + cHP * hp.col(i));
@@ -113,42 +113,42 @@ public:
 
         switch (P.filterType)
         {
-        case P.LOWPASS:
+        case Parameters::LOWPASS:
             b0 = gain * c012;
             b1 = gain * 2 * c012;
             b2 = gain * c012;
             break;
-        case P.HIGHPASS:
+        case Parameters::HIGHPASS:
             b0 = gain * c0;
             b1 = -gain * 2 * c0;
             b2 = gain * c0;
             break;
-        case P.BANDPASS:
+        case Parameters::BANDPASS:
             b0 = gain * c01;
             b1 = 0;
             b2 = -gain * c01;
             break;
-        case P.BANDSTOP:
+        case Parameters::BANDSTOP:
             b0 = gain * (1 - c01);
             b1 = 2 * gain * (c012 + c013 - 1);
             b2 = gain * (2 * (c012 - c013) + c01 + 1);
             break;
-        case P.PEAKING:
+        case Parameters::PEAKING:
             b0 = 1 + c01 * (gain - 1.f);
             b1 = 2 * (c012 + c013 - 1);
             b2 = 2 * c012 - 2 * c013 - c01 * (gain - 1.f) + 1;
             break;
-        case P.LOWSHELF:
+        case Parameters::LOWSHELF:
             b0 = c012 + gain * (c01 + c0);
             b1 = 2 * (c012 - c0 * gain);
             b2 = (c012 - gain * (c01 - c0));
             break;
-        case P.HIGHSHELF:
+        case Parameters::HIGHSHELF:
             b0 = (gain * (c012 + c01) + c0);
             b1 = 2 * (c012 * gain - c0);
             b2 = (gain * (c012 - c01) + c0);
             break;
-        case P.USER_DEFINED:
+        case Parameters::USER_DEFINED:
             b0 = gain * (cLP * c012 + cBP * c01 + cHP * c0);
             b1 = 2 * gain * (cLP * c012 - cHP * c0);
             b2 = gain * (cLP * c012 - cBP * c01 + cHP * c0);
