@@ -73,7 +73,7 @@ public:
         filter.setFilterTypes({static_cast<long unsigned int>(c.nSos), StateVariableFilter::Parameters::USER_DEFINED});
         gain = Eigen::ArrayXf::Ones(c.nSos);
         cutoff = Eigen::ArrayXf::Constant(c.nSos, std::tan(3.14158f * 0.25f)); // tan(pi * f / fs)
-        resonance = Eigen::ArrayXf::Ones(c.nSos, .7071f); // 1/sqrt(2) = 0.7071 corresponds to a Butterworth filter
+        resonance = Eigen::ArrayXf::Constant(c.nSos, .7071f); // 1/sqrt(2) = 0.7071 corresponds to a Butterworth filter
     }
 
     DesignIIRSpline filterDesignerNonParametric;
