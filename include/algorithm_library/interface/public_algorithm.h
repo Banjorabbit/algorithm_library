@@ -87,13 +87,13 @@ public:
 	using Setup = typename Base::Setup;
 
 	// check if conditions for AlgorithmBuffer<Tconfiguration> are fulfilled
-	static_assert(std::is_same<int, decltype(Coefficients::bufferSize)>::value); // Coefficients has integer member variable bufferSize
-	static_assert(std::is_same<int, decltype(Coefficients::nChannels)>::value); // Coefficients has integer member variable nChannels
-	static_assert(std::is_same<BufferMode, decltype(Coefficients::bufferMode)>::value); // Coefficients has BufferMode member variable bufferMode
-	static_assert(Eigen::Dynamic == I::getType<Input>::type::RowsAtCompileTime); // input rows size is Dynamic
-	static_assert(Eigen::Dynamic == I::getType<Input>::type::ColsAtCompileTime); // input cols size is Dynamic
-	static_assert(Eigen::Dynamic == O::getType<Output>::type::RowsAtCompileTime); // output rows size is Dynamic
-	static_assert(Eigen::Dynamic == I::getType<Output>::type::ColsAtCompileTime); // output cols size is Dynamic
+	static_assert(std::is_same<int, decltype(Coefficients::bufferSize)>::value, "Coefficients must have integer variable bufferSize"); // Coefficients has integer member variable bufferSize
+	static_assert(std::is_same<int, decltype(Coefficients::nChannels)>::value, "Coefficients must have integer variable nChannels"); // Coefficients has integer member variable nChannels
+	static_assert(std::is_same<BufferMode, decltype(Coefficients::bufferMode)>::value, "Coefficients must have Buffermode variable bufferMode"); // Coefficients has BufferMode member variable bufferMode
+	static_assert(Eigen::Dynamic == I::getType<Input>::type::RowsAtCompileTime, "Input number of rows must be dynamic"); // input rows size is Dynamic
+	static_assert(Eigen::Dynamic == I::getType<Input>::type::ColsAtCompileTime, "Input number of columns must be dynamic"); // input cols size is Dynamic
+	static_assert(Eigen::Dynamic == O::getType<Output>::type::RowsAtCompileTime, "Output number of rows must be dynamic"); // output rows size is Dynamic
+	static_assert(Eigen::Dynamic == O::getType<Output>::type::ColsAtCompileTime, "Output number of columns must be dynamic"); // output cols size is Dynamic
 
 	AlgorithmBuffer() : AlgorithmBuffer(Coefficients()) {}
 	AlgorithmBuffer(const Coefficients& c) : Algorithm<Tconfiguration>(c) {}
