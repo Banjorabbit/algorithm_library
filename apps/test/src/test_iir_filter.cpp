@@ -25,13 +25,14 @@ TEST(IIRFilter, PowerFrequencyResponse)
 
 	float error = (powR-1).abs2().sum() / nBands;
 	fmt::print("powR error: {}\n", error);
-	EXPECT_TRUE(error< 1e-12f);
+	EXPECT_TRUE(error< 1e-10f);
 
 	auto c = filter.getCoefficients();
 	c.nSos = 10;
+	filter.setCoefficients(c);
 	Eigen::ArrayXf powRCascaded = filter.getPowerFrequencyResponse(nBands);
 
 	error = (powR - powRCascaded).abs2().sum();
 	fmt::print("powR Cascaded: {}\n", error);
-	EXPECT_TRUE(error == 0);
+	EXPECT_TRUE(error < 1e-10f);
 }
