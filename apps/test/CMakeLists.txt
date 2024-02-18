@@ -26,6 +26,14 @@ CPMAddPackage(
   OPTIONS "INSTALL_GTEST OFF" "gtest_force_shared_crt"
 )  
 
+# add format library
+CPMAddPackage(
+  NAME fmt
+  GIT_TAG 9.0.0
+  GITHUB_REPOSITORY fmtlib/fmt
+  OPTIONS "FMT_INSTALL YES" # create an installable target
+)
+
 # add algorithm_library
 CPMAddPackage(
   NAME AlgorithmLibrary 
@@ -40,7 +48,7 @@ add_executable(${PROJECT_NAME} ${SOURCE_LIST_TEST_CPP})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/../../include ${PROJECT_SOURCE_DIR}/../../src)
 
 # The project depends on the following libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE AlgorithmLibrary gtest gtest_main)
+target_link_libraries(${PROJECT_NAME} PRIVATE AlgorithmLibrary gtest gtest_main fmt::fmt)
 
 # All users of this library will need at least C++14
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_14)
