@@ -1,0 +1,14 @@
+    buildType:
+      default: Clang
+      choices:
+        Clang:
+          short: Clang
+          long: use installed Clang and libc++
+          buildType: Release            
+        Unreal:
+          short: UnrealPath
+          long: Use Unreal Engine version of libc++ and default compiler
+          buildType: Release
+          settings:
+            UNREAL_ENGINE_PATH: /home/kris/UnrealEngine/UnrealEngine/ # set this path to the correct path to Unreal Engine
+        

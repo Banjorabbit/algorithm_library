@@ -1,0 +1,7 @@
+{
+    "cmake.buildDirectory": "${workspaceFolder}/../../build/algorithm_library_unreal_engine/${buildType}",
+    "files.associations": {
+        "typeindex": "cpp",
+        "typeinfo": "cpp"
+    },
+}
