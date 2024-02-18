@@ -59,7 +59,7 @@ public:
 	};
 	
 protected:
-	~Algorithm() = default;;
+	~Algorithm() = default;
 	
 	std::unique_ptr<BaseImplementation> pimpl; // PIMPL. Define in derived source file
 };
