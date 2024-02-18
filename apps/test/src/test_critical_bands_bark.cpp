@@ -54,7 +54,6 @@ TEST(CriticalBandsBark, inverse)
 {
 	auto c = CriticalBandsBarkSum::Coefficients();
 	CriticalBandsBarkSum critBands(c);
-	const int nCritBands = BarkScale::getNCriticalBands(c.sampleRate);
 	const int nFFTBands = 257;
 	ArrayXf input = ArrayXf::Random(nFFTBands).abs2();
 	ArrayXf output = critBands.initOutput(input);
