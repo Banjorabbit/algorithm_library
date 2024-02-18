@@ -1,7 +1,7 @@
 #pragma once
 #include "framework/framework.h"
 #include "algorithm_library/iir_filter_time_varying.h"
-#include "fmt/core.h"
+
 // State Variable Filter 
 //
 // author: Kristian Timm Andersen
