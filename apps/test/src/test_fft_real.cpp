@@ -66,7 +66,7 @@ TEST(FFTReal, InvalidFFTSize)
 		c.fftSize = fftSize;
 		FFTReal fft(c);
 	}
-	catch (FFTReal::Configuration::ExceptionFFT error) {
+	catch (const FFTReal::Configuration::ExceptionFFT& error) {
 		fmt::print("Caught exception: {}\n", error.what());
 		validFFTSize = false;
 	}
@@ -80,7 +80,7 @@ TEST(FFTReal, InvalidFFTSize)
 		c.fftSize = 33;
 		fft.setCoefficients(c);
 	}
-	catch (FFTReal::Configuration::ExceptionFFT error) {
+	catch (const FFTReal::Configuration::ExceptionFFT& error) {
 		fmt::print("Caught exception: {}\n", error.what());
 		validFFTSize = false;
 	}
@@ -93,7 +93,7 @@ TEST(FFTReal, InvalidFFTSize)
 		c.fftSize = 1760;
 		fft.setCoefficients(c);
 	}
-	catch (FFTReal::Configuration::ExceptionFFT error) {
+	catch (const FFTReal::Configuration::ExceptionFFT& error) {
 		fmt::print("Caught exception: {}\n", error.what());
 		validFFTSize = false;
 	}
@@ -106,7 +106,7 @@ TEST(FFTReal, InvalidFFTSize)
 		c.fftSize = 16;
 		fft.setCoefficients(c);
 	}
-	catch (FFTReal::Configuration::ExceptionFFT error) {
+	catch (const FFTReal::Configuration::ExceptionFFT& error) {
 		fmt::print("Caught exception: {}\n", error.what());
 		validFFTSize = false;
 	}
@@ -119,7 +119,7 @@ TEST(FFTReal, InvalidFFTSize)
 		c.fftSize = 128;
 		fft.setCoefficients(c);
 	}
-	catch (FFTReal::Configuration::ExceptionFFT error) {
+	catch (const FFTReal::Configuration::ExceptionFFT& error) {
 		fmt::print("Caught exception: {}\n", error.what());
 		validFFTSize = false;
 	}
