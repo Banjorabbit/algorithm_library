@@ -37,6 +37,10 @@ public:
     DCRemoverFirstOrder dcRemover;
     DEFINE_MEMBER_ALGORITHMS(filterbank, filterbankInverse, beamformer, activityDetector, dcRemover)
 
+    int getDelaySamples() const { return filterbank.getDelaySamples() + filterbankInverse.getDelaySamples(); } 
+
+private:
+
     void processOn(Input input, Output output)
 	{
         Eigen::ArrayXXf xTime(C.bufferSize, C.nChannels);
@@ -49,9 +53,8 @@ public:
         beamformer.process({xFreq, activity}, xBeamformed); 
         filterbankInverse.process(xBeamformed, output);
 	}
-
-    int getDelaySamples() const { return filterbank.getDelaySamples() + filterbankInverse.getDelaySamples(); } 
-
-private:
+    
     int nBands;
+
+    friend AlgorithmImplementation<PreprocessingPathConfiguration, BeamformerPath>;
 };

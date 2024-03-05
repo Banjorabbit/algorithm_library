@@ -91,7 +91,9 @@ public:
 		gain = gainA / gainSOS;
     }
 
-    void processOn(Input magnitudeSpectrum, Output output)
+private:
+
+        void processOn(Input magnitudeSpectrum, Output output)
     {
         assert(magnitudeSpectrum.rows() == C.nBands);
         Eigen::ArrayXcf xFreq(C.nBands);
@@ -139,9 +141,7 @@ public:
 		TF2SOS(A, output.sos.bottomRows(3), gainDen);
 		output.gain /= gainDen;
     }
-
-private:
-
+    
     size_t getDynamicSizeVariables() const final
     {
         size_t size = weight.getDynamicMemorySize();
@@ -153,4 +153,6 @@ private:
     Eigen::ArrayXf weight;
     Eigen::MatrixXf R;
     Eigen::PolynomialSolver<float, Eigen::Dynamic> polynomialsolver;
+
+    friend AlgorithmImplementation<DesignIIRMinPhaseConfiguration, DesignIIRMinPhaseTF2SOS>;
 };

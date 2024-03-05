@@ -19,6 +19,8 @@ public:
     FFTReal fft;
     DEFINE_MEMBER_ALGORITHMS(fft)
 
+private:
+
     inline void processOn(Input magnitude, Output spectrum)
     {
         using namespace std::complex_literals;
@@ -38,4 +40,5 @@ public:
         }
     }
 
+    friend AlgorithmImplementation<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>;
 };

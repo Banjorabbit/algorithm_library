@@ -16,7 +16,8 @@
         SolverToeplitzSystem(Coefficients c = Coefficients()) :
             AlgorithmImplementation<SolverToeplitzConfiguration, SolverToeplitzSystem>{ c }
         { }
-        
+    
+    private:
         inline void processOn(Input x, Output y)
         {
             const auto nFilt = x.BRighthand.rows();
@@ -78,4 +79,6 @@
                 }
             }
         }
+
+        friend AlgorithmImplementation<SolverToeplitzConfiguration, SolverToeplitzSystem>;
     };

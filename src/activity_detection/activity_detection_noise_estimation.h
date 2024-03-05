@@ -16,6 +16,14 @@ public:
         onParametersChanged();
      }
 
+    void onParametersChanged()
+    {
+        smoothingLambda = 1.f - expf(-1.f / (C.filterbankRate * P.smoothingTConstant));
+    }
+
+    inline Eigen::ArrayXXf getPowerNoise() const { return powerNoise; }
+
+private:
     void processOn(Input powerNoisy, Output activity)
     {
         // activity detection
@@ -39,14 +47,6 @@ public:
         powerNoise += smoothingLambda * (1.f - activity) * (powerNoisy - powerNoise);
     }
 
-    void onParametersChanged()
-    {
-        smoothingLambda = 1.f - expf(-1.f / (C.filterbankRate * P.smoothingTConstant));
-    }
-
-    inline Eigen::ArrayXXf getPowerNoise() const { return powerNoise; }
-
-private:
     void resetVariables() final
     {
         activityMean.setZero();
@@ -63,6 +63,8 @@ private:
     Eigen::ArrayXXf activityMean;
     Eigen::ArrayXXf powerNoise;
     float activityMeanLambda, smoothingLambda;
+
+    friend AlgorithmImplementation<ActivityDetectionConfiguration, ActivityDetectionNoiseEstimation>;
 };
 
 class ActivityDetectionFusedNoiseEstimation : public AlgorithmImplementation<ActivityDetectionFusedConfiguration, ActivityDetectionFusedNoiseEstimation>
@@ -76,19 +78,19 @@ public:
     ActivityDetectionNoiseEstimation activityDetection;
     DEFINE_MEMBER_ALGORITHMS(activityDetection)
 
-    inline void processOn(Input powerNoisy, Output activityFlag)
-    {
-        Eigen::ArrayXXf activity(C.nBands, C.nChannels);
-        activityDetection.processOn(powerNoisy, activity);
-        
-        activityFlag = (powerNoisy.colwise().mean() > (getPowerNoise().colwise().mean() * 1.5 * P.activityThreshold)).any(); // mean power of each channel is compared. ActivityFlag is true if any channel is above threshold
-        activityFlag |= static_cast<float>((activity > 0.5f * P.activityThreshold).rowwise().any().count()) > (0.15f * P.activityThreshold * C.nBands); // (1) true if activity is above threshold in any channel, (2) then count over bands and compare with threshold
-    }
-
     inline Eigen::ArrayXXf getPowerNoise() const { return activityDetection.getPowerNoise(); }
 
 private:
 
+    inline void processOn(Input powerNoisy, Output activityFlag)
+    {
+        Eigen::ArrayXXf activity(C.nBands, C.nChannels);
+        activityDetection.process(powerNoisy, activity);
+        
+        activityFlag = (powerNoisy.colwise().mean() > (getPowerNoise().colwise().mean() * 1.5 * P.activityThreshold)).any(); // mean power of each channel is compared. ActivityFlag is true if any channel is above threshold
+        activityFlag |= static_cast<float>((activity > 0.5f * P.activityThreshold).rowwise().any().count()) > (0.15f * P.activityThreshold * C.nBands); // (1) true if activity is above threshold in any channel, (2) then count over bands and compare with threshold
+    }
+    
     ActivityDetectionNoiseEstimation::Coefficients convertToActivityDetectionConfiguration(const Coefficients& c)
     {
         ActivityDetectionNoiseEstimation::Coefficients c2;
@@ -97,4 +99,6 @@ private:
         c2.nChannels = c.nChannels;
         return c2;
     }
+
+    friend AlgorithmImplementation<ActivityDetectionFusedConfiguration, ActivityDetectionFusedNoiseEstimation>;
 };

@@ -18,17 +18,6 @@ public:
         resetVariables();
      }
 
-    // push input values into buffer and write output values from buffer
-    inline void processOn(Input input, Output output)
-    {
-        for (auto sample = 0; sample < input.rows(); sample++)
-        {
-            increment();
-            output(sample,0) = buffer(index);
-            buffer(index) = input(sample, 0);
-        }
-    }
-
     inline void push(Input input)
     {
         for (auto sample = 0; sample < input.rows(); sample++)
@@ -69,6 +58,17 @@ public:
 
 private:
 
+    // push input values into buffer and write output values from buffer
+    inline void processOn(Input input, Output output)
+    {
+        for (auto sample = 0; sample < input.rows(); sample++)
+        {
+            increment();
+            output(sample,0) = buffer(index);
+            buffer(index) = input(sample, 0);
+        }
+    }
+
     inline void increment() { index++; if (index >= C.delayLength) { index = 0; } }
     inline void increment(const int increment) { index += increment; while (index >= C.delayLength) { index -= C.delayLength; } }
     inline void decrement() { index--; if (index < 0) { index = C.delayLength - 1; } }
@@ -89,6 +89,8 @@ private:
 
     Eigen::ArrayXf buffer;
     int index;
+
+    friend AlgorithmImplementation<DelayConfiguration, CircularBufferSingleChannel>;
 };
 
 class CircularBuffer : public AlgorithmImplementation<DelayConfiguration, CircularBuffer>
@@ -99,17 +101,6 @@ public:
     {
         buffer.resize(c.delayLength, c.nChannels);
         reset();
-    }
-
-    // push input values into buffer and write output values from buffer
-    inline void processOn(Input input, Output output)
-    {
-        for (auto sample = 0; sample < input.rows(); sample++)
-        {
-            increment();
-            output.row(sample) = buffer.row(index);
-            buffer.row(index) = input.row(sample);
-        }
     }
 
     inline void push(Input input)
@@ -152,6 +143,17 @@ public:
 
 private:
 
+    // push input values into buffer and write output values from buffer
+    inline void processOn(Input input, Output output)
+    {
+        for (auto sample = 0; sample < input.rows(); sample++)
+        {
+            increment();
+            output.row(sample) = buffer.row(index);
+            buffer.row(index) = input.row(sample);
+        }
+    }
+
     inline void increment() { index++; if (index >= C.delayLength) { index = 0; } }
     inline void increment(const int increment) { index += increment; while (index >= C.delayLength) { index -= C.delayLength; } }
     inline void decrement() { index--; if (index < 0) { index = C.delayLength - 1; } }
@@ -172,4 +174,6 @@ private:
 
     Eigen::ArrayXXf buffer;
     int index;
+
+    friend AlgorithmImplementation<DelayConfiguration, CircularBuffer>;
 };

@@ -24,21 +24,6 @@ public:
         b2 = 0.f;
     }
 
-    inline void processOn(Input input, Output output)
-    {
-        for (auto sample = 0; sample < input.rows(); sample++)
-		{
-			for (auto channel = 0; channel < C.nChannels; channel++) // channel in inner loop is faster according to profiling
-			{
-				float out = input(sample, channel) * b0 + state1(channel); // can not write directly to output if input and output are same memory
-				// Update state variables
-				state1(channel) = input(sample, channel) * b1 - out * a1 + state2(channel);
-				state2(channel) = input(sample, channel) * b2 - out * a2;
-				output(sample, channel) = out;
-			}
-		}
-    }
-
     void setFilter(I::Real sos)
     {
         if (sos(3) != 0.f)
@@ -76,6 +61,21 @@ public:
 
 private:
 
+    inline void processOn(Input input, Output output)
+    {
+        for (auto sample = 0; sample < input.rows(); sample++)
+		{
+			for (auto channel = 0; channel < C.nChannels; channel++) // channel in inner loop is faster according to profiling
+			{
+				float out = input(sample, channel) * b0 + state1(channel); // can not write directly to output if input and output are same memory
+				// Update state variables
+				state1(channel) = input(sample, channel) * b1 - out * a1 + state2(channel);
+				state2(channel) = input(sample, channel) * b2 - out * a2;
+				output(sample, channel) = out;
+			}
+		}
+    }
+
     void resetVariables() final
     {
         state1.setZero();
@@ -91,6 +91,8 @@ private:
 
     float b0, b1, b2, a1, a2; // coefficients
     Eigen::ArrayXf state1, state2; // state variables
+
+    friend AlgorithmImplementation<IIRFilterConfiguration, IIRFilter2ndOrder>;
 };
 
 // Cascade of IIRFilter2ndOrder
@@ -104,12 +106,6 @@ public:
 
     VectorAlgo<IIRFilter2ndOrder> filters;
     DEFINE_MEMBER_ALGORITHMS(filters)
-
-    inline void processOn(Input input, Output output)
-    {
-        output = input * gain;
-		for (auto i = 0; i < C.nSos; i++) { filters[i].process(output, output); }
-    }
 
     void setFilter(I::Real2D sos, float g)
     {
@@ -144,5 +140,13 @@ public:
     float getGain() const { return gain; }
 
 private:
+
+    inline void processOn(Input input, Output output)
+    {
+        output = input * gain;
+		for (auto i = 0; i < C.nSos; i++) { filters[i].process(output, output); }
+    }
     float gain;
+
+    friend AlgorithmImplementation<IIRFilterConfiguration, IIRFilterCascaded>;
 };

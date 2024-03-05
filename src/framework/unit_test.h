@@ -54,9 +54,18 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 		return true;
 	}
 
+    template <typename T, typename = void>
+    struct hasPublicProcessOn : std::false_type {};
+
+    template <typename T>
+    struct hasPublicProcessOn<T, decltype(void(&T::processOn))> : std::true_type {};
+
+
 	template<typename Talgo>
 	bool assertInterfaceTest()
 	{
+        static_assert(!hasPublicProcessOn<Talgo>(), "processOn is declared as public method.");
+
 		constexpr bool flagReset = std::is_same<decltype(&Talgo::reset), decltype(&Talgo::BaseAlgorithm::reset)>::value;
 		static_assert(flagReset, "reset() is declared in derived algorithm and hiding reset() in base class.");
 
@@ -89,6 +98,9 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 
 		constexpr bool flagSetSetup = std::is_same<decltype(&Talgo::setSetup), decltype(&Talgo::BaseAlgorithm::setSetup)>::value;
 		static_assert(flagSetSetup, "setSetup() is declared in derived algorithm and hiding setSetup() in base class.");
+
+        constexpr bool flagProcess = std::is_same<decltype(&Talgo::process), decltype(&Talgo::BaseAlgorithm::process)>::value;
+		static_assert(flagProcess, "process() is declared in derived algorithm and hiding process() in base class.");
 
 		Talgo algo;
 		auto c = algo.getCoefficients();
@@ -127,11 +139,8 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 			fmt::print("assertInterfaceTest failed: setSetupTree(...) is declared in derived algorithm and hiding setSetupTree(...) in base class.\n");
 		}
 
-		constexpr bool flagProcess = std::is_same<decltype(&Talgo::process), decltype(&Talgo::BaseAlgorithm::process)>::value;
-		static_assert(flagProcess, "process() is declared in derived algorithm and hiding process() in base class.");
-
 		return flagReset && flagGetDynamicSize && flagGetStaticSize && flagGetCoefficients && flagGetParameters && flagGetSetup &&
-			flagGetCoefficientsTree && flagGetParametersTree && flagGetSetupTree && flagSetParameters && flagSetSetup && flagGetCoefficientsTree &&
+			flagGetCoefficientsTree && flagGetParametersTree && flagGetSetupTree && flagSetParameters && flagSetSetup && flagProcess && flagGetCoefficientsTree &&
 			flagGetParametersTree && flagGetSetupTree && flagSetCoefficients && flagSetCoefficientsTree && flagSetParametersTree && flagSetSetupTree;
 	}
 

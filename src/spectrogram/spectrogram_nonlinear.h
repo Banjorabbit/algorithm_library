@@ -44,19 +44,6 @@ public:
     FilterbankAnalysisWOLA filterbank2;
     DEFINE_MEMBER_ALGORITHMS(filterbank0, filterbank1, filterbank2)
 
-    void inline processOn(Input input, Output output)
-    {
-        for (auto nFrame = 0; nFrame < getNFrames(input.size(), C.bufferSize); nFrame++)
-        {
-            Eigen::ArrayXf frame = input.segment(nFrame * C.bufferSize, C.bufferSize);
-            Eigen::ArrayXcf filterbankOut0(nBands), filterbankOut1(nBands), filterbankOut2(nBands);
-            filterbank0.process(frame, filterbankOut0);
-            filterbank1.process(frame, filterbankOut1);
-            filterbank2.process(frame, filterbankOut2);
-            output.col(nFrame) = filterbankOut0.abs2().min(filterbankOut1.abs2()).min(filterbankOut2.abs2());
-        }
-    }
-
     void setWindow(I::Real window) 
     {
         // calculate windows
@@ -99,6 +86,20 @@ public:
     static inline int getNFrames(int nSamples, int bufferSize) { return nSamples / bufferSize; }
 
 private:
+
+    void inline processOn(Input input, Output output)
+    {
+        for (auto nFrame = 0; nFrame < getNFrames(input.size(), C.bufferSize); nFrame++)
+        {
+            Eigen::ArrayXf frame = input.segment(nFrame * C.bufferSize, C.bufferSize);
+            Eigen::ArrayXcf filterbankOut0(nBands), filterbankOut1(nBands), filterbankOut2(nBands);
+            filterbank0.process(frame, filterbankOut0);
+            filterbank1.process(frame, filterbankOut1);
+            filterbank2.process(frame, filterbankOut2);
+            output.col(nFrame) = filterbankOut0.abs2().min(filterbankOut1.abs2()).min(filterbankOut2.abs2());
+        }
+    }
+    
     static FilterbankAnalysis::Coefficients convertCoefficientsToFilterbankCoefficients(Coefficients c) 
     {
         FilterbankAnalysis::Coefficients cFilterbank;
@@ -111,4 +112,6 @@ private:
     }
 
     int nBands;
+
+    friend AlgorithmImplementation<SpectrogramConfiguration, SpectrogramNonlinear>;
 };

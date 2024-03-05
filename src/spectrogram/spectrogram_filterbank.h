@@ -22,17 +22,6 @@ public:
     FilterbankAnalysisWOLA filterbank;
     DEFINE_MEMBER_ALGORITHMS(filterbank)
 
-    void inline processOn(Input input, Output output)
-    {
-        for (auto nFrame = 0; nFrame < getNFrames(static_cast<int>(input.size()), C.bufferSize); nFrame++)
-        {
-            Eigen::ArrayXf frame = input.segment(nFrame * C.bufferSize, C.bufferSize);
-            Eigen::ArrayXcf filterbankOut(nBands);
-            filterbank.process(frame, filterbankOut);
-            output.col(nFrame) = filterbankOut.abs2();
-        }
-    }
-
     void setWindow(I::Real window) 
     {
         auto pFilterbank = filterbank.getParameters();
@@ -44,6 +33,18 @@ public:
     static inline int getNFrames(int nSamples, int bufferSize) { return nSamples / bufferSize; }
 
 private:
+
+    void inline processOn(Input input, Output output)
+    {
+        for (auto nFrame = 0; nFrame < getNFrames(static_cast<int>(input.size()), C.bufferSize); nFrame++)
+        {
+            Eigen::ArrayXf frame = input.segment(nFrame * C.bufferSize, C.bufferSize);
+            Eigen::ArrayXcf filterbankOut(nBands);
+            filterbank.process(frame, filterbankOut);
+            output.col(nFrame) = filterbankOut.abs2();
+        }
+    }
+
     static FilterbankAnalysis::Coefficients convertCoefficientsToFilterbankCoefficients(Coefficients c) 
     {
         FilterbankAnalysis::Coefficients cFilterbank;
@@ -56,4 +57,6 @@ private:
     }
 
     int nBands;
+
+    friend AlgorithmImplementation<SpectrogramConfiguration, SpectrogramFilterbank>;
 };

@@ -19,21 +19,6 @@ public:
     FFTReal fft;
     DEFINE_MEMBER_ALGORITHMS(fft)
 
-    inline void processOn(Input xTime, Output yFreq)
-    {
-        timeBuffer.topRows(overlap) = timeBuffer.bottomRows(overlap);
-        timeBuffer.bottomRows(C.bufferSize) = xTime;
-        for (auto channel = 0; channel < C.nChannels; channel++)
-        {
-            fftBuffer.head(C.frameSize) = timeBuffer.col(channel) * window;
-            for (auto j = 1; j < nFolds; j++)
-            {
-                fftBuffer.head(C.fftSize) += fftBuffer.segment(j * C.fftSize, C.fftSize);
-            }
-            fft.process(fftBuffer.head(C.fftSize), yFreq.col(channel));
-        }
-    }
-
     void onParametersChanged()
     {
         switch (P.windowType)
@@ -138,6 +123,21 @@ public:
 
 private:
     
+    inline void processOn(Input xTime, Output yFreq)
+    {
+        timeBuffer.topRows(overlap) = timeBuffer.bottomRows(overlap);
+        timeBuffer.bottomRows(C.bufferSize) = xTime;
+        for (auto channel = 0; channel < C.nChannels; channel++)
+        {
+            fftBuffer.head(C.frameSize) = timeBuffer.col(channel) * window;
+            for (auto j = 1; j < nFolds; j++)
+            {
+                fftBuffer.head(C.fftSize) += fftBuffer.segment(j * C.fftSize, C.fftSize);
+            }
+            fft.process(fftBuffer.head(C.fftSize), yFreq.col(channel));
+        }
+    }
+
     void initialize()
     {
         overlap = C.frameSize - C.bufferSize;
@@ -169,6 +169,8 @@ private:
     Eigen::ArrayXf window, fftBuffer; // advantage of FFTBuffer being allocated on heap is that zeropadding is kept between calls
     Eigen::ArrayXXf timeBuffer;
     int overlap, nFolds, maxSize;
+
+    friend AlgorithmImplementation<FilterbankAnalysisConfiguration, FilterbankAnalysisWOLA>;
 };
 
 
@@ -186,22 +188,6 @@ public:
 
     FFTReal fft;
     DEFINE_MEMBER_ALGORITHMS(fft)
-
-    inline void processOn(Input xFreq, Output yTime)
-    {
-        for (auto channel = 0; channel < C.nChannels; channel++)
-        {
-            fft.inverse(xFreq.col(channel), fftBuffer.head(C.fftSize));
-            for (auto j = 1; j < nFolds; j++)
-            {
-                fftBuffer.segment(j * C.fftSize, C.fftSize) = fftBuffer.head(C.fftSize);
-            }
-            timeBuffer.col(channel) += (fftBuffer.tail(C.frameSize) * window);
-        }
-        yTime = timeBuffer.topRows(C.bufferSize);
-        timeBuffer.topRows(overlap) = timeBuffer.bottomRows(overlap);
-        timeBuffer.bottomRows(C.bufferSize) = 0.f;
-    }
 
     void setWindow(I::Real w)
     {
@@ -306,6 +292,22 @@ public:
     } 
 private:
 
+    inline void processOn(Input xFreq, Output yTime)
+    {
+        for (auto channel = 0; channel < C.nChannels; channel++)
+        {
+            fft.inverse(xFreq.col(channel), fftBuffer.head(C.fftSize));
+            for (auto j = 1; j < nFolds; j++)
+            {
+                fftBuffer.segment(j * C.fftSize, C.fftSize) = fftBuffer.head(C.fftSize);
+            }
+            timeBuffer.col(channel) += (fftBuffer.tail(C.frameSize) * window);
+        }
+        yTime = timeBuffer.topRows(C.bufferSize);
+        timeBuffer.topRows(overlap) = timeBuffer.bottomRows(overlap);
+        timeBuffer.bottomRows(C.bufferSize) = 0.f;
+    }
+    
     void initialize()
     {
         overlap = C.frameSize - C.bufferSize;
@@ -337,4 +339,6 @@ private:
     Eigen::ArrayXf window, fftBuffer; // advantage of FFTBuffer being allocated on heap is that zeropadding is kept between calls
     Eigen::ArrayXXf timeBuffer;
     int overlap, nFolds, maxSize;
+
+    friend AlgorithmImplementation<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>;
 };

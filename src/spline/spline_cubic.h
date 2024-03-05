@@ -14,6 +14,7 @@ public:
         AlgorithmImplementation<SplineConfiguration, SplineCubic>{ c }
     { }
 
+private:
     inline void processOn(Input x, Output y)
     {
         using namespace Eigen;
@@ -61,4 +62,6 @@ public:
             }
         }
     }
+
+    friend AlgorithmImplementation<SplineConfiguration, SplineCubic>;
 };

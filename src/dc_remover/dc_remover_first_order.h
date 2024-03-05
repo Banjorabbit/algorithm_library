@@ -24,19 +24,6 @@ public:
         onParametersChanged();
     }
 
-    void processOn(Input input, Output output)
-    {
-        for (auto channel = 0; channel < C.nChannels; channel++)
-        {
-            for (auto sample = 0; sample < input.rows(); sample++)
-            {
-                const float xi = coef1 * input(sample,channel);
-                output(sample, channel) = xi + delay(channel);
-                delay(channel) = coef0 * output(sample, channel) - xi;
-            }
-        }
-    }
-
     void onParametersChanged() 
     {
         const float cosf = std::cos(2 * 3.14159265358979323846 * P.cutoffFrequency / C.sampleRate);
@@ -48,6 +35,19 @@ public:
 
 private:
 
+        void processOn(Input input, Output output)
+    {
+        for (auto channel = 0; channel < C.nChannels; channel++)
+        {
+            for (auto sample = 0; sample < input.rows(); sample++)
+            {
+                const float xi = coef1 * input(sample,channel);
+                output(sample, channel) = xi + delay(channel);
+                delay(channel) = coef0 * output(sample, channel) - xi;
+            }
+        }
+    }
+    
     void resetVariables() final 
     {
         delay.setZero();
@@ -61,4 +61,6 @@ private:
 
     ArrayXf delay;
     float coef0, coef1;
+
+    friend AlgorithmImplementation<DCRemoverConfiguration, DCRemoverFirstOrder>;
 };

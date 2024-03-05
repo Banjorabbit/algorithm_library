@@ -27,6 +27,8 @@ public:
         resetVariables();
     }
 
+private:
+
     inline void processOn(Input input, Output output)
     {
         for (auto frame = 0; frame < input.cols(); frame++)
@@ -47,9 +49,7 @@ public:
             valuesOld1 = input.col(frame);
         }
     }
-
-private:
-
+    
     void resetVariables() final
     {
         valuesOld0.setZero();
@@ -66,5 +66,7 @@ private:
     Eigen::ArrayXf valuesOld0;
     Eigen::ArrayXf valuesOld1;
     float den1, den2;
+
+    friend AlgorithmImplementation<Normal3dConfiguration, Normal3dDiff>;
 };
 

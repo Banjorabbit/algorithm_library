@@ -21,18 +21,6 @@ public:
         indexEnd = indexStart(c.nMels - 1) + nBandsSum(c.nMels - 1);        
     }
 
-    inline void processOn(Input input, Output output)
-    {
-        for (auto channel = 0; channel < input.cols(); channel++)
-        {
-            for (auto i = 0; i < C.nMels; i++)
-            {
-                // sum
-                output(i, channel) = input.block(indexStart(i), channel, nBandsSum(i), 1).sum();
-            }
-        }
-    }
-
     inline void inverse(I::Real2D xPower, O::Real2D yPower)
     {
         assert(xPower.rows() == C.nMels);
@@ -57,7 +45,20 @@ public:
         return array;
     }
 
-protected:
+private:
+
+    inline void processOn(Input input, Output output)
+    {
+        for (auto channel = 0; channel < input.cols(); channel++)
+        {
+            for (auto i = 0; i < C.nMels; i++)
+            {
+                // sum
+                output(i, channel) = input.block(indexStart(i), channel, nBandsSum(i), 1).sum();
+            }
+        }
+    }
+
     size_t getDynamicSizeVariables() const final
     { 
         size_t size = indexStart.getDynamicMemorySize();
@@ -68,4 +69,6 @@ protected:
     int indexEnd;
     Eigen::ArrayXi indexStart;
     Eigen::ArrayXi nBandsSum;
+
+    friend AlgorithmImplementation<MelScaleConfiguration, MelScaleSpectrogram>;
 };

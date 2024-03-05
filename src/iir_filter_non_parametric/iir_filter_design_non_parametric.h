@@ -23,11 +23,6 @@ public:
     IIRFilterCascaded filter;
     DEFINE_MEMBER_ALGORITHMS(filter, filterDesignerNonParametric)
 
-    inline void processOn(Input input, Output output)
-    {
-        filter.process(input, output);
-    }
-
     void setFilter(I::Real frequencies, I::Real gains)
     {
         Eigen::ArrayXXf sos(6, C.nSos);
@@ -51,6 +46,11 @@ public:
 
 private:
 
+    inline void processOn(Input input, Output output)
+    {
+        filter.process(input, output);
+    }
+
     DesignIIRSpline::Coefficients convertToDesignIIRSplineCoefficients(const Coefficients & c)
     {
         DesignIIRSpline::Coefficients coefficients;
@@ -59,6 +59,8 @@ private:
         coefficients.sampleRate = c.sampleRate;
         return coefficients;
     }
+
+    friend AlgorithmImplementation<IIRFilterNonParametricConfiguration, IIRFilterTDFNonParametric>;
 };
 
 // IIR filter is implemented using State Variable filter implemetation
@@ -79,11 +81,6 @@ public:
     DesignIIRSpline filterDesignerNonParametric;
     StateVariableFilterCascade filter;
     DEFINE_MEMBER_ALGORITHMS(filter, filterDesignerNonParametric)
-
-    inline void processOn(Input input, Output output)
-    {
-        filter.process({input, cutoff, gain, resonance}, output);
-    }
 
     void setFilter(I::Real frequencies, I::Real gains)
     {
@@ -112,6 +109,11 @@ public:
     
 private:
 
+    inline void processOn(Input input, Output output)
+    {
+        filter.process({input, cutoff, gain, resonance}, output);
+    }
+
     DesignIIRSpline::Coefficients convertToDesignIIRSplineCoefficients(const Coefficients & c)
     {
         DesignIIRSpline::Coefficients coefficients;
@@ -132,4 +134,6 @@ private:
     Eigen::ArrayXf cutoff;
     Eigen::ArrayXf gain;
     Eigen::ArrayXf resonance;
+
+    friend AlgorithmImplementation<IIRFilterNonParametricConfiguration, IIRFilterSVFNonParametric>;
 };

@@ -84,6 +84,10 @@ public:
         AlgorithmImplementation<CriticalBandsSumConfiguration, CriticalBandsBarkSum>{ c }
     { }
 
+    inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
+
+private:
+
     inline void processOn(Input xPower, Output yPower)
     {
        for (auto channel = 0; channel < xPower.cols(); channel++)
@@ -95,11 +99,9 @@ public:
             }
         }
     }
-
-    inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
-
-private:
     size_t getDynamicSizeVariables() const final { return CriticalBandsBark::getDynamicSizeVariables(); }
+
+    friend AlgorithmImplementation<CriticalBandsSumConfiguration, CriticalBandsBarkSum>;
 };
 
 // --------------------------------------------------- CriticalBandsBarkMax ----------------------------------------------------------------
@@ -113,6 +115,10 @@ public:
         AlgorithmImplementation<CriticalBandsMaxConfiguration, CriticalBandsBarkMax>{ c }
     { }
 
+    inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
+
+private:
+
     inline void processOn(Input xPower, Output yPower)
     {
        for (auto channel = 0; channel < xPower.cols(); channel++)
@@ -124,11 +130,9 @@ public:
             }
         }
     }
-
-    inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
-
-private:
     size_t getDynamicSizeVariables() const final { return CriticalBandsBark::getDynamicSizeVariables(); }
+
+    friend AlgorithmImplementation<CriticalBandsMaxConfiguration, CriticalBandsBarkMax>;
 };
 
 // --------------------------------------------------- CriticalBandsBarkMean ----------------------------------------------------------------
@@ -142,6 +146,10 @@ public:
         AlgorithmImplementation<CriticalBandsMeanConfiguration, CriticalBandsBarkMean>{ c }
     { }
 
+    inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
+
+private:
+
     inline void processOn(Input xPower, Output yPower)
     {
        for (auto channel = 0; channel < xPower.cols(); channel++)
@@ -154,8 +162,7 @@ public:
         }
     }
 
-    inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
-
-private:
     size_t getDynamicSizeVariables() const final { return CriticalBandsBark::getDynamicSizeVariables(); }
+
+    friend AlgorithmImplementation<CriticalBandsMeanConfiguration, CriticalBandsBarkMean>;
 };

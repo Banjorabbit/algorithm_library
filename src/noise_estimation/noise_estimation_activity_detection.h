@@ -17,14 +17,14 @@ public:
     ActivityDetectionNoiseEstimation activityDetection;
     DEFINE_MEMBER_ALGORITHMS(activityDetection)
 
+private:
+
     inline void processOn(Input powerNoisy, Output output)
     {
         Eigen::ArrayXXf activity(C.nBands, C.nChannels);
-        activityDetection.processOn(powerNoisy, activity);
+        activityDetection.process(powerNoisy, activity);
         output = activityDetection.getPowerNoise();
     }
-
-private:
 
     ActivityDetectionNoiseEstimation::Coefficients convertToActivityDetectionCoefficients(const Coefficients& c)
     {
@@ -34,6 +34,8 @@ private:
         c2.nChannels = c.nChannels;
         return c2;
     }
+
+    friend AlgorithmImplementation<NoiseEstimationConfiguration, NoiseEstimationActivityDetection>;
 };
 
 
@@ -51,13 +53,13 @@ public:
     ActivityDetectionNoiseEstimation activityDetection;
     DEFINE_MEMBER_ALGORITHMS(activityDetection)
 
+private:
+
     inline void processOn(Input powerNoisy, Output output)
     {
-        activityDetection.processOn(powerNoisy, output.activity);
+        activityDetection.process(powerNoisy, output.activity);
         output.powerNoise = activityDetection.getPowerNoise();
     }
-
-private:
 
     ActivityDetectionNoiseEstimation::Coefficients convertToActivityDetectionCoefficients(const Coefficients& c)
     {
@@ -67,6 +69,8 @@ private:
         c2.nChannels = c.nChannels;
         return c2;
     }
+
+    friend AlgorithmImplementation<NoiseEstimationActivityConfiguration, NoiseEstimationOutputActivityDetection>;
 };
 
 
@@ -85,13 +89,13 @@ public:
     ActivityDetectionFusedNoiseEstimation activityDetection;
     DEFINE_MEMBER_ALGORITHMS(activityDetection)
 
+private:
+
     inline void processOn(Input powerNoisy, Output output)
     {
-        activityDetection.processOn(powerNoisy, output.activity);
+        activityDetection.process(powerNoisy, output.activity);
         output.powerNoise = activityDetection.getPowerNoise();
     }
-
-private:
 
     ActivityDetectionFusedNoiseEstimation::Coefficients convertToActivityDetectionCoefficients(const Coefficients& c)
     {
@@ -101,4 +105,6 @@ private:
         c2.nChannels = c.nChannels;
         return c2;
     }
+
+    friend AlgorithmImplementation<NoiseEstimationActivityFusedConfiguration, NoiseEstimationOutputFusedActivityDetection>;
 };

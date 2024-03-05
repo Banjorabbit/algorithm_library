@@ -21,7 +21,9 @@ public:
 	DesignIIRMinPhaseTF2SOS filterDesigner;
     DEFINE_MEMBER_ALGORITHMS(splineCalculation, filterDesigner)
 
-	void processOn(Input input, Output output)
+private:
+
+    void processOn(Input input, Output output)
 	{
         // add 2 frequency/gain points to the left and right of given points to ensure correct gradient 
         Eigen::ArrayXf frequencies(input.frequencies.rows() + 4);
@@ -45,8 +47,6 @@ public:
         filterDesigner.process(gainFFT, {output.sos, output.gain});
 	}
 
-private:
-
     DesignIIRMinPhaseTF2SOS::Coefficients convertToDesignIIRMinPhaseTF2SOS(const Coefficients& c)
     {
         DesignIIRMinPhaseTF2SOS::Coefficients cMinPhase;
@@ -57,4 +57,5 @@ private:
         return cMinPhase;
     }
 
+    friend AlgorithmImplementation<DesignIIRNonParametricConfiguration, DesignIIRSpline>;
 };

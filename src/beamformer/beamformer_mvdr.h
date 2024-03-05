@@ -28,6 +28,12 @@ public:
 		eigenSolver.compute(Rx[0], Rn[0]); // run once to make sure calculation works
     }
 
+    enum SpeechUpdateDecisions { NOISE, SPEECH, INPUT, FREEZE_UPDATE };
+    void setSpeechDecision(SpeechUpdateDecisions sd) { speechDecision = sd; }
+    SpeechUpdateDecisions getSpeechDecision() const { return speechDecision; }
+
+private:
+
     void processOn(Input input, Output yFreq)
 	{
 		bool activityFlag = input.speechActivity;
@@ -50,12 +56,6 @@ public:
 
 		yFreq = (input.xFreq * filter).rowwise().sum(); // this has been profiled to be just as fast as multiplying with ones or summing in a for-loop
 	}
-
-    enum SpeechUpdateDecisions { NOISE, SPEECH, INPUT, FREEZE_UPDATE };
-    void setSpeechDecision(SpeechUpdateDecisions sd) { speechDecision = sd; }
-    SpeechUpdateDecisions getSpeechDecision() const { return speechDecision; }
-
-private:
 
     void covarianceUpdate(Input input)
 	{
@@ -120,5 +120,7 @@ private:
     Eigen::ArrayXXcf filter;
     std::vector<Eigen::MatrixXcf> Rx, Rn;
     Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXcf> eigenSolver;
-	Eigen::MatrixXcf eigenVectors, Rxn;    
+	Eigen::MatrixXcf eigenVectors, Rxn;   
+
+    friend AlgorithmImplementation<BeamformerConfiguration, BeamformerMVDR>; 
 };

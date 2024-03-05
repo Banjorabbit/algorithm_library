@@ -29,19 +29,6 @@ public:
         assert(isFFTSizeValid(C.fftSize)); // assert that FFT size is valid. It is not extremely useful after the throwing exception, but it allows the exception to be caught in debug mode
     }
 
-    inline void processOn(Input xTime, Output yFreq)
-    {
-        // After the first channel, yFreq is not 16 byte alligned due to FFTSize/2+1 size so we can't write output to it from FFT transform
-        for (auto channel = 0; channel < xTime.cols(); channel++)
-        {
-            Eigen::ArrayXf out((int)C.fftSize);
-            pffft_transform_ordered(setup.get(), xTime.col(channel).data(), out.data(), nullptr, PFFFT_FORWARD);
-            yFreq(0, channel) = out(0);
-            yFreq(C.fftSize / 2, channel) = out(1);
-            std::memcpy(&yFreq.real()(1, channel), &out(2), (C.fftSize - 2) * sizeof(float));
-        }
-    }
-
     inline void inverse(I::Complex2D xFreq, O::Real2D yTime)
     {
         for (auto channel = 0; channel < xFreq.cols(); channel++)
@@ -74,6 +61,19 @@ public:
 
 private:
 
+    inline void processOn(Input xTime, Output yFreq)
+    {
+        // After the first channel, yFreq is not 16 byte alligned due to FFTSize/2+1 size so we can't write output to it from FFT transform
+        for (auto channel = 0; channel < xTime.cols(); channel++)
+        {
+            Eigen::ArrayXf out((int)C.fftSize);
+            pffft_transform_ordered(setup.get(), xTime.col(channel).data(), out.data(), nullptr, PFFFT_FORWARD);
+            yFreq(0, channel) = out(0);
+            yFreq(C.fftSize / 2, channel) = out(1);
+            std::memcpy(&yFreq.real()(1, channel), &out(2), (C.fftSize - 2) * sizeof(float));
+        }
+    }
+    
     size_t getDynamicSizeVariables() const final
     {
         if (setup) { return pffft_get_setup_size(setup.get()); }
@@ -91,5 +91,7 @@ private:
     } 
 
     static const std::array<int,72> validFFTSizes; // defined in fft.cpp
+
+    friend AlgorithmImplementation<FFTConfiguration, FFTReal>;
 };
 

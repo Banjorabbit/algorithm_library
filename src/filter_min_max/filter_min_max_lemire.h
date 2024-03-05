@@ -40,6 +40,23 @@ public:
         resetVariables();
     }
 
+    void resetInitialValue(const float iOld) 
+    { 
+        reset(); 
+        inputOld.setConstant(iOld); 
+    }
+
+    void resetInitialValue(I::Real iOld)
+    { 
+        if (iOld.size() == inputOld.size())
+        {
+            reset();
+            inputOld = iOld; 
+        }
+    }
+
+private:
+
     void processOn(Input input, Output output)
     {
         for (auto channel = 0; channel < C.nChannels; channel++)
@@ -119,23 +136,6 @@ public:
         minIndex -= static_cast<int>(input.rows());
     }
 
-    void resetInitialValue(const float iOld) 
-    { 
-        reset(); 
-        inputOld.setConstant(iOld); 
-    }
-
-    void resetInitialValue(I::Real iOld)
-    { 
-        if (iOld.size() == inputOld.size())
-        {
-            reset();
-            inputOld = iOld; 
-        }
-    }
-
-private:
-
     size_t getDynamicSizeVariables() const final
     {
         auto size = minIndex.getDynamicMemorySize();
@@ -169,6 +169,8 @@ private:
     ArrayXXf minValue;
     ArrayXf inputOld;
     ArrayXi upperFrontIndex, upperEndIndex, lowerFrontIndex, lowerEndIndex;
+
+    friend AlgorithmImplementation<StreamingMinMaxConfiguration, StreamingMinMaxLemire>;
 };
 
 class FilterMinMaxLemire : public AlgorithmImplementation<FilterMinMaxConfiguration, FilterMinMaxLemire>
@@ -184,6 +186,11 @@ public:
     StreamingMinMaxLemire streaming;
     DEFINE_MEMBER_ALGORITHMS(streaming)
 
+    void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
+    void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
+
+private:
+
     void processOn(Input input, Output output)
     {
         streaming.resetInitialValue(input.row(0).transpose());
@@ -196,12 +203,9 @@ public:
         streaming.process(xSymmetric, output);
     }
 
-    void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
-    void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
-
-private:
-
     int wHalf;
+
+    friend AlgorithmImplementation<FilterMinMaxConfiguration, FilterMinMaxLemire>;
 };
 
 class StreamingMaxLemire : public AlgorithmImplementation<StreamingMaxConfiguration, StreamingMaxLemire>
@@ -217,6 +221,23 @@ public:
         upperEndIndex.resize(C.nChannels);
         resetVariables();
     }
+
+    void resetInitialValue(const float iOld) 
+    { 
+        reset(); 
+        inputOld.setConstant(iOld); 
+    }
+
+    void resetInitialValue(I::Real iOld)
+    { 
+        if (iOld.size() == inputOld.size())
+        {
+            reset();
+            inputOld = iOld; 
+        }
+    }
+
+private:
 
     void processOn(Input input, Output output)
     {
@@ -266,23 +287,6 @@ public:
         maxIndex -= static_cast<int>(input.rows());
     }
 
-    void resetInitialValue(const float iOld) 
-    { 
-        reset(); 
-        inputOld.setConstant(iOld); 
-    }
-
-    void resetInitialValue(I::Real iOld)
-    { 
-        if (iOld.size() == inputOld.size())
-        {
-            reset();
-            inputOld = iOld; 
-        }
-    }
-
-private:
-
     size_t getDynamicSizeVariables() const final
     {
         auto size = maxIndex.getDynamicMemorySize();
@@ -306,6 +310,8 @@ private:
     ArrayXXf maxValue;
     ArrayXf inputOld;
     ArrayXi upperFrontIndex, upperEndIndex;
+
+    friend AlgorithmImplementation<StreamingMaxConfiguration, StreamingMaxLemire>;
 };
 
 class StreamingMinLemire : public AlgorithmImplementation<StreamingMinConfiguration, StreamingMinLemire>
@@ -321,6 +327,23 @@ public:
         lowerEndIndex.resize(C.nChannels);
         resetVariables();
     }
+
+    void resetInitialValue(const float iOld) 
+    { 
+        reset(); 
+        inputOld.setConstant(iOld); 
+    }
+
+    void resetInitialValue(I::Real iOld)
+    { 
+        if (iOld.size() == inputOld.size())
+        {
+            reset();
+            inputOld = iOld; 
+        }
+    }
+
+private:
 
     void processOn(Input input, Output output)
     {
@@ -371,23 +394,6 @@ public:
         minIndex -= static_cast<int>(input.rows());
     }
 
-    void resetInitialValue(const float iOld) 
-    { 
-        reset(); 
-        inputOld.setConstant(iOld); 
-    }
-
-    void resetInitialValue(I::Real iOld)
-    { 
-        if (iOld.size() == inputOld.size())
-        {
-            reset();
-            inputOld = iOld; 
-        }
-    }
-
-private:
-
     size_t getDynamicSizeVariables() const final
     {
         auto size = minIndex.getDynamicMemorySize();
@@ -411,6 +417,8 @@ private:
     ArrayXXf minValue;
     ArrayXf inputOld;
     ArrayXi lowerFrontIndex, lowerEndIndex;
+
+    friend AlgorithmImplementation<StreamingMinConfiguration, StreamingMinLemire>;
 };
 
 class FilterMaxLemire : public AlgorithmImplementation<FilterMaxConfiguration, FilterMaxLemire>
@@ -426,6 +434,11 @@ public:
     StreamingMaxLemire streaming;
     DEFINE_MEMBER_ALGORITHMS(streaming)
 
+    void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
+    void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
+
+private:
+
     void processOn(Input input, Output output)
     {
         streaming.resetInitialValue(input.row(0).transpose());
@@ -438,12 +451,9 @@ public:
         streaming.process(xSymmetric, output);
     }
 
-    void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
-    void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
-
-private:
-
     int wHalf;
+
+    friend AlgorithmImplementation<FilterMaxConfiguration, FilterMaxLemire>;
 };
 
 class FilterMinLemire : public AlgorithmImplementation<FilterMinConfiguration, FilterMinLemire>
@@ -459,6 +469,11 @@ public:
     StreamingMinLemire streaming;
     DEFINE_MEMBER_ALGORITHMS(streaming)
 
+    void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
+    void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
+
+private:
+
     void processOn(Input input, Output output)
     {
         streaming.resetInitialValue(input.row(0).transpose());
@@ -470,11 +485,8 @@ public:
         xSymmetric.bottomRows(wHalf) = input.bottomRows<1>().replicate(wHalf, 1);
         streaming.process(xSymmetric, output);
     }
-
-    void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
-    void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
-
-private:
-
+    
     int wHalf;
+
+    friend AlgorithmImplementation<FilterMinConfiguration, FilterMinLemire>;
 };

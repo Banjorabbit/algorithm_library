@@ -19,6 +19,8 @@ public:
         AlgorithmImplementation<InterpolationSampleConfiguration, InterpolationCubicSample>{ c }
     { }
 
+private:
+
     inline void processOn(Input input, Output output)
     {
         const auto c0 = input.samples(1);
@@ -28,6 +30,8 @@ public:
         output = ((c3 * input.fractionalDelay + c2) * input.fractionalDelay + c1) * input.fractionalDelay + c0;
         assert(input.fractionalDelay >= 0.f); assert(input.fractionalDelay <= 1.f); // ASSERT: fractionalDelay must be between 0 and 1
     }
+
+    friend AlgorithmImplementation<InterpolationSampleConfiguration, InterpolationCubicSample>;
 };
 
 
@@ -43,6 +47,8 @@ public:
     InterpolationCubicSample interpolation; // this class uses default constructor
     DEFINE_MEMBER_ALGORITHMS(interpolation)
 
+private:
+
     inline void processOn(Input x, Output y)
     {
         for (auto i = 0; i < x.fractionalIndices.size(); i++)
@@ -54,6 +60,8 @@ public:
             interpolation.process({ samples, fractionalIndex }, y(i));
         }
     }
+
+    friend AlgorithmImplementation<InterpolationConfiguration, InterpolationCubic>;
 };
 
 // ----------------------------- Cubic interpolation of array with constant fractionalDelay. This is faster ------------------------------------------------------
@@ -75,6 +83,8 @@ public:
         assert(C.fractionalDelay <= 1); assert(C.fractionalDelay >= 0);// ASSERT: fractionalDelay must be between 0 and 1
     }
 
+private:
+
     inline void processOn(Input x, Output y)
     {
         const int N = static_cast<int>(x.size()) - 3; // number of output samples
@@ -82,7 +92,8 @@ public:
         y = a0 * x.head(N) + a1 * x.segment(1, N) + a2 * x.segment(2, N) + a3 * x.tail(N);
     }
 
-private:
     float a0, a1, a2, a3;
+
+    friend AlgorithmImplementation<InterpolationConstantConfiguration, InterpolationCubicConstant>;
 };
 
