@@ -46,5 +46,5 @@ TEST(ReadWriteType, RunTwoThreads)
     if (iterFail == -1) { fmt::print("Test succeeded\n"); }
     else { fmt::print("Test failed in iteration: {}\n", iterFail); }
 
-    EXPECT_TRUE(iterFail = -1);
+    EXPECT_TRUE(iterFail == -1);
 }
