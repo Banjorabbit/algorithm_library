@@ -23,17 +23,22 @@ TEST(ReadWriteType, RunTwoThreads)
 
     // loop reads
     int iterFail = -1;
+    int value = -1;
     int valueOld = -1;
     for (int i = 0; i < 150000; i++) 
     {
-        int value = data.get();
+        value = data.get();
         if (value < valueOld) // test pass criteria
         {
             iterFail = i;
             break;
         }
         valueOld = value;
+        std::this_thread::yield();
     }
+    int numElements = data.getNumElements();
+    fmt::print("Value: {}\n", value);
+    fmt::print("Number of elements in data: {}\n", numElements);
 
     // join thread
     t1.join();
