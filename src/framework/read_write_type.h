@@ -33,7 +33,7 @@ public:
     // NOTE: This method must be called from real-time thread
     T& get() 
     { 
-        // // update readList
+        // update readList
         readList = endList;
         return readList->data;
     }
