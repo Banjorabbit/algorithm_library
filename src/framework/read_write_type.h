@@ -30,16 +30,21 @@ public:
         delete startList;
     }
 
+    // NOTE: This method must be called from real-time thread
     T& get() 
     { 
-        // update readList
-        while (readList->next != nullptr)
-        {
-            readList = readList->next;
-        }
+        // // update readList
+        readList = endList;
         return readList->data;
     }
 
+    // NOTE: This method must be called from same thread as set()
+    T getConst() const
+    {
+        return endList->data;
+    }
+
+    // set data in message thread
     void set(T& data)
     {
         // update endList
