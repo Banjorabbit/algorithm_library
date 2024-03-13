@@ -21,7 +21,8 @@ public:
         smoothingLambda = 1.f - expf(-1.f / (C.filterbankRate * P.smoothingTConstant));
     }
 
-    inline Eigen::ArrayXXf getPowerNoise() const { return powerNoise; }
+    // return by const reference to avoid memory copy
+    inline const Eigen::ArrayXXf& getPowerNoise() const { return powerNoise; }
 
 private:
     void processOn(Input powerNoisy, Output activity)
@@ -73,24 +74,31 @@ public:
     ActivityDetectionFusedNoiseEstimation(Coefficients c =  Coefficients()) :
         AlgorithmImplementation<ActivityDetectionFusedConfiguration, ActivityDetectionFusedNoiseEstimation>{ c },
         activityDetection(convertToActivityDetectionConfiguration(c))
-    { }
+    { 
+        activity.resize(C.nBands, C.nChannels);
+    }
 
     ActivityDetectionNoiseEstimation activityDetection;
     DEFINE_MEMBER_ALGORITHMS(activityDetection)
 
-    inline Eigen::ArrayXXf getPowerNoise() const { return activityDetection.getPowerNoise(); }
+    // return by const reference to avoid memory copy
+    inline const Eigen::ArrayXXf& getPowerNoise() const { return activityDetection.getPowerNoise(); }
 
 private:
 
     inline void processOn(Input powerNoisy, Output activityFlag)
     {
-        Eigen::ArrayXXf activity(C.nBands, C.nChannels);
         activityDetection.process(powerNoisy, activity);
-        
         activityFlag = (powerNoisy.colwise().mean() > (getPowerNoise().colwise().mean() * 1.5 * P.activityThreshold)).any(); // mean power of each channel is compared. ActivityFlag is true if any channel is above threshold
         activityFlag |= static_cast<float>((activity > 0.5f * P.activityThreshold).rowwise().any().count()) > (0.15f * P.activityThreshold * C.nBands); // (1) true if activity is above threshold in any channel, (2) then count over bands and compare with threshold
     }
     
+    size_t getDynamicSizeVariables() const final
+    {
+        size_t size = activity.getDynamicMemorySize();
+        return size;
+    }
+
     ActivityDetectionNoiseEstimation::Coefficients convertToActivityDetectionConfiguration(const Coefficients& c)
     {
         ActivityDetectionNoiseEstimation::Coefficients c2;
@@ -99,6 +107,7 @@ private:
         c2.nChannels = c.nChannels;
         return c2;
     }
+    Eigen::ArrayXXf activity;
 
     friend AlgorithmImplementation<ActivityDetectionFusedConfiguration, ActivityDetectionFusedNoiseEstimation>;
 };

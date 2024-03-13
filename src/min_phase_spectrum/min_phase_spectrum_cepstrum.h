@@ -14,7 +14,10 @@ public:
     MinPhaseSpectrumCepstrum(Coefficients c =  Coefficients()) :
         AlgorithmImplementation<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>{ c },
         fft({ 2 * (C.nBands - 1) })
-    { }
+    { 
+        xLog.resize(C.nBands);
+        xCepstrum.resize((C.nBands - 1) * 2);
+    }
 
     FFTReal fft;
     DEFINE_MEMBER_ALGORITHMS(fft)
@@ -28,8 +31,7 @@ private:
         for (auto channel = 0; channel < magnitude.cols(); channel++)
         {
             // calculate cepstrum
-            Eigen::ArrayXcf xLog = magnitude.col(channel).max(P.minMagnitude).log().cast<std::complex<float>>();
-            Eigen::ArrayXf xCepstrum((C.nBands - 1) * 2);
+            xLog = magnitude.col(channel).max(P.minMagnitude).log().cast<std::complex<float>>();
             fft.inverse(xLog, xCepstrum);
             // fold
             xCepstrum.segment(1, C.nBands - 2) += xCepstrum.segment(C.nBands, C.nBands - 2).colwise().reverse();
@@ -39,6 +41,14 @@ private:
             spectrum.col(channel) = xLog.real().exp() * (xLog.imag().cos() + 1.if*xLog.imag().sin()); //complex exponential exp(x+iy) = exp(x)*(cos(y)+i*sin(y)) is much faster according to profiling
         }
     }
+
+    size_t getDynamicSizeVariables() const final
+    {
+        return xLog.getDynamicMemorySize() + xCepstrum.getDynamicMemorySize();
+    }
+
+    Eigen::ArrayXcf xLog;
+    Eigen::ArrayXf xCepstrum;
 
     friend AlgorithmImplementation<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>;
 };

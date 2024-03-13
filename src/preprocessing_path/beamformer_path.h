@@ -28,6 +28,11 @@ public:
         cActivity.nBands = nBands;
         cActivity.nChannels = c.nChannels;
         activityDetector.setCoefficients(cActivity);// delay initialization to after initializer list to get fftSize from filterbank
+
+        xTime.resize(C.bufferSize, C.nChannels);
+        xFreq.resize(nBands, C.nChannels);
+        xFreq2.resize(nBands, C.nChannels);
+        xBeamformed.resize(nBands);
     }
 
     FilterbankAnalysisWOLA filterbank;
@@ -41,20 +46,31 @@ public:
 
 private:
 
+    size_t getDynamicSizeVariables() const final 
+    {
+        size_t size = xTime.getDynamicMemorySize();
+        size += xFreq.getDynamicMemorySize();
+        size += xFreq2.getDynamicMemorySize();
+        size += xBeamformed.getDynamicMemorySize();
+        return size; 
+    }
+
     void processOn(Input input, Output output)
 	{
-        Eigen::ArrayXXf xTime(C.bufferSize, C.nChannels);
-        Eigen::ArrayXXcf xFreq(nBands, C.nChannels);
-        Eigen::ArrayXcf xBeamformed(nBands);
-        bool activity;
         dcRemover.process(input, xTime);
 		filterbank.process(xTime, xFreq);
-        activityDetector.process(xFreq.abs2(), activity);
+        xFreq2 = xFreq.abs2();
+        activityDetector.process(xFreq2, activity);
         beamformer.process({xFreq, activity}, xBeamformed); 
         filterbankInverse.process(xBeamformed, output);
 	}
     
     int nBands;
+    Eigen::ArrayXXf xTime;
+    Eigen::ArrayXXcf xFreq;
+    Eigen::ArrayXXf xFreq2;
+    Eigen::ArrayXcf xBeamformed;
+    bool activity;
 
     friend AlgorithmImplementation<PreprocessingPathConfiguration, BeamformerPath>;
 };

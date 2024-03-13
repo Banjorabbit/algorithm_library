@@ -20,6 +20,13 @@ public:
         R.resize(2 * c.nOrder + 1, 2 * c.nOrder + 1);
         R.block(c.nOrder, c.nOrder, c.nOrder+1, c.nOrder+1).setIdentity();
         weight.resize(c.nBands);
+        xFreq.resize(C.nBands);
+        xPow.resize(C.nBands);
+        xTime.resize(fftSize);
+        Vd.resize(2 * C.nOrder + 1);
+        th.resize(2 * C.nOrder + 1);
+        A.resize(C.nOrder + 1);
+        B.resize(C.nOrder + 1);
         if (c.weightType == c.MELSCALE)
         {
             weight(0) = 1.6f;
@@ -96,15 +103,12 @@ private:
         void processOn(Input magnitudeSpectrum, Output output)
     {
         assert(magnitudeSpectrum.rows() == C.nBands);
-        Eigen::ArrayXcf xFreq(C.nBands);
         minPhaseCalculator.process(magnitudeSpectrum, xFreq);
 
         // lower left and upper right corner
-        Eigen::ArrayXcf xPow = xFreq * weight;
-        Eigen::ArrayXf xTime(fftSize);
+        xPow = xFreq * weight;
         fft.inverse(xPow, xTime);
 
-        Eigen::VectorXf Vd(2 * C.nOrder + 1);
         for (auto i = 0; i < C.nOrder; i++)
         {
             const auto r2 = std::max(C.nOrder - i, 0);
@@ -128,9 +132,8 @@ private:
 		}
 		Vd.head(C.nOrder) = -xTime.segment(1, C.nOrder);
 
-        const Eigen::VectorXf th = R.llt().solve(Vd);
+        th = R.llt().solve(Vd);
 
-		Eigen::ArrayXf A(C.nOrder + 1), B(C.nOrder+1);
 		A(0) = 1.f;
 		A.tail(C.nOrder) = th.head(C.nOrder);
 		B = th.tail(C.nOrder + 1);
@@ -146,13 +149,27 @@ private:
     {
         size_t size = weight.getDynamicMemorySize();
         size += R.getDynamicMemorySize();
+        size += xFreq.getDynamicMemorySize();
+        size += xPow.getDynamicMemorySize();
+        size += xTime.getDynamicMemorySize();
+        size += Vd.getDynamicMemorySize();
+        size += th.getDynamicMemorySize();
+        size += A.getDynamicMemorySize();
+        size += B.getDynamicMemorySize();
         return size;
     }
 
     int fftSize;
+    Eigen::ArrayXcf xFreq;
     Eigen::ArrayXf weight;
     Eigen::MatrixXf R;
     Eigen::PolynomialSolver<float, Eigen::Dynamic> polynomialsolver;
+    Eigen::ArrayXcf xPow;
+    Eigen::ArrayXf xTime;
+    Eigen::VectorXf Vd;
+    Eigen::VectorXf th;
+    Eigen::ArrayXf A;
+    Eigen::ArrayXf B;
 
     friend AlgorithmImplementation<DesignIIRMinPhaseConfiguration, DesignIIRMinPhaseTF2SOS>;
 };

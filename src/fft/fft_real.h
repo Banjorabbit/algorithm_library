@@ -25,6 +25,7 @@ public:
         scale{ 1.f / static_cast<float>(C.fftSize) },
         setup{ std::shared_ptr<PFFFT_Setup>(pffftSmartCreate(C.fftSize), pffftSmartDestroy) }
     {
+        out.resize((int)C.fftSize);
         if (!setup) { throw Configuration::ExceptionFFT(C.fftSize); }
         assert(isFFTSizeValid(C.fftSize)); // assert that FFT size is valid. It is not extremely useful after the throwing exception, but it allows the exception to be caught in debug mode
     }
@@ -66,7 +67,6 @@ private:
         // After the first channel, yFreq is not 16 byte alligned due to FFTSize/2+1 size so we can't write output to it from FFT transform
         for (auto channel = 0; channel < xTime.cols(); channel++)
         {
-            Eigen::ArrayXf out((int)C.fftSize);
             pffft_transform_ordered(setup.get(), xTime.col(channel).data(), out.data(), nullptr, PFFFT_FORWARD);
             yFreq(0, channel) = out(0);
             yFreq(C.fftSize / 2, channel) = out(1);
@@ -76,8 +76,9 @@ private:
     
     size_t getDynamicSizeVariables() const final
     {
-        if (setup) { return pffft_get_setup_size(setup.get()); }
-        return 0;
+        size_t size = out.getDynamicMemorySize();
+        if (setup) { size += pffft_get_setup_size(setup.get()); }
+        return size;
     }
 
     float scale;
@@ -90,6 +91,7 @@ private:
         return nullptr;
     } 
 
+    Eigen::ArrayXf out;
     static const std::array<int,72> validFFTSizes; // defined in fft.cpp
 
     friend AlgorithmImplementation<FFTConfiguration, FFTReal>;
