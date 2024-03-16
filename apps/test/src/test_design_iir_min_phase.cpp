@@ -8,7 +8,8 @@ using namespace Eigen;
 
 TEST(DesignIIRMinPhase, Interface)
 {
-	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<DesignIIRMinPhaseTF2SOS>());
+    bool testMallocFlag = false;
+    EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<DesignIIRMinPhaseTF2SOS>(testMallocFlag));
 }
 
 TEST(DesignIIRMinPhase, CheckCalculation)

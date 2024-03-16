@@ -30,9 +30,9 @@ struct DesignIIRNonParametricConfiguration
     struct Coefficients
     {
         int nBands = 257; // nBands should be significantly higher than the filter order: nOrder
+        int nGains = 4; // number of frequency/gain pairs. High orders are not numerically stable when calculating roots (about >64)
         float sampleRate = 16000;
-        int nOrder = 8; // filter order. High orders are not numerically stable when calculating roots (about >32)
-        DEFINE_TUNABLE_COEFFICIENTS(nBands, sampleRate, nOrder)
+        DEFINE_TUNABLE_COEFFICIENTS(nBands, nGains, sampleRate)
     };
 
     struct Parameters
@@ -40,16 +40,14 @@ struct DesignIIRNonParametricConfiguration
         DEFINE_NO_TUNABLE_PARAMETERS
     };
 
-    static int getNSos(int nOrder) { return static_cast<int>(std::ceil(static_cast<float>(nOrder) / 2)); } // get number of second-order sections from filter order
-
     static auto validInput(Input input, const Coefficients& c) { return (input.frequencies.rows() > 0) && (input.frequencies > 0).all() && (input.frequencies.rows() == input.gaindB.rows()); }
-    static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::Array<float, 6, Eigen::Dynamic>::Zero(6, getNSos(c.nOrder)), float()); }
+    static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::Array<float, 6, Eigen::Dynamic>::Zero(6, c.nGains), float()); }
 
     template<typename Talgo>
     struct Example
     {
         Talgo algo;
-        int nBands, nOrder;
+        int nBands, nGains;
         Eigen::ArrayXf frequencies, gaindB;
         Eigen::Array<float, 6, Eigen::Dynamic> sos;
         float gain;
@@ -58,7 +56,7 @@ struct DesignIIRNonParametricConfiguration
         Example(const Coefficients& c) : algo(c)
         {
             nBands = c.nBands;
-            nOrder = c.nOrder;
+            nGains = c.nGains;
             frequencies.resize(5);
             gaindB.resize(5);
             frequencies << 80, 500, 1000, 2400, 4000;
@@ -67,7 +65,7 @@ struct DesignIIRNonParametricConfiguration
         }
 
         void processAlgorithm() { algo.process({frequencies, gaindB}, {sos, gain}); }
-        bool isExampleOutputValid() const { return sos.allFinite() && std::isfinite(gain) && (sos.cols() == getNSos(nOrder)) && (sos.rows() == 6); }
+        bool isExampleOutputValid() const { return sos.allFinite() && std::isfinite(gain) && (sos.cols() == nGains) && (sos.rows() == 6); }
     };
 };
 
@@ -76,7 +74,5 @@ class DesignIIRNonParametric : public Algorithm<DesignIIRNonParametricConfigurat
 public:
     DesignIIRNonParametric() = default;
     DesignIIRNonParametric(const Coefficients& c);
-
-    int getNSos() const { return Configuration::getNSos(getCoefficients().nOrder); }
 };
 

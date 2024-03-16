@@ -8,6 +8,7 @@ using namespace Eigen;
 
 TEST(BeamformerMVDR, Interface)
 {
-	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<BeamformerMVDR>());
+	bool testMallocFlag = false;
+	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<BeamformerMVDR>(testMallocFlag));
 }
 

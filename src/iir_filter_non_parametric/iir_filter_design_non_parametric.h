@@ -54,7 +54,7 @@ private:
     DesignIIRSpline::Coefficients convertToDesignIIRSplineCoefficients(const Coefficients & c)
     {
         DesignIIRSpline::Coefficients coefficients;
-        coefficients.nOrder = c.nSos * 2;
+        coefficients.nGains = c.nSos;
         coefficients.nBands = FFTReal::getValidFFTSize(c.nSos * 16)/2+1; // must be significantly higher than the filter order
         coefficients.sampleRate = c.sampleRate;
         return coefficients;
@@ -117,7 +117,7 @@ private:
     DesignIIRSpline::Coefficients convertToDesignIIRSplineCoefficients(const Coefficients & c)
     {
         DesignIIRSpline::Coefficients coefficients;
-        coefficients.nOrder = c.nSos * 2;
+        coefficients.nGains = c.nSos;
         coefficients.nBands = FFTReal::getValidFFTSize(c.nSos * 16)/2+1; // must be significantly higher than the filter order
         coefficients.sampleRate = c.sampleRate;
         return coefficients;

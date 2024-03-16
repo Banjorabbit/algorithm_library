@@ -2,6 +2,7 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
+#define EIGEN_RUNTIME_NO_MALLOC 
 #include "framework/framework.h"
 #include "fmt/core.h"
 #include <cmath>
@@ -144,6 +145,17 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 			flagGetParametersTree && flagGetSetupTree && flagSetCoefficients && flagSetCoefficientsTree && flagSetParametersTree && flagSetSetupTree;
 	}
 
+	// test that process algorithm doesn't allocate memory in DEBUG mode
+	template<typename Talgo>
+	bool mallocDEBUGTest()
+	{
+		typename Talgo::Configuration::template Example<Talgo> example;
+		Eigen::internal::set_is_malloc_allowed(false);
+		example.processAlgorithm();
+		Eigen::internal::set_is_malloc_allowed(true);
+		return true;
+	}
+
 	template<typename Talgo>
 	bool processExampleTest()
 	{
@@ -203,13 +215,17 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 	}
 
 	template<typename Talgo>
-	bool algorithmInterfaceTest()
+	bool algorithmInterfaceTest(bool testMallocFlag = true)
 	{
 		fmt::print("----------------------------------------------------------------------------------------------------------------------------------\n");
 		auto successFlag = coefficientsTest<Talgo>();
 		successFlag &= parametersTest<Talgo>();
 		successFlag &= versionAlgorithmTest<Talgo>();
 		successFlag &= processExampleTest<Talgo>();
+		if (testMallocFlag)
+		{
+			successFlag &= mallocDEBUGTest<Talgo>();
+		}
 		successFlag &= resetTest<Talgo>();
 		successFlag &= getSetTest<Talgo>();
 		successFlag &= assertInterfaceTest<Talgo>();

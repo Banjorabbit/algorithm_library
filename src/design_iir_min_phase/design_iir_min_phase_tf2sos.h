@@ -27,6 +27,9 @@ public:
         th.resize(2 * C.nOrder + 1);
         A.resize(C.nOrder + 1);
         B.resize(C.nOrder + 1);
+        rootsStable.resize(C.nOrder + 1);
+        roots.resize(C.nOrder+1);
+        rootsPow.resize(C.nOrder+1);
         if (c.weightType == c.MELSCALE)
         {
             weight(0) = 1.6f;
@@ -59,10 +62,9 @@ public:
 		//Eigen::VectorXcf poles = D.EigenSolver.eigenvalues();
 
 		polynomialsolver.compute(tf.reverse().matrix());
-		Eigen::VectorXcf roots = polynomialsolver.roots();
-        Eigen::ArrayXf rootsPow = roots.array().abs2();
+		roots = polynomialsolver.roots();
+        rootsPow = roots.array().abs2();
 
-		Eigen::VectorXcf rootsStable(N);
 		auto start = 0;
 		auto end = N1;
 		for (auto i = 0; i < N;i++)
@@ -156,6 +158,9 @@ private:
         size += th.getDynamicMemorySize();
         size += A.getDynamicMemorySize();
         size += B.getDynamicMemorySize();
+        size += rootsStable.getDynamicMemorySize();
+        size += roots.getDynamicMemorySize();
+        size += rootsPow.getDynamicMemorySize();
         return size;
     }
 
@@ -170,6 +175,9 @@ private:
     Eigen::VectorXf th;
     Eigen::ArrayXf A;
     Eigen::ArrayXf B;
+    Eigen::VectorXcf rootsStable;
+    Eigen::VectorXcf roots;
+    Eigen::ArrayXf rootsPow;
 
     friend AlgorithmImplementation<DesignIIRMinPhaseConfiguration, DesignIIRMinPhaseTF2SOS>;
 };
