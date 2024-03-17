@@ -17,7 +17,11 @@ struct SplineConfiguration
 
     using Output = O::Real2D;
 
-    struct Coefficients { DEFINE_NO_TUNABLE_COEFFICIENTS };
+    struct Coefficients 
+    { 
+        int nGiven = 10;
+        DEFINE_TUNABLE_COEFFICIENTS(nGiven)
+    };
     
     struct Parameters
     {
@@ -41,7 +45,7 @@ struct SplineConfiguration
         Example() : Example(Coefficients()) {}
         Example(const Coefficients& c) : algo(c)
         {
-            int n = 10; // number of input samples per channel
+            int n = c.nGiven; // number of input samples per channel
             nOS = 100; // number of output samples per channel
             nChannels = 2;
             xGiven = Eigen::ArrayXf::LinSpaced(n, 0, n - 1).replicate(1, nChannels);

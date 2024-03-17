@@ -30,7 +30,7 @@ struct DesignIIRNonParametricConfiguration
     struct Coefficients
     {
         int nBands = 257; // nBands should be significantly higher than the filter order: nOrder
-        int nGains = 4; // number of frequency/gain pairs. High orders are not numerically stable when calculating roots (about >64)
+        int nGains = 5; // number of frequency/gain pairs. High orders are not numerically stable when calculating roots (about >64)
         float sampleRate = 16000;
         DEFINE_TUNABLE_COEFFICIENTS(nBands, nGains, sampleRate)
     };
@@ -57,8 +57,8 @@ struct DesignIIRNonParametricConfiguration
         {
             nBands = c.nBands;
             nGains = c.nGains;
-            frequencies.resize(5);
-            gaindB.resize(5);
+            frequencies.resize(nGains);
+            gaindB.resize(nGains);
             frequencies << 80, 500, 1000, 2400, 4000;
             gaindB << 5, 10, -10, 0, 7;
             std::tie(sos, gain) = initOutput({frequencies, gaindB}, c);

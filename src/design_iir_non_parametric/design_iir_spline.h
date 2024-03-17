@@ -13,7 +13,7 @@ class DesignIIRSpline : public AlgorithmImplementation<DesignIIRNonParametricCon
 public:
     DesignIIRSpline(const DesignIIRNonParametricConfiguration::Coefficients& c = Coefficients()) :
         AlgorithmImplementation<DesignIIRNonParametricConfiguration, DesignIIRSpline>(c),
-        splineCalculation(),
+        splineCalculation({c.nGains + 4}),
         filterDesigner(convertToDesignIIRMinPhaseTF2SOS(c))
     { 
         // add 2 frequency/gain points to the left and right of given points to ensure correct gradient 
