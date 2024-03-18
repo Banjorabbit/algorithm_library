@@ -8,5 +8,6 @@ using namespace Eigen;
 
 TEST(DesignIIRNonParametric, Interface)
 {
-	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<DesignIIRSpline>());
+	bool testMallocFlag = false;
+	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<DesignIIRSpline>(testMallocFlag));
 }
