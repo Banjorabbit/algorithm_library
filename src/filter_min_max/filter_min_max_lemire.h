@@ -2,8 +2,6 @@
 #include "framework/framework.h"
 #include "algorithm_library/filter_min_max.h"
 
-using namespace Eigen;
-
 // StreamingMinMax finds the minimum and maximum value over a
 // window with length C.Length for each new sample. It requires on
 // average no more than 3 comparisons per sample. The algorithm uses 2
@@ -46,7 +44,9 @@ public:
         inputOld.setConstant(iOld); 
     }
 
-    void resetInitialValue(I::Real iOld)
+    // Template const Eigen::ArrayBase& avoids memory copy from row array with stride
+    template <typename Derived>
+    void resetInitialValue(const Eigen::ArrayBase<Derived> &iOld)
     { 
         if (iOld.size() == inputOld.size())
         {
@@ -163,12 +163,12 @@ private:
         lowerEndIndex.setZero();
     }
 
-    ArrayXXi minIndex;
-    ArrayXXi maxIndex;
-    ArrayXXf maxValue;
-    ArrayXXf minValue;
-    ArrayXf inputOld;
-    ArrayXi upperFrontIndex, upperEndIndex, lowerFrontIndex, lowerEndIndex;
+    Eigen::ArrayXXi minIndex;
+    Eigen::ArrayXXi maxIndex;
+    Eigen::ArrayXXf maxValue;
+    Eigen::ArrayXXf minValue;
+    Eigen::ArrayXf inputOld;
+    Eigen::ArrayXi upperFrontIndex, upperEndIndex, lowerFrontIndex, lowerEndIndex;
 
     friend AlgorithmImplementation<StreamingMinMaxConfiguration, StreamingMinMaxLemire>;
 };
@@ -181,6 +181,7 @@ public:
         streaming{c}
     {
         wHalf = (c.filterLength - 1) / 2;
+        xEndHalf.resize(wHalf, c.nChannels);
     }
 
     StreamingMinMaxLemire streaming;
@@ -197,13 +198,19 @@ private:
         // this output is discarded and is only used to update internal values
         streaming.process(input.topRows(wHalf), { output.minValue.topRows(wHalf), output.maxValue.topRows(wHalf) });
         // This is the shifted streaming filter, which creates a symmetric window
-        ArrayXXf xSymmetric(input.rows(), input.cols());
-        xSymmetric.topRows(input.rows() - wHalf) = input.bottomRows(input.rows() - wHalf);
-        xSymmetric.bottomRows(wHalf) = input.bottomRows<1>().replicate(wHalf, 1);
-        streaming.process(xSymmetric, output);
+        streaming.process(input.bottomRows(input.rows() - wHalf), {output.minValue.topRows(input.rows() - wHalf), output.maxValue.topRows(input.rows() - wHalf)});
+        xEndHalf = input.bottomRows<1>().replicate(wHalf,1);
+        streaming.process(xEndHalf, { output.minValue.bottomRows(wHalf), output.maxValue.bottomRows(wHalf)});
+    }
+
+    size_t getDynamicSizeVariables() const final 
+    {
+        size_t size = xEndHalf.getDynamicMemorySize();
+        return size;
     }
 
     int wHalf;
+    Eigen::ArrayXXf xEndHalf;
 
     friend AlgorithmImplementation<FilterMinMaxConfiguration, FilterMinMaxLemire>;
 };
@@ -228,7 +235,9 @@ public:
         inputOld.setConstant(iOld); 
     }
 
-    void resetInitialValue(I::Real iOld)
+    // Template const Eigen::ArrayBase& avoids memory copy from row array with stride
+    template <typename Derived>
+    void resetInitialValue(const Eigen::ArrayBase<Derived> &iOld)
     { 
         if (iOld.size() == inputOld.size())
         {
@@ -306,10 +315,10 @@ private:
         upperEndIndex.setZero();
     }
 
-    ArrayXXi maxIndex;
-    ArrayXXf maxValue;
-    ArrayXf inputOld;
-    ArrayXi upperFrontIndex, upperEndIndex;
+    Eigen::ArrayXXi maxIndex;
+    Eigen::ArrayXXf maxValue;
+    Eigen::ArrayXf inputOld;
+    Eigen::ArrayXi upperFrontIndex, upperEndIndex;
 
     friend AlgorithmImplementation<StreamingMaxConfiguration, StreamingMaxLemire>;
 };
@@ -334,7 +343,9 @@ public:
         inputOld.setConstant(iOld); 
     }
 
-    void resetInitialValue(I::Real iOld)
+    // Template const Eigen::ArrayBase& avoids memory copy from row array with stride
+    template <typename Derived>
+    void resetInitialValue(const Eigen::ArrayBase<Derived> &iOld)
     { 
         if (iOld.size() == inputOld.size())
         {
@@ -413,10 +424,10 @@ private:
         lowerEndIndex.setZero();
     }
 
-    ArrayXXi minIndex;
-    ArrayXXf minValue;
-    ArrayXf inputOld;
-    ArrayXi lowerFrontIndex, lowerEndIndex;
+    Eigen::ArrayXXi minIndex;
+    Eigen::ArrayXXf minValue;
+    Eigen::ArrayXf inputOld;
+    Eigen::ArrayXi lowerFrontIndex, lowerEndIndex;
 
     friend AlgorithmImplementation<StreamingMinConfiguration, StreamingMinLemire>;
 };
@@ -429,6 +440,7 @@ public:
         streaming{c}
     {
         wHalf = (c.filterLength - 1) / 2;
+        xEndHalf.resize(wHalf, c.nChannels);
     }
 
     StreamingMaxLemire streaming;
@@ -441,17 +453,23 @@ private:
 
     void processOn(Input input, Output output)
     {
-        streaming.resetInitialValue(input.row(0).transpose());
+        streaming.resetInitialValue(input.row(0));
         // this output is discarded and is only used to update internal values
         streaming.process(input.topRows(wHalf), output.topRows(wHalf));
         // This is the shifted streaming filter, which creates a symmetric window
-        ArrayXXf xSymmetric(input.rows(), input.cols());
-        xSymmetric.topRows(input.rows() - wHalf) = input.bottomRows(input.rows() - wHalf);
-        xSymmetric.bottomRows(wHalf) = input.bottomRows<1>().replicate(wHalf, 1);
-        streaming.process(xSymmetric, output);
+        streaming.process(input.bottomRows(input.rows() - wHalf), output.topRows(input.rows() - wHalf));
+        xEndHalf = input.bottomRows<1>().replicate(wHalf, 1);;
+        streaming.process(xEndHalf, output.bottomRows(wHalf));
+    }
+
+    size_t getDynamicSizeVariables() const final 
+    {
+        size_t size = xEndHalf.getDynamicMemorySize();
+        return size;
     }
 
     int wHalf;
+    Eigen::ArrayXXf xEndHalf;
 
     friend AlgorithmImplementation<FilterMaxConfiguration, FilterMaxLemire>;
 };
@@ -464,6 +482,7 @@ public:
         streaming{c}
     {
         wHalf = (c.filterLength - 1) / 2;
+        xEndHalf.resize(wHalf, c.nChannels);
     }
 
     StreamingMinLemire streaming;
@@ -476,17 +495,23 @@ private:
 
     void processOn(Input input, Output output)
     {
-        streaming.resetInitialValue(input.row(0).transpose());
+        streaming.resetInitialValue(input.row(0));
         // this output is discarded and is only used to update internal values
         streaming.process(input.topRows(wHalf), output.topRows(wHalf));
         // This is the shifted streaming filter, which creates a symmetric window
-        ArrayXXf xSymmetric(input.rows(), input.cols());
-        xSymmetric.topRows(input.rows() - wHalf) = input.bottomRows(input.rows() - wHalf);
-        xSymmetric.bottomRows(wHalf) = input.bottomRows<1>().replicate(wHalf, 1);
-        streaming.process(xSymmetric, output);
+        streaming.process(input.bottomRows(input.rows() - wHalf), output.topRows(input.rows() - wHalf));
+        xEndHalf = input.bottomRows<1>().replicate(wHalf, 1);
+        streaming.process(xEndHalf, output.bottomRows(wHalf));
     }
-    
+
+    size_t getDynamicSizeVariables() const final 
+    {
+        size_t size = xEndHalf.getDynamicMemorySize();
+        return size;
+    }
+
     int wHalf;
+    Eigen::ArrayXXf xEndHalf;
 
     friend AlgorithmImplementation<FilterMinConfiguration, FilterMinLemire>;
 };
