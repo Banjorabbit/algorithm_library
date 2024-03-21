@@ -108,10 +108,14 @@ public:
         cHP = -(sos(0) - sos(1) + sos(2))/c45m;
         cBP = (-sos(0) + sos(2))/(sos(5) - 1);
         cLP = (sos(0) + sos(1) + sos(2))/c45p;
+        const float gain = (cHP + cBP + cLP) / 3.f;
+        cHP /= gain;
+        cBP /= gain;
+        cLP /= gain;
 
         setParameters({P.USER_DEFINED});
         Eigen::Array3f cgr;
-        cgr << cutoff, 1.f, resonance;
+        cgr << cutoff, gain, resonance;
         return cgr;
     }
     
