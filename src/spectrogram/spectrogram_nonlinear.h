@@ -13,14 +13,17 @@ public:
         filterbank0(convertCoefficientsToFilterbankCoefficients(c)),
         filterbank1(convertCoefficientsToFilterbankCoefficients(c)),
         filterbank2(convertCoefficientsToFilterbankCoefficients(c))
-    { 
+    {
+        nBands = c.fftSize / 2 + 1; 
+        frame.resize(c.bufferSize);
+        filterbankOut.resize(nBands);
+
         auto pFilterbank = filterbank0.getParameters();
         pFilterbank.windowType = pFilterbank.USER_DEFINED;
         filterbank0.setParameters(pFilterbank);
         filterbank1.setParameters(pFilterbank);
         filterbank2.setParameters(pFilterbank);
         // set windows
-        nBands = C.fftSize / 2 + 1;
         Eigen::ArrayXf window = hann(C.fftSize);
         Eigen::ArrayXf windowSmall = hann(C.bufferSize);
 
@@ -91,15 +94,26 @@ private:
     {
         for (auto nFrame = 0; nFrame < getNFrames(input.size(), C.bufferSize); nFrame++)
         {
-            Eigen::ArrayXf frame = input.segment(nFrame * C.bufferSize, C.bufferSize);
-            Eigen::ArrayXcf filterbankOut0(nBands), filterbankOut1(nBands), filterbankOut2(nBands);
-            filterbank0.process(frame, filterbankOut0);
-            filterbank1.process(frame, filterbankOut1);
-            filterbank2.process(frame, filterbankOut2);
-            output.col(nFrame) = filterbankOut0.abs2().min(filterbankOut1.abs2()).min(filterbankOut2.abs2());
+            frame = input.segment(nFrame * C.bufferSize, C.bufferSize);
+
+            filterbank0.process(frame, filterbankOut);
+            output.col(nFrame) = filterbankOut.abs2();
+            
+            filterbank1.process(frame, filterbankOut);
+            output.col(nFrame) = output.col(nFrame).min(filterbankOut.abs2());
+            
+            filterbank2.process(frame, filterbankOut);
+            output.col(nFrame) = output.col(nFrame).min(filterbankOut.abs2());
         }
     }
     
+    size_t getDynamicSizeVariables() const final
+    {
+        size_t size = frame.getDynamicMemorySize();
+        size += filterbankOut.getDynamicMemorySize();
+        return size;
+    }
+
     static FilterbankAnalysis::Coefficients convertCoefficientsToFilterbankCoefficients(Coefficients c) 
     {
         FilterbankAnalysis::Coefficients cFilterbank;
@@ -112,6 +126,8 @@ private:
     }
 
     int nBands;
+    Eigen::ArrayXf frame;
+    Eigen::ArrayXcf filterbankOut;
 
     friend AlgorithmImplementation<SpectrogramConfiguration, SpectrogramNonlinear>;
 };
