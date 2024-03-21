@@ -8,7 +8,8 @@ using namespace Eigen;
 
 TEST(PreprocessingPath, Interface)
 {
-	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<BeamformerPath>());
+    bool testMallocFlag = false;
+	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<BeamformerPath>(testMallocFlag));
 }
 
 TEST(PreprocessingPath, Single)
