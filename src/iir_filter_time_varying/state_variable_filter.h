@@ -13,10 +13,10 @@ public:
     {
         z1.resize(c.nChannels);
         z2.resize(c.nChannels);
-        resetVariables();
         cLP = 1.f;
         cBP = 1.f;
         cHP = 1.f;
+        resetVariables();
     }
     
     Eigen::ArrayXf getSosFilter(float cutoff, float gain, float resonance) const
@@ -119,78 +119,51 @@ private:
 
     inline void processOn(Input input, Output output) 
     {
-		Eigen::ArrayXf c1 = input.cutoff / input.resonance;
-		Eigen::ArrayXf c2 = input.cutoff * input.resonance;
-		Eigen::ArrayXf c3 = c2 + 1.f;
-		Eigen::ArrayXf c0 = 1.f / (1.f + c1 * (c2 + 1.f));
-
-        Eigen::ArrayXXf hp(input.xTime.rows(), C.nChannels), bp(input.xTime.rows(), C.nChannels), lp(input.xTime.rows(), C.nChannels);
-
         for (auto sample = 0; sample < input.xTime.rows(); sample++)
         {
+            const float c1 = input.cutoff(sample) / input.resonance(sample);
+            const float c2 = input.cutoff(sample) * input.resonance(sample);
+            const float c3 = c2 + 1.f;
+            const float c0 = 1.f / (1.f + c1 * c3);
             for (auto channel = 0; channel < C.nChannels; channel++) // channel in inner loop is faster according to profiling
             {
-                hp(sample, channel) = c0(sample) * (input.xTime(sample, channel) - z2(channel) - c3(sample) * z1(channel));
-				const auto x1 = c1(sample) * hp(sample, channel);
-				bp(sample, channel) = x1 + z1(channel);
-				const auto x2 = c2(sample) * bp(sample, channel);
-				lp(sample, channel) = x2 + z2(channel);
+                const float hp = c0 * (input.xTime(sample, channel) - z2(channel) - c3 * z1(channel));
+				const float x1 = c1 * hp;
+				const float bp = x1 + z1(channel);
+				const float x2 = c2 * bp;
+				const float lp = x2 + z2(channel);
 
-				z1(channel) = x1 + bp(sample, channel);
-				z2(channel) = x2 + lp(sample, channel);
+				z1(channel) = x1 + bp;
+				z2(channel) = x2 + lp;
+
+                switch (P.filterType)
+                {
+                    case Parameters::LOWPASS:
+                        output(sample, channel) = input.gain(sample) * lp;
+                        break;
+                    case Parameters::HIGHPASS:
+                        output(sample, channel) = input.gain(sample) * hp;
+                        break;
+                    case Parameters::BANDPASS:
+                        output(sample, channel) = input.gain(sample) * bp;
+                        break;
+                    case Parameters::BANDSTOP:
+                        output(sample, channel) = input.gain(sample) * (lp + hp);
+                        break;
+                    case Parameters::PEAKING:
+                        output(sample, channel) = lp + hp + input.gain(sample) * bp;
+                        break;
+                    case Parameters::LOWSHELF:
+                        output(sample, channel) = input.gain(sample) * (bp + hp) + lp;
+                        break;
+                    case Parameters::HIGHSHELF:
+                        output(sample, channel) = input.gain(sample) * (bp + lp) + hp;
+                        break;
+                    case Parameters::USER_DEFINED:
+                        output(sample, channel) = input.gain(sample) * (cLP * lp + cBP * bp + cHP * hp);
+                        break;
+                }
             }
-        }
-        
-        switch (P.filterType)
-        {
-        case Parameters::LOWPASS:
-            for (auto i = 0; i < C.nChannels; i++)
-            {
-                output.col(i) = input.gain * lp.col(i);
-            }
-            break;
-        case Parameters::HIGHPASS:
-            for (auto i = 0; i < C.nChannels; i++)
-            {
-                output.col(i) = input.gain * hp.col(i);
-            }
-            break;
-        case Parameters::BANDPASS:
-            for (auto i = 0; i < C.nChannels; i++)
-            {
-                output.col(i) = input.gain * bp.col(i);
-            }
-            break;
-        case Parameters::BANDSTOP:
-            for (auto i = 0; i < C.nChannels; i++)
-            {
-                output.col(i) = input.gain * (input.xTime.col(i) - bp.col(i));
-            }
-            break;
-        case Parameters::PEAKING:
-            for (auto i = 0; i < C.nChannels; i++)
-            {
-                output.col(i) = input.xTime.col(i) + (input.gain - 1.f) * bp.col(i);
-            }
-            break;
-        case Parameters::LOWSHELF:
-            for (auto i = 0; i < C.nChannels; i++)
-            {
-                output.col(i) = input.gain * (bp.col(i) + hp.col(i)) + lp.col(i);
-            }
-            break;
-        case Parameters::HIGHSHELF:
-            for (auto i = 0; i < C.nChannels; i++)
-            {
-                output.col(i) = input.gain * (bp.col(i) + lp.col(i)) + hp.col(i);
-            }
-            break;
-        case Parameters::USER_DEFINED:
-            for (auto i = 0; i < C.nChannels; i++)
-            {
-                output.col(i) = input.gain * (cLP * lp.col(i) + cBP * bp.col(i) + cHP * hp.col(i));
-            }
-            break;
         }
     }
 
@@ -202,7 +175,9 @@ private:
 
     size_t getDynamicSizeVariables() const final
     {
-        return z1.getDynamicMemorySize() + z2.getDynamicMemorySize();
+        size_t size = z1.getDynamicMemorySize();
+        size += z2.getDynamicMemorySize();
+        return size;
     }
 
     Eigen::ArrayXf z1;
