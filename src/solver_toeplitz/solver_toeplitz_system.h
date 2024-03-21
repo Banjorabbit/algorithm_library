@@ -15,7 +15,10 @@
     public:
         SolverToeplitzSystem(Coefficients c = Coefficients()) :
             AlgorithmImplementation<SolverToeplitzConfiguration, SolverToeplitzSystem>{ c }
-        { }
+        { 
+            c1.resize(c.nRHS - 1);
+            c2.resize(c.nRHS - 1);
+        }
     
     private:
         inline void processOn(Input x, Output y)
@@ -23,8 +26,6 @@
             const auto nFilt = x.BRighthand.rows();
             const auto nChan = x.BRighthand.cols();
 
-            Eigen::ArrayXcf c1(nFilt - 1);
-            Eigen::ArrayXcf c2(nFilt - 1);
             std::complex<float> r1 = x.aToeplitz(0), r2 = { 0,0 }, r3 = { 0,0 }, r5 = { 0,0 }, r6 = { 0,0 };
             r1 += 1e-10f; // add small regularization
             std::complex<float> r1Norm = std::conj(r1) / std::norm(r1);
@@ -80,5 +81,12 @@
             }
         }
 
+        size_t getDynamicSizeVariables() const final
+        {
+            return c1.getDynamicMemorySize() + c2.getDynamicMemorySize();
+        }
+
+        Eigen::ArrayXcf c1;
+        Eigen::ArrayXcf c2;
         friend AlgorithmImplementation<SolverToeplitzConfiguration, SolverToeplitzSystem>;
     };

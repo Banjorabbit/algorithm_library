@@ -20,8 +20,11 @@ public:
     Normal3dDiff(Coefficients c = Coefficients()) :
         AlgorithmImplementation<Normal3dConfiguration, Normal3dDiff> {c}
     {
-        valuesOld0.resize(C.nValuesX);
-        valuesOld1.resize(C.nValuesX);
+        valuesOld0.resize(c.nValuesX);
+        valuesOld1.resize(c.nValuesX);
+        normals.resize(c.nValuesX, 3);
+        normalsTransposed.resize(3, c.nValuesX);
+        length.resize(c.nValuesX);
         den1 = 1.f / (2.f * P.distance1);
         den2 = 1.f / (2.f * P.distance2);
         resetVariables();
@@ -33,17 +36,16 @@ private:
     {
         for (auto frame = 0; frame < input.cols(); frame++)
         {
-            Eigen::ArrayXXf normals(C.nValuesX, 3);
             normals.col(0) << 0.f, den1 * (input.col(frame).tail(C.nValuesX - 2) - input.col(frame).head(C.nValuesX - 2)), 0.f; // 1st dimension
             normals.col(1) = den2 * (input.col(frame) - valuesOld0); // 2nd dimension
             normals.col(2) = Eigen::ArrayXf::Ones(C.nValuesX); // Z direction
-            Eigen::ArrayXf length = (normals.col(0).abs2() + normals.col(1).abs2() + Eigen::ArrayXf::Ones(C.nValuesX)).sqrt(); // calculate length
+            length = (normals.col(0).abs2() + normals.col(1).abs2() + Eigen::ArrayXf::Ones(C.nValuesX)).sqrt(); // calculate length
             normals.col(0) /= length; // normalize by length (profiled to be much faster than using .replicate())
             normals.col(1) /= length; // normalize by length (profiled to be much faster than using .replicate())
             normals.col(2) /= length; // normalize by length (profiled to be much faster than using .replicate())
 
-            Eigen::ArrayXXf temp = normals.transpose(); // saving temp is profiled to be faster than writing directly to output
-            output.col(frame) = Eigen::Map<Eigen::ArrayXf>(temp.data(), 3 * C.nValuesX, 1);
+            normalsTransposed = normals.transpose(); // saving temp is profiled to be faster than writing directly to output
+            output.col(frame) = Eigen::Map<Eigen::ArrayXf>(normalsTransposed.data(), 3 * C.nValuesX, 1);
 
             valuesOld0 = valuesOld1;
             valuesOld1 = input.col(frame);
@@ -60,11 +62,17 @@ private:
     { 
         size_t size = valuesOld0.getDynamicMemorySize();
         size += valuesOld1.getDynamicMemorySize();
+        size += normals.getDynamicMemorySize();
+        size += length.getDynamicMemorySize();
+        size += normalsTransposed.getDynamicMemorySize();
         return size; 
     }
 
     Eigen::ArrayXf valuesOld0;
     Eigen::ArrayXf valuesOld1;
+    Eigen::ArrayXXf normals;
+    Eigen::ArrayXf length;
+    Eigen::ArrayXXf normalsTransposed;
     float den1, den2;
 
     friend AlgorithmImplementation<Normal3dConfiguration, Normal3dDiff>;

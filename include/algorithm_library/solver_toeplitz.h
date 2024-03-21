@@ -21,12 +21,15 @@ struct SolverToeplitzConfiguration
 
     using Output = O::Complex2D;
 
-    struct Coefficients { DEFINE_NO_TUNABLE_COEFFICIENTS };
+    struct Coefficients { 
+        int nRHS = 8; // number of right-hand sides to solve (columns in BRighthand)
+        DEFINE_TUNABLE_COEFFICIENTS(nRHS)
+    };
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.aToeplitz.size() > 0) && (input.aToeplitz.size() == input.BRighthand.rows()) && (input.BRighthand.rows() == input.BRighthand.cols()); }
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(input.BRighthand.rows(), input.BRighthand.cols()); }
+    static auto validInput(Input input, const Coefficients& c) { return (input.aToeplitz.size() > 0) && (input.aToeplitz.size() == input.BRighthand.rows()) && (input.BRighthand.cols() == c.nRHS); }
+    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(input.BRighthand.rows(), c.nRHS); }
 
     template<typename Talgo>
     struct Example
@@ -35,20 +38,22 @@ struct SolverToeplitzConfiguration
         Eigen::ArrayXcf aToeplitz;
         Eigen::ArrayXXcf BRighthand;
         Eigen::ArrayXXcf output;
+        int nRHS;
 
         Example() : Example(Coefficients()) {}
         Example(const Coefficients& c)
         {
+            nRHS = c.nRHS;
             aToeplitz.resize(8);
             aToeplitz.setRandom();
             aToeplitz(0) = 1;
-            BRighthand.resize(8, 8);
+            BRighthand.resize(8, nRHS);
             BRighthand.setRandom();
             output = initOutput({aToeplitz, BRighthand}, c);
         }
 
         inline void processAlgorithm() { algo.process({ aToeplitz, BRighthand }, output); }
-        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == 8) && (output.cols() == 8); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == 8) && (output.cols() == nRHS); }
     };
 };
 
