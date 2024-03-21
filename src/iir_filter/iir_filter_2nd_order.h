@@ -64,16 +64,16 @@ private:
     inline void processOn(Input input, Output output)
     {
         for (auto sample = 0; sample < input.rows(); sample++)
-		{
-			for (auto channel = 0; channel < C.nChannels; channel++) // channel in inner loop is faster according to profiling
-			{
-				float out = input(sample, channel) * b0 + state1(channel); // can not write directly to output if input and output are same memory
-				// Update state variables
-				state1(channel) = input(sample, channel) * b1 - out * a1 + state2(channel);
-				state2(channel) = input(sample, channel) * b2 - out * a2;
-				output(sample, channel) = out;
-			}
-		}
+        {
+            for (auto channel = 0; channel < C.nChannels; channel++) // channel in inner loop is faster according to profiling
+            {
+                float out = input(sample, channel) * b0 + state1(channel); // can not write directly to output if input and output are same memory
+                // Update state variables
+                state1(channel) = input(sample, channel) * b1 - out * a1 + state2(channel);
+                state2(channel) = input(sample, channel) * b2 - out * a2;
+                output(sample, channel) = out;
+            }
+        }
     }
 
     void resetVariables() final
@@ -144,7 +144,7 @@ private:
     inline void processOn(Input input, Output output)
     {
         output = input * gain;
-		for (auto i = 0; i < C.nSos; i++) { filters[i].process(output, output); }
+        for (auto i = 0; i < C.nSos; i++) { filters[i].process(output, output); }
     }
     float gain;
 

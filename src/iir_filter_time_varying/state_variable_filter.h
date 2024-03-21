@@ -21,10 +21,10 @@ public:
     
     Eigen::ArrayXf getSosFilter(float cutoff, float gain, float resonance) const
     {
-		float c1 = cutoff / resonance;
-		float c2 = cutoff * resonance;
-		float c3 = c2 + 1.f;
-		float c0 = 1.f / (1.f + c1 * (c2 + 1.f));
+        float c1 = cutoff / resonance;
+        float c2 = cutoff * resonance;
+        float c3 = c2 + 1.f;
+        float c0 = 1.f / (1.f + c1 * (c2 + 1.f));
 
         float b0{},b1{},b2{};
         const float c01 = c0 * c1;
@@ -132,13 +132,13 @@ private:
             for (auto channel = 0; channel < C.nChannels; channel++) // channel in inner loop is faster according to profiling
             {
                 const float hp = c0 * (input.xTime(sample, channel) - z2(channel) - c3 * z1(channel));
-				const float x1 = c1 * hp;
-				const float bp = x1 + z1(channel);
-				const float x2 = c2 * bp;
-				const float lp = x2 + z2(channel);
+                const float x1 = c1 * hp;
+                const float bp = x1 + z1(channel);
+                const float x2 = c2 * bp;
+                const float lp = x2 + z2(channel);
 
-				z1(channel) = x1 + bp;
-				z2(channel) = x2 + lp;
+                z1(channel) = x1 + bp;
+                z2(channel) = x2 + lp;
 
                 switch (P.filterType)
                 {
@@ -283,7 +283,7 @@ private:
     inline void processOn(Input input, Output output)
     {
         output = input.xTime * gain;
-		for (auto i = 0; i < C.nSos; i++) 
+        for (auto i = 0; i < C.nSos; i++) 
         { 
             filters[i].process({output, input.cutoff.col(i), input.gain.col(i), input.resonance.col(i)}, output); 
         }

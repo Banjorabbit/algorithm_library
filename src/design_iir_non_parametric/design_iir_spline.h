@@ -23,14 +23,14 @@ public:
         gainFFT.resize(C.nBands);
     }
 
-	SplineCubic splineCalculation;
-	DesignIIRMinPhaseTF2SOS filterDesigner;
+    SplineCubic splineCalculation;
+    DesignIIRMinPhaseTF2SOS filterDesigner;
     DEFINE_MEMBER_ALGORITHMS(splineCalculation, filterDesigner)
 
 private:
 
     void processOn(Input input, Output output)
-	{
+    {
         frequencies.head(2) = -input.frequencies.head(2).reverse();
         frequencies.segment(2, input.frequencies.rows()) = input.frequencies;
         frequencies.tail(2) = C.sampleRate - input.frequencies.tail(2).reverse();
@@ -47,7 +47,7 @@ private:
 
         // calculate minimum phase spectrum
         filterDesigner.process(gainFFT, {output.sos, output.gain});
-	}
+    }
 
     size_t getDynamicSizeVariables() const final
     {

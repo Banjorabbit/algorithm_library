@@ -76,8 +76,8 @@ struct ActivityDetectionFusedConfiguration
 
     struct Parameters
     {
-		float activityThreshold = 1.f; // parameter to set how aggresive the detection is
-		DEFINE_TUNABLE_PARAMETERS(activityThreshold)
+        float activityThreshold = 1.f; // parameter to set how aggresive the detection is
+        DEFINE_TUNABLE_PARAMETERS(activityThreshold)
     };
 
     static auto validInput(Input input, const Coefficients& c) 

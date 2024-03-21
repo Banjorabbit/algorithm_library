@@ -56,14 +56,14 @@ private:
     }
 
     void processOn(Input input, Output output)
-	{
+    {
         dcRemover.process(input, xTime);
-		filterbank.process(xTime, xFreq);
+        filterbank.process(xTime, xFreq);
         xFreq2 = xFreq.abs2();
         activityDetector.process(xFreq2, activity);
         beamformer.process({xFreq, activity}, xBeamformed); 
         filterbankInverse.process(xBeamformed, output);
-	}
+    }
     
     int nBands;
     Eigen::ArrayXXf xTime;
