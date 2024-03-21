@@ -37,7 +37,7 @@ struct IIRFilterTimeVaryingConfiguration
         bool test = (input.xTime.cols() == c.nChannels) && (input.xTime.rows() > 0);
         test &= (input.cutoff.rows() == input.xTime.rows()) && (input.cutoff >= 0.f).all();
         test &= (input.gain.rows() == input.xTime.rows()) && (input.gain >= 0.f).all();
-        test &= (input.resonance.rows() == input.xTime.rows()) && (input.resonance >= 0.f).all();
+        test &= (input.resonance.rows() == input.xTime.rows()) && (input.resonance > 0.f).all();
         return test;
     }
 
