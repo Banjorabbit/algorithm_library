@@ -12,7 +12,9 @@ public:
     NoiseEstimationActivityDetection(Coefficients c =  Coefficients()) :
         AlgorithmImplementation<NoiseEstimationConfiguration, NoiseEstimationActivityDetection>{ c },
         activityDetection(convertToActivityDetectionCoefficients(c))
-    { }
+    { 
+        activity.resize(C.nBands, C.nChannels);
+    }
 
     ActivityDetectionNoiseEstimation activityDetection;
     DEFINE_MEMBER_ALGORITHMS(activityDetection)
@@ -21,9 +23,13 @@ private:
 
     inline void processOn(Input powerNoisy, Output output)
     {
-        Eigen::ArrayXXf activity(C.nBands, C.nChannels);
         activityDetection.process(powerNoisy, activity);
         output = activityDetection.getPowerNoise();
+    }
+
+    size_t getDynamicSizeVariables() const final
+    {
+        return activity.getDynamicMemorySize();
     }
 
     ActivityDetectionNoiseEstimation::Coefficients convertToActivityDetectionCoefficients(const Coefficients& c)
@@ -35,6 +41,7 @@ private:
         return c2;
     }
 
+    Eigen::ArrayXXf activity;
     friend AlgorithmImplementation<NoiseEstimationConfiguration, NoiseEstimationActivityDetection>;
 };
 
