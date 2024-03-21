@@ -16,7 +16,9 @@ public:
         pFilterbank.windowType = pFilterbank.HANN_WINDOW;
         filterbank.setParameters(pFilterbank);
         
+        frame.resize(c.bufferSize);
         nBands = c.fftSize / 2 + 1;
+        filterbankOut.resize(nBands);        
     }
 
     FilterbankAnalysisWOLA filterbank;
@@ -38,11 +40,15 @@ private:
     {
         for (auto nFrame = 0; nFrame < getNFrames(static_cast<int>(input.size()), C.bufferSize); nFrame++)
         {
-            Eigen::ArrayXf frame = input.segment(nFrame * C.bufferSize, C.bufferSize);
-            Eigen::ArrayXcf filterbankOut(nBands);
+            frame = input.segment(nFrame * C.bufferSize, C.bufferSize);
             filterbank.process(frame, filterbankOut);
             output.col(nFrame) = filterbankOut.abs2();
         }
+    }
+
+    size_t getDynamicSizeVariables() const final
+    {
+        return frame.getDynamicMemorySize() + filterbankOut.getDynamicMemorySize();
     }
 
     static FilterbankAnalysis::Coefficients convertCoefficientsToFilterbankCoefficients(Coefficients c) 
@@ -57,6 +63,8 @@ private:
     }
 
     int nBands;
+    Eigen::ArrayXf frame;
+    Eigen::ArrayXcf filterbankOut;
 
     friend AlgorithmImplementation<SpectrogramConfiguration, SpectrogramFilterbank>;
 };
