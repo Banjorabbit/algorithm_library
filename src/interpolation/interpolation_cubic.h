@@ -15,8 +15,7 @@
 class InterpolationCubicSample : public AlgorithmImplementation<InterpolationSampleConfiguration, InterpolationCubicSample>
 {
 public:
-    InterpolationCubicSample(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<InterpolationSampleConfiguration, InterpolationCubicSample>{ c }
+    InterpolationCubicSample(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     { }
 
 private:
@@ -31,7 +30,7 @@ private:
         assert(input.fractionalDelay >= 0.f); assert(input.fractionalDelay <= 1.f); // ASSERT: fractionalDelay must be between 0 and 1
     }
 
-    friend AlgorithmImplementation<InterpolationSampleConfiguration, InterpolationCubicSample>;
+    friend BaseAlgorithm;
 };
 
 
@@ -40,8 +39,7 @@ private:
 class InterpolationCubic : public AlgorithmImplementation<InterpolationConfiguration, InterpolationCubic>
 {
 public:
-    InterpolationCubic(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<InterpolationConfiguration, InterpolationCubic>{ c }
+    InterpolationCubic(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     { }
     
     InterpolationCubicSample interpolation; // this class uses default constructor
@@ -61,7 +59,7 @@ private:
         }
     }
 
-    friend AlgorithmImplementation<InterpolationConfiguration, InterpolationCubic>;
+    friend BaseAlgorithm;
 };
 
 // ----------------------------- Cubic interpolation of array with constant fractionalDelay. This is faster ------------------------------------------------------
@@ -70,8 +68,7 @@ private:
 class InterpolationCubicConstant : public AlgorithmImplementation<InterpolationConstantConfiguration, InterpolationCubicConstant>
 {
 public:
-    InterpolationCubicConstant(Coefficients c = Coefficients()) :
-        AlgorithmImplementation <InterpolationConstantConfiguration, InterpolationCubicConstant>{ c }
+    InterpolationCubicConstant(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     { 
         const auto d2 = C.fractionalDelay * C.fractionalDelay;
         const auto dm1 = C.fractionalDelay - 1.f;
@@ -94,6 +91,6 @@ private:
 
     float a0, a1, a2, a3;
 
-    friend AlgorithmImplementation<InterpolationConstantConfiguration, InterpolationCubicConstant>;
+    friend BaseAlgorithm;
 };
 

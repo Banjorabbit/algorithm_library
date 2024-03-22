@@ -9,8 +9,7 @@
 class MelScaleSpectrogram : public AlgorithmImplementation<MelScaleConfiguration, MelScaleSpectrogram>
 {
 public:
-    MelScaleSpectrogram(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<MelScaleConfiguration, MelScaleSpectrogram>{ c }
+    MelScaleSpectrogram(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     { 
         float highFreqMel = 2595 * std::log10(1 + (c.sampleRate/2)/700); // convert Hz to Mel
         Eigen::ArrayXf mels = Eigen::ArrayXf::LinSpaced(c.nMels + 1, 0, highFreqMel); // linear spaced corner indices in Mel domain
@@ -70,5 +69,5 @@ private:
     Eigen::ArrayXi indexStart;
     Eigen::ArrayXi nBandsSum;
 
-    friend AlgorithmImplementation<MelScaleConfiguration, MelScaleSpectrogram>;
+    friend BaseAlgorithm;
 };

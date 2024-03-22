@@ -23,8 +23,7 @@
 class StreamingMinMaxLemire : public AlgorithmImplementation<StreamingMinMaxConfiguration, StreamingMinMaxLemire>
 {
 public:
-    StreamingMinMaxLemire(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<StreamingMinMaxConfiguration, StreamingMinMaxLemire>{ c }
+    StreamingMinMaxLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     {
         minIndex.resize(C.filterLength, C.nChannels);
         maxIndex.resize(C.filterLength, C.nChannels);
@@ -170,14 +169,13 @@ private:
     Eigen::ArrayXf inputOld;
     Eigen::ArrayXi upperFrontIndex, upperEndIndex, lowerFrontIndex, lowerEndIndex;
 
-    friend AlgorithmImplementation<StreamingMinMaxConfiguration, StreamingMinMaxLemire>;
+    friend BaseAlgorithm;
 };
 
 class FilterMinMaxLemire : public AlgorithmImplementation<FilterMinMaxConfiguration, FilterMinMaxLemire>
 {
 public:
-    FilterMinMaxLemire(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<FilterMinMaxConfiguration, FilterMinMaxLemire>{ c },
+    FilterMinMaxLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c},
         streaming{c}
     {
         wHalf = (c.filterLength - 1) / 2;
@@ -212,14 +210,13 @@ private:
     int wHalf;
     Eigen::ArrayXXf xEndHalf;
 
-    friend AlgorithmImplementation<FilterMinMaxConfiguration, FilterMinMaxLemire>;
+    friend BaseAlgorithm;
 };
 
 class StreamingMaxLemire : public AlgorithmImplementation<StreamingMaxConfiguration, StreamingMaxLemire>
 {
 public:
-    StreamingMaxLemire(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<StreamingMaxConfiguration, StreamingMaxLemire>{ c }
+    StreamingMaxLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     {
         maxIndex.resize(C.filterLength, C.nChannels);
         maxValue.resize(C.filterLength, C.nChannels);
@@ -320,14 +317,13 @@ private:
     Eigen::ArrayXf inputOld;
     Eigen::ArrayXi upperFrontIndex, upperEndIndex;
 
-    friend AlgorithmImplementation<StreamingMaxConfiguration, StreamingMaxLemire>;
+    friend BaseAlgorithm;
 };
 
 class StreamingMinLemire : public AlgorithmImplementation<StreamingMinConfiguration, StreamingMinLemire>
 {
 public:
-    StreamingMinLemire(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<StreamingMinConfiguration, StreamingMinLemire>{ c }
+    StreamingMinLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     {
         minIndex.resize(C.filterLength, C.nChannels);
         minValue.resize(C.filterLength, C.nChannels);
@@ -429,14 +425,13 @@ private:
     Eigen::ArrayXf inputOld;
     Eigen::ArrayXi lowerFrontIndex, lowerEndIndex;
 
-    friend AlgorithmImplementation<StreamingMinConfiguration, StreamingMinLemire>;
+    friend BaseAlgorithm;
 };
 
 class FilterMaxLemire : public AlgorithmImplementation<FilterMaxConfiguration, FilterMaxLemire>
 {
 public:
-    FilterMaxLemire(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<FilterMaxConfiguration, FilterMaxLemire>{ c },
+    FilterMaxLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c},
         streaming{c}
     {
         wHalf = (c.filterLength - 1) / 2;
@@ -471,15 +466,14 @@ private:
     int wHalf;
     Eigen::ArrayXXf xEndHalf;
 
-    friend AlgorithmImplementation<FilterMaxConfiguration, FilterMaxLemire>;
+    friend BaseAlgorithm;
 };
 
 class FilterMinLemire : public AlgorithmImplementation<FilterMinConfiguration, FilterMinLemire>
 {
 public:
-    FilterMinLemire(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<FilterMinConfiguration, FilterMinLemire>{ c },
-        streaming{c}
+    FilterMinLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c}, 
+    streaming{c}
     {
         wHalf = (c.filterLength - 1) / 2;
         xEndHalf.resize(wHalf, c.nChannels);
@@ -513,5 +507,5 @@ private:
     int wHalf;
     Eigen::ArrayXXf xEndHalf;
 
-    friend AlgorithmImplementation<FilterMinConfiguration, FilterMinLemire>;
+    friend BaseAlgorithm;
 };

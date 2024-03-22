@@ -8,8 +8,7 @@
 class SpectrogramFilterbank : public AlgorithmImplementation<SpectrogramConfiguration, SpectrogramFilterbank>
 {
 public:
-    SpectrogramFilterbank(Coefficients c = Coefficients()) : 
-        AlgorithmImplementation<SpectrogramConfiguration, SpectrogramFilterbank>{c},
+    SpectrogramFilterbank(Coefficients c = Coefficients()) : BaseAlgorithm{c},
         filterbank(convertCoefficientsToFilterbankCoefficients(c))
     { 
         auto pFilterbank = filterbank.getParameters();
@@ -66,5 +65,5 @@ private:
     Eigen::ArrayXf frame;
     Eigen::ArrayXcf filterbankOut;
 
-    friend AlgorithmImplementation<SpectrogramConfiguration, SpectrogramFilterbank>;
+    friend BaseAlgorithm;
 };

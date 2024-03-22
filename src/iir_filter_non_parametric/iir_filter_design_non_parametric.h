@@ -13,8 +13,7 @@
 class IIRFilterTDFNonParametric : public AlgorithmImplementation<IIRFilterNonParametricConfiguration, IIRFilterTDFNonParametric>
 {
 public:
-    IIRFilterTDFNonParametric(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<IIRFilterNonParametricConfiguration, IIRFilterTDFNonParametric>{ c },
+    IIRFilterTDFNonParametric(Coefficients c = Coefficients()) : BaseAlgorithm{c},
         filterDesignerNonParametric(convertToDesignIIRSplineCoefficients(c)),
         filter({ c.nChannels, c.nSos})
     { }
@@ -60,15 +59,14 @@ private:
         return coefficients;
     }
 
-    friend AlgorithmImplementation<IIRFilterNonParametricConfiguration, IIRFilterTDFNonParametric>;
+    friend BaseAlgorithm;
 };
 
 // IIR filter is implemented using State Variable filter implemetation
 class IIRFilterSVFNonParametric : public AlgorithmImplementation<IIRFilterNonParametricConfiguration, IIRFilterSVFNonParametric>
 {
 public:
-    IIRFilterSVFNonParametric(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<IIRFilterNonParametricConfiguration, IIRFilterSVFNonParametric>{ c },
+    IIRFilterSVFNonParametric(Coefficients c = Coefficients()) : BaseAlgorithm{c},
         filterDesignerNonParametric(convertToDesignIIRSplineCoefficients(c)),
         filter({ c.nChannels, c.nSos})
     { 
@@ -135,5 +133,5 @@ private:
     Eigen::ArrayXf gain;
     Eigen::ArrayXf resonance;
 
-    friend AlgorithmImplementation<IIRFilterNonParametricConfiguration, IIRFilterSVFNonParametric>;
+    friend BaseAlgorithm;
 };

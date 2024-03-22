@@ -21,7 +21,7 @@ class FFTReal : public AlgorithmImplementation<FFTConfiguration, FFTReal>
 {
 public:
     FFTReal(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<FFTConfiguration, FFTReal>{ c },
+        BaseAlgorithm{c},
         scale{ 1.f / static_cast<float>(C.fftSize) },
         setup{ std::shared_ptr<PFFFT_Setup>(pffftSmartCreate(C.fftSize), pffftSmartDestroy) }
     {
@@ -94,6 +94,6 @@ private:
     Eigen::ArrayXf out;
     static const std::array<int,72> validFFTSizes; // defined in fft.cpp
 
-    friend AlgorithmImplementation<FFTConfiguration, FFTReal>;
+    friend BaseAlgorithm;
 };
 

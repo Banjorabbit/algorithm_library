@@ -9,8 +9,7 @@
 class FilterbankAnalysisWOLA : public AlgorithmImplementation<FilterbankAnalysisConfiguration, FilterbankAnalysisWOLA>
 {
 public:
-    FilterbankAnalysisWOLA(Coefficients c =  Coefficients()) :
-        AlgorithmImplementation<FilterbankAnalysisConfiguration, FilterbankAnalysisWOLA>{ c },
+    FilterbankAnalysisWOLA(Coefficients c =  Coefficients()) : BaseAlgorithm{c},
         fft({ C.fftSize })
     {
         initialize();
@@ -170,7 +169,7 @@ private:
     Eigen::ArrayXXf timeBuffer;
     int overlap, nFolds, maxSize;
 
-    friend AlgorithmImplementation<FilterbankAnalysisConfiguration, FilterbankAnalysisWOLA>;
+    friend BaseAlgorithm;
 };
 
 
@@ -179,8 +178,7 @@ private:
 class FilterbankSynthesisWOLA : public AlgorithmImplementation<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>
 {
 public:
-    FilterbankSynthesisWOLA(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>{ c },
+    FilterbankSynthesisWOLA(Coefficients c = Coefficients()) : BaseAlgorithm{c},
         fft({ C.fftSize })
     {
         initialize();
@@ -340,5 +338,5 @@ private:
     Eigen::ArrayXXf timeBuffer;
     int overlap, nFolds, maxSize;
 
-    friend AlgorithmImplementation<FilterbankSynthesisConfiguration, FilterbankSynthesisWOLA>;
+    friend BaseAlgorithm;
 };

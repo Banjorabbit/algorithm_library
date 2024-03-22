@@ -8,8 +8,7 @@
 class BeamformerMVDR : public AlgorithmImplementation<BeamformerConfiguration, BeamformerMVDR>
 {
 public:
-    BeamformerMVDR(const Coefficients& c = Coefficients()) :
-        AlgorithmImplementation<BeamformerConfiguration, BeamformerMVDR>{c}
+    BeamformerMVDR(const Coefficients& c = Coefficients()) : BaseAlgorithm{c}
     {
         filterUpdatesPerFrame = static_cast<int>(c.nBands * filterUpdateRate / c.filterbankRate);
         covarianceUpdateLambda = 1.f - expf(-1.f / (c.filterbankRate * covarianceUpdateTConstant));
@@ -122,5 +121,5 @@ private:
     Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXcf> eigenSolver;
     Eigen::MatrixXcf eigenVectors, Rxn;   
 
-    friend AlgorithmImplementation<BeamformerConfiguration, BeamformerMVDR>; 
+    friend BaseAlgorithm; 
 };

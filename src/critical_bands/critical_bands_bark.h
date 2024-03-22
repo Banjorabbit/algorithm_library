@@ -81,7 +81,7 @@ class CriticalBandsBarkSum : public CriticalBandsBark, public AlgorithmImplement
 public:
     CriticalBandsBarkSum(Coefficients c =  Coefficients()) :
         CriticalBandsBark(c), 
-        AlgorithmImplementation<CriticalBandsSumConfiguration, CriticalBandsBarkSum>{ c }
+        BaseAlgorithm{c}
     { }
 
     inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
@@ -101,7 +101,7 @@ private:
     }
     size_t getDynamicSizeVariables() const final { return CriticalBandsBark::getDynamicSizeVariables(); }
 
-    friend AlgorithmImplementation<CriticalBandsSumConfiguration, CriticalBandsBarkSum>;
+    friend BaseAlgorithm;
 };
 
 // --------------------------------------------------- CriticalBandsBarkMax ----------------------------------------------------------------
@@ -112,7 +112,7 @@ public:
 
     CriticalBandsBarkMax(Coefficients c =  Coefficients()) :
         CriticalBandsBark(c), 
-        AlgorithmImplementation<CriticalBandsMaxConfiguration, CriticalBandsBarkMax>{ c }
+        BaseAlgorithm{c}
     { }
 
     inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
@@ -132,7 +132,7 @@ private:
     }
     size_t getDynamicSizeVariables() const final { return CriticalBandsBark::getDynamicSizeVariables(); }
 
-    friend AlgorithmImplementation<CriticalBandsMaxConfiguration, CriticalBandsBarkMax>;
+    friend BaseAlgorithm;
 };
 
 // --------------------------------------------------- CriticalBandsBarkMean ----------------------------------------------------------------
@@ -143,7 +143,7 @@ public:
 
     CriticalBandsBarkMean(Coefficients c =  Coefficients()) :
         CriticalBandsBark(c), 
-        AlgorithmImplementation<CriticalBandsMeanConfiguration, CriticalBandsBarkMean>{ c }
+        BaseAlgorithm{c}
     { }
 
     inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
@@ -164,5 +164,5 @@ private:
 
     size_t getDynamicSizeVariables() const final { return CriticalBandsBark::getDynamicSizeVariables(); }
 
-    friend AlgorithmImplementation<CriticalBandsMeanConfiguration, CriticalBandsBarkMean>;
+    friend BaseAlgorithm;
 };

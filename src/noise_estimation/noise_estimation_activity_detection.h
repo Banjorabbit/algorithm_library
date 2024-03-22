@@ -9,8 +9,7 @@
 class NoiseEstimationActivityDetection : public AlgorithmImplementation<NoiseEstimationConfiguration, NoiseEstimationActivityDetection>
 {
 public:
-    NoiseEstimationActivityDetection(Coefficients c =  Coefficients()) :
-        AlgorithmImplementation<NoiseEstimationConfiguration, NoiseEstimationActivityDetection>{ c },
+    NoiseEstimationActivityDetection(Coefficients c =  Coefficients()) : BaseAlgorithm{c},
         activityDetection(convertToActivityDetectionCoefficients(c))
     { 
         activity.resize(C.nBands, C.nChannels);
@@ -42,7 +41,7 @@ private:
     }
 
     Eigen::ArrayXXf activity;
-    friend AlgorithmImplementation<NoiseEstimationConfiguration, NoiseEstimationActivityDetection>;
+    friend BaseAlgorithm;
 };
 
 
@@ -52,8 +51,7 @@ private:
 class NoiseEstimationOutputActivityDetection : public AlgorithmImplementation<NoiseEstimationActivityConfiguration, NoiseEstimationOutputActivityDetection>
 {
 public:
-    NoiseEstimationOutputActivityDetection(Coefficients c =  Coefficients()) :
-        AlgorithmImplementation<NoiseEstimationActivityConfiguration, NoiseEstimationOutputActivityDetection>{ c },
+    NoiseEstimationOutputActivityDetection(Coefficients c =  Coefficients()) : BaseAlgorithm{c},
         activityDetection(convertToActivityDetectionCoefficients(c))
     { }
 
@@ -77,7 +75,7 @@ private:
         return c2;
     }
 
-    friend AlgorithmImplementation<NoiseEstimationActivityConfiguration, NoiseEstimationOutputActivityDetection>;
+    friend BaseAlgorithm;
 };
 
 
@@ -88,8 +86,7 @@ private:
 class NoiseEstimationOutputFusedActivityDetection : public AlgorithmImplementation<NoiseEstimationActivityFusedConfiguration, NoiseEstimationOutputFusedActivityDetection>
 {
 public:
-    NoiseEstimationOutputFusedActivityDetection(Coefficients c =  Coefficients()) :
-        AlgorithmImplementation<NoiseEstimationActivityFusedConfiguration, NoiseEstimationOutputFusedActivityDetection>{ c },
+    NoiseEstimationOutputFusedActivityDetection(Coefficients c =  Coefficients()) : BaseAlgorithm{c},
         activityDetection(convertToActivityDetectionCoefficients(c))
     { }
 
@@ -113,5 +110,5 @@ private:
         return c2;
     }
 
-    friend AlgorithmImplementation<NoiseEstimationActivityFusedConfiguration, NoiseEstimationOutputFusedActivityDetection>;
+    friend BaseAlgorithm;
 };

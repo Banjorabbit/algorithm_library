@@ -17,7 +17,7 @@ class DCRemoverFirstOrder : public AlgorithmImplementation<DCRemoverConfiguratio
 {
 public:
     DCRemoverFirstOrder(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<DCRemoverConfiguration, DCRemoverFirstOrder>{ c }
+        BaseAlgorithm{c}
     {
         delay.resize(c.nChannels);
         resetVariables();
@@ -62,5 +62,5 @@ private:
     ArrayXf delay;
     float coef0, coef1;
 
-    friend AlgorithmImplementation<DCRemoverConfiguration, DCRemoverFirstOrder>;
+    friend BaseAlgorithm;
 };

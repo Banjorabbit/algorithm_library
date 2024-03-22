@@ -13,8 +13,7 @@
     class SolverToeplitzSystem : public AlgorithmImplementation<SolverToeplitzConfiguration, SolverToeplitzSystem>
     {
     public:
-        SolverToeplitzSystem(Coefficients c = Coefficients()) :
-            AlgorithmImplementation<SolverToeplitzConfiguration, SolverToeplitzSystem>{ c }
+        SolverToeplitzSystem(Coefficients c = Coefficients()) : BaseAlgorithm{c}
         { 
             c1.resize(c.nRHS - 1);
             c2.resize(c.nRHS - 1);
@@ -88,5 +87,5 @@
 
         Eigen::ArrayXcf c1;
         Eigen::ArrayXcf c2;
-        friend AlgorithmImplementation<SolverToeplitzConfiguration, SolverToeplitzSystem>;
+        friend BaseAlgorithm;
     };

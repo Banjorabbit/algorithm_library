@@ -11,8 +11,7 @@
 class MinPhaseSpectrumCepstrum : public AlgorithmImplementation<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>
 {
 public:
-    MinPhaseSpectrumCepstrum(Coefficients c =  Coefficients()) :
-        AlgorithmImplementation<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>{ c },
+    MinPhaseSpectrumCepstrum(Coefficients c =  Coefficients()) : BaseAlgorithm{c},
         fft({ 2 * (C.nBands - 1) })
     { 
         xLog.resize(C.nBands);
@@ -50,5 +49,5 @@ private:
     Eigen::ArrayXcf xLog;
     Eigen::ArrayXf xCepstrum;
 
-    friend AlgorithmImplementation<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>;
+    friend BaseAlgorithm;
 };

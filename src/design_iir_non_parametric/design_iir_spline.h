@@ -12,7 +12,7 @@ class DesignIIRSpline : public AlgorithmImplementation<DesignIIRNonParametricCon
 {
 public:
     DesignIIRSpline(const DesignIIRNonParametricConfiguration::Coefficients& c = Coefficients()) :
-        AlgorithmImplementation<DesignIIRNonParametricConfiguration, DesignIIRSpline>(c),
+        BaseAlgorithm(c),
         splineCalculation({c.nGains + 4}),
         filterDesigner(convertToDesignIIRMinPhaseTF2SOS(c))
     { 
@@ -73,5 +73,5 @@ private:
     Eigen::ArrayXf freqsFFT; // desired frequency points for FFT
     Eigen::ArrayXf gainFFT;
 
-    friend AlgorithmImplementation<DesignIIRNonParametricConfiguration, DesignIIRSpline>;
+    friend BaseAlgorithm;
 };

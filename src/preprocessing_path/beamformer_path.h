@@ -9,8 +9,7 @@
 class BeamformerPath : public AlgorithmImplementation<PreprocessingPathConfiguration, BeamformerPath>
 {
 public:
-    BeamformerPath(const Coefficients& c = Coefficients()) :
-        AlgorithmImplementation<PreprocessingPathConfiguration, BeamformerPath>{c},
+    BeamformerPath(const Coefficients& c = Coefficients()) : BaseAlgorithm{c},
         dcRemover({c.nChannels, c.sampleRate})
     {
         filterbank.setStandardFilterbank(c.bufferSize, c.nChannels);
@@ -72,5 +71,5 @@ private:
     Eigen::ArrayXcf xBeamformed;
     bool activity;
 
-    friend AlgorithmImplementation<PreprocessingPathConfiguration, BeamformerPath>;
+    friend BaseAlgorithm;
 };

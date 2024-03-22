@@ -9,8 +9,7 @@
 class GainCalculationApriori : public AlgorithmImplementation<GainCalculationConfiguration, GainCalculationApriori>
 {
 public:
-    GainCalculationApriori(Coefficients c =  Coefficients()) :
-        AlgorithmImplementation<GainCalculationConfiguration, GainCalculationApriori>{ c }
+    GainCalculationApriori(Coefficients c =  Coefficients()) : BaseAlgorithm{ c }
     { 
         snr.resize(c.nBands, c.nChannels);
         gainSmoothed.resize(c.nBands, c.nChannels);
@@ -58,6 +57,6 @@ private:
     float upLambda;
     float downLambda;
 
-    friend AlgorithmImplementation<GainCalculationConfiguration, GainCalculationApriori>;
+    friend BaseAlgorithm;
 };
 

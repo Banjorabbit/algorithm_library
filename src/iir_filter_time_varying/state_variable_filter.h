@@ -8,8 +8,7 @@
 class StateVariableFilter : public AlgorithmImplementation<IIRFilterTimeVaryingConfiguration, StateVariableFilter>
 {
 public:
-    StateVariableFilter(const Coefficients& c = Coefficients())
-        : AlgorithmImplementation<IIRFilterTimeVaryingConfiguration, StateVariableFilter>{ c }
+    StateVariableFilter(const Coefficients& c = Coefficients()) : BaseAlgorithm{c}
     {
         z1.resize(c.nChannels);
         z2.resize(c.nChannels);
@@ -188,7 +187,7 @@ private:
     Eigen::ArrayXf z2;
     float cLP, cBP, cHP;
 
-    friend AlgorithmImplementation<IIRFilterTimeVaryingConfiguration, StateVariableFilter>;
+    friend BaseAlgorithm;
 };
 
 
@@ -197,8 +196,7 @@ private:
 class StateVariableFilterCascade : public AlgorithmImplementation<IIRFilterCascadeTimeVaryingConfiguration, StateVariableFilterCascade>
 {
 public:
-    StateVariableFilterCascade(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<IIRFilterCascadeTimeVaryingConfiguration, StateVariableFilterCascade>{ c },
+    StateVariableFilterCascade(Coefficients c = Coefficients()) : BaseAlgorithm{c},
         filters(c.nSos, {c.nChannels})
     { gain = 1.f; }
 
@@ -291,5 +289,5 @@ private:
 
     float gain;
 
-    friend AlgorithmImplementation<IIRFilterCascadeTimeVaryingConfiguration, StateVariableFilterCascade>;
+    friend BaseAlgorithm;
 };

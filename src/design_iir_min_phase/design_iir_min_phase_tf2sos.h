@@ -12,7 +12,7 @@ class DesignIIRMinPhaseTF2SOS : public AlgorithmImplementation<DesignIIRMinPhase
 {
 public:
     DesignIIRMinPhaseTF2SOS(const DesignIIRMinPhaseConfiguration::Coefficients& c = Coefficients()) : 
-        AlgorithmImplementation<DesignIIRMinPhaseConfiguration, DesignIIRMinPhaseTF2SOS>(c),
+        BaseAlgorithm(c),
         minPhaseCalculator({c.nBands}),
         fft({2*(c.nBands-1)})
     {
@@ -179,5 +179,5 @@ private:
     Eigen::VectorXcf roots;
     Eigen::ArrayXf rootsPow;
 
-    friend AlgorithmImplementation<DesignIIRMinPhaseConfiguration, DesignIIRMinPhaseTF2SOS>;
+    friend BaseAlgorithm;
 };

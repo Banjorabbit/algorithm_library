@@ -9,8 +9,7 @@
 class IIRFilter2ndOrder : public AlgorithmImplementation<IIRFilterConfiguration, IIRFilter2ndOrder>
 {
 public:
-    IIRFilter2ndOrder(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<IIRFilterConfiguration, IIRFilter2ndOrder>{ c }
+    IIRFilter2ndOrder(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     { 
         C.nSos = 1; // overwrite in case another value is passed on
         state1.resize(c.nChannels);
@@ -92,15 +91,14 @@ private:
     float b0, b1, b2, a1, a2; // coefficients
     Eigen::ArrayXf state1, state2; // state variables
 
-    friend AlgorithmImplementation<IIRFilterConfiguration, IIRFilter2ndOrder>;
+    friend BaseAlgorithm;
 };
 
 // Cascade of IIRFilter2ndOrder
 class IIRFilterCascaded : public AlgorithmImplementation<IIRFilterConfiguration, IIRFilterCascaded>
 {
 public:
-    IIRFilterCascaded(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<IIRFilterConfiguration, IIRFilterCascaded>{ c },
+    IIRFilterCascaded(Coefficients c = Coefficients()) : BaseAlgorithm{c},
         filters(c.nSos,c)
     { gain = 1.f; }
 
@@ -148,5 +146,5 @@ private:
     }
     float gain;
 
-    friend AlgorithmImplementation<IIRFilterConfiguration, IIRFilterCascaded>;
+    friend BaseAlgorithm;
 };

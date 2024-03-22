@@ -10,8 +10,7 @@
 class CircularBufferSingleChannel : public AlgorithmImplementation<DelayConfiguration, CircularBufferSingleChannel>
 {
 public:
-    CircularBufferSingleChannel(Coefficients c =  Coefficients()) :
-        AlgorithmImplementation<DelayConfiguration, CircularBufferSingleChannel>{ c }
+    CircularBufferSingleChannel(Coefficients c =  Coefficients()) : BaseAlgorithm{c}
     {
         C.nChannels = 1; // force number of channels to 1 since this is the single channel version
         buffer.resize(c.delayLength);
@@ -90,14 +89,13 @@ private:
     Eigen::ArrayXf buffer;
     int index;
 
-    friend AlgorithmImplementation<DelayConfiguration, CircularBufferSingleChannel>;
+    friend BaseAlgorithm;
 };
 
 class CircularBuffer : public AlgorithmImplementation<DelayConfiguration, CircularBuffer>
 {
 public:
-    CircularBuffer(Coefficients c =  Coefficients()) :
-        AlgorithmImplementation<DelayConfiguration, CircularBuffer>{ c }
+    CircularBuffer(Coefficients c =  Coefficients()) : BaseAlgorithm{c}
     {
         buffer.resize(c.delayLength, c.nChannels);
         reset();
@@ -175,5 +173,5 @@ private:
     Eigen::ArrayXXf buffer;
     int index;
 
-    friend AlgorithmImplementation<DelayConfiguration, CircularBuffer>;
+    friend BaseAlgorithm;
 };

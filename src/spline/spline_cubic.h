@@ -10,8 +10,7 @@
 class SplineCubic : public AlgorithmImplementation<SplineConfiguration, SplineCubic>
 {
 public:
-    SplineCubic(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<SplineConfiguration, SplineCubic>{ c }
+    SplineCubic(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     { 
         mk.resize(c.nGiven);
         index.resize(c.nGiven);
@@ -81,5 +80,5 @@ private:
     Eigen::ArrayXf mk;
     Eigen::ArrayXi index;
 
-    friend AlgorithmImplementation<SplineConfiguration, SplineCubic>;
+    friend BaseAlgorithm;
 };

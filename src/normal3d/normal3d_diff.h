@@ -17,8 +17,7 @@
 class Normal3dDiff: public AlgorithmImplementation<Normal3dConfiguration, Normal3dDiff>
 {
 public:
-    Normal3dDiff(Coefficients c = Coefficients()) :
-        AlgorithmImplementation<Normal3dConfiguration, Normal3dDiff> {c}
+    Normal3dDiff(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     {
         valuesOld0.resize(c.nValuesX);
         valuesOld1.resize(c.nValuesX);
@@ -75,6 +74,6 @@ private:
     Eigen::ArrayXXf normalsTransposed;
     float den1, den2;
 
-    friend AlgorithmImplementation<Normal3dConfiguration, Normal3dDiff>;
+    friend BaseAlgorithm;
 };
 

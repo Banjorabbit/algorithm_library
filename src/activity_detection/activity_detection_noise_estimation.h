@@ -6,8 +6,7 @@
 class ActivityDetectionNoiseEstimation : public AlgorithmImplementation<ActivityDetectionConfiguration, ActivityDetectionNoiseEstimation>
 {
 public:
-    ActivityDetectionNoiseEstimation(Coefficients c =  Coefficients()) :
-        AlgorithmImplementation<ActivityDetectionConfiguration, ActivityDetectionNoiseEstimation>{ c }
+    ActivityDetectionNoiseEstimation(Coefficients c =  Coefficients()) : BaseAlgorithm{c}
     {
         activityMean.resize(c.nBands, c.nChannels);
         powerNoise.resize(c.nBands, c.nChannels);
@@ -65,14 +64,13 @@ private:
     Eigen::ArrayXXf powerNoise;
     float activityMeanLambda, smoothingLambda;
 
-    friend AlgorithmImplementation<ActivityDetectionConfiguration, ActivityDetectionNoiseEstimation>;
+    friend BaseAlgorithm;
 };
 
 class ActivityDetectionFusedNoiseEstimation : public AlgorithmImplementation<ActivityDetectionFusedConfiguration, ActivityDetectionFusedNoiseEstimation>
 {
 public:
-    ActivityDetectionFusedNoiseEstimation(Coefficients c =  Coefficients()) :
-        AlgorithmImplementation<ActivityDetectionFusedConfiguration, ActivityDetectionFusedNoiseEstimation>{ c },
+    ActivityDetectionFusedNoiseEstimation(Coefficients c =  Coefficients()) : BaseAlgorithm{c},
         activityDetection(convertToActivityDetectionConfiguration(c))
     { 
         activity.resize(C.nBands, C.nChannels);
@@ -109,5 +107,5 @@ private:
     }
     Eigen::ArrayXXf activity;
 
-    friend AlgorithmImplementation<ActivityDetectionFusedConfiguration, ActivityDetectionFusedNoiseEstimation>;
+    friend BaseAlgorithm;
 };
