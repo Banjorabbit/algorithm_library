@@ -24,15 +24,6 @@ public:
         onParametersChanged();
     }
 
-    void onParametersChanged() 
-    {
-        const float cosf = std::cos(2 * 3.14159265358979323846 * P.cutoffFrequency / C.sampleRate);
-        const float a = (1.f - std::sqrt(1.f - cosf*cosf))/cosf;
-
-        coef0 = a;
-        coef1 = (1+a)/2;
-    }
-
 private:
 
         void processOn(Input input, Output output)
@@ -47,7 +38,16 @@ private:
             }
         }
     }
-    
+
+    void onParametersChanged() 
+    {
+        const float cosf = std::cos(2 * 3.14159265358979323846 * P.cutoffFrequency / C.sampleRate);
+        const float a = (1.f - std::sqrt(1.f - cosf*cosf))/cosf;
+
+        coef0 = a;
+        coef1 = (1+a)/2;
+    }
+        
     void resetVariables() final 
     {
         delay.setZero();

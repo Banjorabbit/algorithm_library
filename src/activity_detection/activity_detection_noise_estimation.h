@@ -16,11 +16,6 @@ public:
         onParametersChanged();
      }
 
-    void onParametersChanged()
-    {
-        smoothingLambda = 1.f - expf(-1.f / (C.filterbankRate * P.smoothingTConstant));
-    }
-
     // return by const reference to avoid memory copy
     inline const Eigen::ArrayXXf& getPowerNoise() const { return powerNoise; }
 
@@ -52,6 +47,11 @@ private:
     {
         activityMean.setZero();
         powerNoise.setZero();
+    }
+
+    void onParametersChanged()
+    {
+        smoothingLambda = 1.f - expf(-1.f / (C.filterbankRate * P.smoothingTConstant));
     }
 
     size_t getDynamicSizeVariables() const final

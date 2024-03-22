@@ -205,8 +205,6 @@ public:
     template<typename Tsetup>
     void setSetupTree(const Tsetup& s) { static_cast<Talgo&>(*this).setSetupTreeImpl(s); }
 
-    void onParametersChanged() {} // hide in derived algorithm if desired. If more advanced functionality is needed, then write your own setters but remember to call the setters from this function.
-
     auto validInput(Input input) const { return Configuration::validInput(input, C); }
     auto initOutput(Input input) const { return Configuration::initOutput(input, C); }
 
@@ -216,6 +214,7 @@ protected:
     virtual size_t getDynamicSizeAlgorithms() const { return 0; }
     virtual void resetVariables() { }
     virtual void resetAlgorithms() { }
+    void onParametersChanged() {} // If more advanced functionality is needed, then write your own setters but remember to call the setters from this function.
 
     // these functions will be hidden if macro DEFINE_STATIC_MEMBER_ALGORITHMS(...) or DEFINE_SIMPLE_MEMBER_ALGORITHMS(...) is declared in derived Talgo
     Coefficients getCoefficientsTreeImpl() const { return getCoefficients(); }

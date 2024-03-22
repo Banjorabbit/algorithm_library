@@ -19,27 +19,6 @@ public:
     FFTReal fft;
     DEFINE_MEMBER_ALGORITHMS(fft)
 
-    void onParametersChanged()
-    {
-        switch (P.windowType)
-        {
-        case Parameters::HANN_WINDOW:
-            window = hann(C.frameSize) * C.gain;
-            break;
-        case Parameters::SQRT_HANN_WINDOW:
-            window = hann(C.frameSize).sqrt() * C.gain;
-            break;
-        case Parameters::RECTANGULAR:
-            window.setOnes();
-            window *= C.gain;
-            break;
-        case Parameters::USER_DEFINED:
-            break;
-        default:
-            window.setZero();
-        }
-    }
-
     void setWindow(I::Real w)
     {
         if (P.windowType == P.USER_DEFINED)
@@ -150,6 +129,27 @@ private:
         onParametersChanged();
 
         resetVariables();
+    }
+
+    void onParametersChanged()
+    {
+        switch (P.windowType)
+        {
+        case Parameters::HANN_WINDOW:
+            window = hann(C.frameSize) * C.gain;
+            break;
+        case Parameters::SQRT_HANN_WINDOW:
+            window = hann(C.frameSize).sqrt() * C.gain;
+            break;
+        case Parameters::RECTANGULAR:
+            window.setOnes();
+            window *= C.gain;
+            break;
+        case Parameters::USER_DEFINED:
+            break;
+        default:
+            window.setZero();
+        }
     }
 
     size_t getDynamicSizeVariables() const final

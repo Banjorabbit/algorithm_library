@@ -22,6 +22,7 @@
 #include "iir_filter/iir_filter_2nd_order.h"
 #include "iir_filter_time_varying/state_variable_filter.h"
 #include "iir_filter_non_parametric/iir_filter_design_non_parametric.h"
+#include "gain_calculation/gain_calculation_apriori.h"
 
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
@@ -73,6 +74,7 @@ DEFINE_BENCHMARK_ALGORITHM(DCRemoverFirstOrder)
 DEFINE_BENCHMARK_ALGORITHM(MelScaleSpectrogram)
 DEFINE_BENCHMARK_ALGORITHM(ActivityDetectionNoiseEstimation)
 DEFINE_BENCHMARK_ALGORITHM(ActivityDetectionFusedNoiseEstimation)
+DEFINE_BENCHMARK_ALGORITHM(GainCalculationApriori)
 
 
 

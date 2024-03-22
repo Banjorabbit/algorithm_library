@@ -1,0 +1,3 @@
+#include "gain_calculation/gain_calculation_apriori.h"
+
+DEFINE_ALGORITHM_CONSTRUCTOR(GainCalculation, GainCalculationApriori, GainCalculationConfiguration)
