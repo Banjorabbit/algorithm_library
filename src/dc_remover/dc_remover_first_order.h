@@ -26,7 +26,7 @@ public:
 
 private:
 
-        void processOn(Input input, Output output)
+    void processOn(Input input, Output output)
     {
         for (auto channel = 0; channel < C.nChannels; channel++)
         {
