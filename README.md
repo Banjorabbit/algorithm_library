@@ -1,9 +1,9 @@
 # Algorithm Library
-The Algorithm library repository is a collection of algorithms written in C++14. The public interface is found in [include](/include/). The implementations are found in subfolders of [src](/src/).
+The Algorithm library repository is a collection of algorithms written in C++. The public interface is found in [include](/include/). The implementations are found in subfolders of [src](/src/).
 
 Both the interface and implementations are heavily dependent on [Eigen](https://gitlab.com/libeigen/eigen/).
 
-It is a personal project in continous development and there are no guarantees regarding stability or any of the other *lities. 
+It is a personal project in continous development.
 
 ## Benchmarks
 Benchmarks are implemented using [Google benchmark](https://github.com/google/benchmark) and are located [here](apps/benchmark).
