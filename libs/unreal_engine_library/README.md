@@ -1,5 +1,5 @@
 # Integrate Algorithm Library into Unreal Engine project
-This project creates a static library that can be integrated into [Unreal Engine](https://www.unrealengine.com) projects. 
+This project builds the algorithm library as a static library that can be integrated into [Unreal Engine](https://www.unrealengine.com) projects. 
 
 The static library has been written and tested on Ubuntu 22.04 with Unreal Engine [v.5.3](https://docs.unrealengine.com/5.3/en-US/).
 
