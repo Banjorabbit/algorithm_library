@@ -1,0 +1,1 @@
+Here are Python scripts used for various testing and experimentation. It is currently not structured in any way and could probably use a cleanup. The [CMakeLists.txt](../CMakeLists.txt) file will copy all files in this folder to the build folder after building the project.
