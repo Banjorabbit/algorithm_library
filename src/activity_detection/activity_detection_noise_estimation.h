@@ -45,7 +45,7 @@ private:
     void resetVariables() final
     {
         activityMean.setZero();
-        powerNoise.setZero();
+        powerNoise.setConstant(1e-12f);
     }
 
     void onParametersChanged()
