@@ -8,26 +8,17 @@
 
 class BeamformerPath : public AlgorithmImplementation<PreprocessingPathConfiguration, BeamformerPath>
 {
+    int nBands; // It's important nBands is declared here before member algorithms since placement order determines the initialization order in constructor initializer list
+
 public:
     BeamformerPath(const Coefficients& c = Coefficients()) : BaseAlgorithm{c},
-        dcRemover({c.nChannels, c.sampleRate})
-    {
-        filterbank.setStandardFilterbank(c.bufferSize, c.nChannels);
-        filterbankInverse.setStandardFilterbank(c.bufferSize, 1); // only output 1 channel
-        
-        nBands = filterbank.getCoefficients().fftSize / 2 + 1; // get fftSize from filterbank
-        BeamformerMVDR::Coefficients cBeamformer;
-        cBeamformer.filterbankRate = c.sampleRate / c.bufferSize;
-        cBeamformer.nBands = nBands;
-        cBeamformer.nChannels = c.nChannels;
-        beamformer.setCoefficients(cBeamformer);  // delay initialization of beamformer to after initializer list to get fftSize from filterbank
-
-        ActivityDetectionFusedNoiseEstimation::Coefficients cActivity;
-        cActivity.filterbankRate = c.sampleRate / c.bufferSize;
-        cActivity.nBands = nBands;
-        cActivity.nChannels = c.nChannels;
-        activityDetector.setCoefficients(cActivity);// delay initialization to after initializer list to get fftSize from filterbank
-
+        nBands{FFTConfiguration::getNBands(4 * c.bufferSize)}, // important to define this before member algorithms, since nBands is passed to constructors!
+        filterbank(       {.nChannels = c.nChannels, .bufferSize = c.bufferSize, .nBands = nBands, .filterbankType = FilterbankAnalysisConfiguration::Coefficients::HANN}),
+        filterbankInverse({.nChannels = 1,           .bufferSize = c.bufferSize, .nBands = nBands, .filterbankType = FilterbankSynthesisConfiguration::Coefficients::HANN}), // only 1 channel
+        beamformer({.nChannels = c.nChannels, .filterbankRate = c.sampleRate / c.bufferSize, .nBands = nBands }),
+        activityDetector({.filterbankRate = c.sampleRate / c.bufferSize, .nBands = nBands, .nChannels = c.nChannels}),
+        dcRemover({.nChannels = c.nChannels, .sampleRate = c.sampleRate})
+    {   
         xTime.resize(C.bufferSize, C.nChannels);
         xFreq.resize(nBands, C.nChannels);
         xFreq2.resize(nBands, C.nChannels);
@@ -63,8 +54,7 @@ private:
         beamformer.process({xFreq, activity}, xBeamformed); 
         filterbankInverse.process(xBeamformed, output);
     }
-    
-    int nBands;
+
     Eigen::ArrayXXf xTime;
     Eigen::ArrayXXcf xFreq;
     Eigen::ArrayXXf xFreq2;

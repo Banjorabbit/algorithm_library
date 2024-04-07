@@ -9,27 +9,13 @@ class SpectrogramFilterbank : public AlgorithmImplementation<SpectrogramConfigur
 {
 public:
     SpectrogramFilterbank(Coefficients c = Coefficients()) : BaseAlgorithm{c},
-        filterbank(convertCoefficientsToFilterbankCoefficients(c))
+        filterbank(convertToFilterbankCoefficients(c))
     { 
-        auto pFilterbank = filterbank.getParameters();
-        pFilterbank.windowType = pFilterbank.HANN_WINDOW;
-        filterbank.setParameters(pFilterbank);
-        
-        frame.resize(c.bufferSize);
-        nBands = c.fftSize / 2 + 1;
-        filterbankOut.resize(nBands);        
+        filterbankOut.resize(c.nBands);        
     }
 
     FilterbankAnalysisWOLA filterbank;
     DEFINE_MEMBER_ALGORITHMS(filterbank)
-
-    void setWindow(I::Real window) 
-    {
-        auto pFilterbank = filterbank.getParameters();
-        pFilterbank.windowType = pFilterbank.USER_DEFINED;
-        filterbank.setParameters(pFilterbank);
-        filterbank.setWindow(window);
-    }
 
     static inline int getNFrames(int nSamples, int bufferSize) { return nSamples / bufferSize; }
 
@@ -37,32 +23,40 @@ private:
 
     void inline processOn(Input input, Output output)
     {
-        for (auto nFrame = 0; nFrame < getNFrames(static_cast<int>(input.size()), C.bufferSize); nFrame++)
+        for (auto nFrame = 0; nFrame < getNFrames(input.size(), C.bufferSize); nFrame++)
         {
-            frame = input.segment(nFrame * C.bufferSize, C.bufferSize);
-            filterbank.process(frame, filterbankOut);
+            filterbank.process(input.segment(nFrame * C.bufferSize, C.bufferSize), filterbankOut);
             output.col(nFrame) = filterbankOut.abs2();
         }
     }
 
     size_t getDynamicSizeVariables() const final
     {
-        return frame.getDynamicMemorySize() + filterbankOut.getDynamicMemorySize();
+        return filterbankOut.getDynamicMemorySize();
     }
 
-    static FilterbankAnalysis::Coefficients convertCoefficientsToFilterbankCoefficients(Coefficients c) 
+    FilterbankAnalysisWOLA::Coefficients convertToFilterbankCoefficients(const Coefficients& c)
     {
-        FilterbankAnalysis::Coefficients cFilterbank;
+        FilterbankAnalysisWOLA::Coefficients cFilterbank;
         cFilterbank.bufferSize = c.bufferSize;
-        cFilterbank.fftSize = c.fftSize;
-        cFilterbank.frameSize = c.fftSize;
-        cFilterbank.gain = 1.f;
         cFilterbank.nChannels = 1;
+        cFilterbank.nBands = c.nBands;
+        switch (c.algorithmType)
+        {
+        default: // Hann is the default case
+        case c.HANN:
+            cFilterbank.filterbankType = cFilterbank.HANN;
+            break;
+        case c.SQRT_HANN:
+            cFilterbank.filterbankType = cFilterbank.SQRT_HANN;
+            break;
+        case c.WOLA:
+            cFilterbank.filterbankType = cFilterbank.WOLA;
+            break;
+        }
         return cFilterbank;
     }
 
-    int nBands;
-    Eigen::ArrayXf frame;
     Eigen::ArrayXcf filterbankOut;
 
     friend BaseAlgorithm;

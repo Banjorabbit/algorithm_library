@@ -23,7 +23,7 @@ TEST(SpectrogramFilterbank, getNFrames)
 	ArrayXf signal(nSamples);
 	signal.setRandom();
 
-	ArrayXXf output(c.fftSize / 2 + 1, nFrames + 1); // add one extra frame than needed
+	ArrayXXf output(c.nBands, nFrames + 1); // add one extra frame than needed
 	output.setZero(); // important to set to zero, since we are checking last frame is zero in success criteria
 	spec.process(signal, output);
 
@@ -32,28 +32,3 @@ TEST(SpectrogramFilterbank, getNFrames)
 	EXPECT_TRUE(criteria);
 }
 
-// description: process two spectrograms with the same input signal, set one of the spectrogram windows to a random window, and verify that the output spectrograms are different.
-TEST(SpectrogramFilterbank, setWindow)
-{
-	Spectrogram spec1;
-	Spectrogram spec2;
-
-	auto c = spec2.getCoefficients();
-	ArrayXf window(c.fftSize);
-	window.setRandom();
-	spec2.setWindow(window);
-
-	const int nSamples = 1e5;
-	const int nFrames = Spectrogram::getNFrames(nSamples, c.bufferSize);
-	ArrayXf input(nSamples);
-	input.setRandom();
-	ArrayXXf output1(c.fftSize / 2 + 1, nFrames);
-	ArrayXXf output2(c.fftSize / 2 + 1, nFrames);
-
-	spec1.process(input, output1);
-	spec2.process(input, output2);
-
-	float error = (output1 - output2).abs2().sum() / output1.abs2().sum();
-	fmt::print("Error: {}\n", error);
-	EXPECT_TRUE(error > 1e-3); // error must be larger than threshold to show window was changed in spec2
-}

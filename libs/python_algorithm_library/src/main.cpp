@@ -194,14 +194,8 @@ PYBIND11_MODULE(PythonAlgorithmLibrary, m)
   DEFINE_PYTHON_INTERFACE(StreamingMinMax);
   DEFINE_PYTHON_INTERFACE(StreamingMin);
   DEFINE_PYTHON_INTERFACE(StreamingMax);
-  DEFINE_PYTHON_INTERFACE(FilterbankAnalysis)
-    .def("setStandardFilterbank", [](FilterbankAnalysis& algo, int bufferSize) { algo.setStandardFilterbank(bufferSize); })
-    .def("setLowDelayFilterbank", [](FilterbankAnalysis& algo, int bufferSize) { algo.setLowDelayFilterbank(bufferSize); })
-    .def("setHighQualityFilterbank", [](FilterbankAnalysis& algo, int bufferSize) { algo.setHighQualityFilterbank(bufferSize); });
-  DEFINE_PYTHON_INTERFACE(FilterbankSynthesis)
-    .def("setStandardFilterbank", [](FilterbankSynthesis& algo, int bufferSize) { algo.setStandardFilterbank(bufferSize); })
-    .def("setLowDelayFilterbank", [](FilterbankSynthesis& algo, int bufferSize) { algo.setLowDelayFilterbank(bufferSize); })
-    .def("setHighQualityFilterbank", [](FilterbankSynthesis& algo, int bufferSize) { algo.setHighQualityFilterbank(bufferSize); });
+  DEFINE_PYTHON_INTERFACE(FilterbankAnalysis);
+  DEFINE_PYTHON_INTERFACE(FilterbankSynthesis);
   DEFINE_PYTHON_INTERFACE(Interpolation);
   DEFINE_PYTHON_INTERFACE(InterpolationConstant);
   DEFINE_PYTHON_INTERFACE(InterpolationSample);

@@ -14,11 +14,11 @@ struct SpectrogramConfiguration
     struct Coefficients
     {
         int bufferSize = 128;
-        int fftSize = 512;
-        enum SpectrogramAlgorithm { FILTERBANK, NONLINEAR};
-        SpectrogramAlgorithm algorithm = FILTERBANK; // choose algorithm to use for calculating spectrogram
-        DEFINE_TUNABLE_ENUM(SpectrogramAlgorithm, {{FILTERBANK, "Filterbank"}, {NONLINEAR, "NonLinear"}})
-        DEFINE_TUNABLE_COEFFICIENTS(bufferSize, fftSize, algorithm)
+        int nBands = 257;
+        enum SpectrogramAlgorithmType { HANN, SQRT_HANN, WOLA, NONLINEAR};
+        SpectrogramAlgorithmType algorithmType = HANN; // choose algorithm to use for calculating spectrogram
+        DEFINE_TUNABLE_ENUM(SpectrogramAlgorithmType, {{HANN, "Hann"}, {SQRT_HANN, "Sqrt Hann"}, {WOLA, "Wola"}, {NONLINEAR, "NonLinear"}})
+        DEFINE_TUNABLE_COEFFICIENTS(bufferSize, nBands, algorithmType)
     };
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
@@ -26,7 +26,7 @@ struct SpectrogramConfiguration
     static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0); }
     static auto initOutput(Input input, const Coefficients& c)
     {
-        return Eigen::ArrayXXf(c.fftSize / 2 + 1, input.rows() / c.bufferSize);
+        return Eigen::ArrayXXf(c.nBands, input.rows() / c.bufferSize);
     }
 
     template<typename Talgo>
@@ -35,20 +35,20 @@ struct SpectrogramConfiguration
         Talgo algo;
         Eigen::ArrayXf input;
         Eigen::ArrayXXf output;
-        int fftSize, nFrames;
+        int nBands, nFrames;
 
         Example() : Example(Coefficients()) {}
         Example(const Coefficients& c) : algo(c)
         {
             nFrames = 10;
-            fftSize = c.fftSize;
+            nBands = c.nBands;
             input.resize(nFrames * c.bufferSize);
             input.setRandom();
             output = initOutput(input, c);
         }
 
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == fftSize/2 + 1) && (output.cols() == nFrames); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == nBands) && (output.cols() == nFrames); }
     };
 };
 
@@ -58,7 +58,6 @@ public:
     Spectrogram() = default;
     Spectrogram(const Coefficients& c);
 
-    void setWindow(I::Real window); // set FFT window
     static int getNFrames(int inputSize, int bufferSize); // get number of output frames given the size of the input signal and the bufferSize
     static int getValidFFTSize(int fftSize); // return valid FFT size larger or equal to fftSize
 };

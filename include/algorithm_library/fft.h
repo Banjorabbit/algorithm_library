@@ -22,8 +22,11 @@ struct FFTConfiguration
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
+    static int getFFTSize(int nBands) { return (nBands - 1) * 2; }
+    static int getNBands(int fftSize) { return fftSize / 2 + 1; }
+
     static auto validInput(Input input, const Coefficients& c) { return (input.rows() == c.fftSize) && (input.cols() > 0); }
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(c.fftSize/2 +1, input.cols()); }
+    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(getNBands(c.fftSize), input.cols()); }
 
     // exception for constructing FFT with invalid FFT size
     class ExceptionFFT : public std::runtime_error {
@@ -49,7 +52,7 @@ struct FFTConfiguration
         }
 
         inline void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == fftSize/2 + 1) && (output.cols() == nChannels); }
+        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == getNBands(fftSize)) && (output.cols() == nChannels); }
     };
 };
 

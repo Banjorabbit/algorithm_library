@@ -7,30 +7,17 @@ using NonlinearImpl = Implementation<SpectrogramNonlinear, SpectrogramConfigurat
 template<>
 Algorithm<SpectrogramConfiguration>::Algorithm(const Coefficients& c) 
 {
-    if (c.algorithm == c.FILTERBANK)
+    if (c.algorithmType == c.NONLINEAR)
     {
-        pimpl = std::make_unique<FilterbankImpl>(c);
+        pimpl = std::make_unique<NonlinearImpl>(c);
     }
     else
     {
-        pimpl = std::make_unique<NonlinearImpl>(c);
+        pimpl = std::make_unique<FilterbankImpl>(c);
     }
 } 
 
 Spectrogram::Spectrogram(const Coefficients& c) : Algorithm<SpectrogramConfiguration>(c) {}
-
-void Spectrogram::setWindow(I::Real window)
-{
-    const auto c = getCoefficients();
-    if (c.algorithm == c.FILTERBANK)
-    {
-        static_cast<FilterbankImpl*>(pimpl.get())->algo.setWindow(window);
-    }
-    else
-    {
-        static_cast<NonlinearImpl*>(pimpl.get())->algo.setWindow(window);
-    }
-}
 
 // static function so it doesn't matter which getNFrames we are using
 int Spectrogram::getNFrames(int inputSize, int bufferSize) 

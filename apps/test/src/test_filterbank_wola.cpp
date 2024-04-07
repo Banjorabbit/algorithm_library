@@ -22,13 +22,15 @@ TEST(Filterbank, ReconstructionHighQuality)
 {
 	const int nFrames = 100; // number of frames to process
 
-	FilterbankAnalysis filterbank;
-	filterbank.setHighQualityFilterbank();
+	auto c = FilterbankAnalysis::Coefficients();
+	c.filterbankType = c.WOLA;
+	c.nBands = FFTConfiguration::getNBands(4 * c.bufferSize);
+	FilterbankAnalysis filterbank(c);
 
-	FilterbankSynthesis filterbankInv;
-	filterbankInv.setHighQualityFilterbank();
-
-	auto c = filterbankInv.getCoefficients();
+	auto cInv = FilterbankSynthesis::Coefficients();
+	cInv.filterbankType = cInv.WOLA;
+	cInv.nBands = FFTConfiguration::getNBands(4 * cInv.bufferSize);
+	FilterbankSynthesis filterbankInv(cInv);
 
 	ArrayXXf input(nFrames * c.bufferSize, c.nChannels);
 	input.setRandom();
@@ -40,27 +42,29 @@ TEST(Filterbank, ReconstructionHighQuality)
 		filterbank.process(input.middleRows(i * c.bufferSize, c.bufferSize), outFreq);
 		filterbankInv.process(outFreq, output.middleRows(i * c.bufferSize, c.bufferSize));
 	}
-	int offset = c.frameSize / c.bufferSize - 1;
-	float error = (input.topRows((nFrames - offset) * c.bufferSize) - output.bottomRows((nFrames - offset) * c.bufferSize)).abs2().mean();
-	error /= input.topRows((nFrames - offset) * c.bufferSize).abs2().mean();
+	int offset = 7 * c.bufferSize; // frameSize - bufferSize = 8 * bufferSize - bufferSize
+	float error = (input.topRows(nFrames * c.bufferSize - offset) - output.bottomRows(nFrames * c.bufferSize - offset)).abs2().mean();
+	error /= input.topRows(nFrames * c.bufferSize - offset).abs2().mean();
 
 	fmt::print("Output error: {}\n", error);
 	EXPECT_LT(error, 1e-6f);
 }
 
-// Description: Send random signal through LowDelay filterbank and reconstruct it.
+// Description: Send random signal through Sqrt_Hann filterbank and reconstruct it.
 // pass/fail: check reconstruction error is below threshold.
-TEST(Filterbank, ReconstructionLowDelay)
+TEST(Filterbank, ReconstructionSqrtHann)
 {
 	const int nFrames = 100; // number of frames to process
 
-	FilterbankAnalysis filterbank;
-	filterbank.setLowDelayFilterbank();
+	auto c = FilterbankAnalysis::Coefficients();
+	c.filterbankType = c.SQRT_HANN;
+	c.nBands = FFTConfiguration::getNBands(2 * c.bufferSize);
+	FilterbankAnalysis filterbank(c);
 
-	FilterbankSynthesis filterbankInv;
-	filterbankInv.setLowDelayFilterbank();
-
-	auto c = filterbankInv.getCoefficients();
+	auto cInv = FilterbankSynthesis::Coefficients();
+	cInv.filterbankType = cInv.SQRT_HANN;
+	cInv.nBands = FFTConfiguration::getNBands(2 * cInv.bufferSize);
+	FilterbankSynthesis filterbankInv(cInv);
 
 	ArrayXXf input(nFrames * c.bufferSize, c.nChannels);
 	input.setRandom();
@@ -72,27 +76,29 @@ TEST(Filterbank, ReconstructionLowDelay)
 		filterbank.process(input.middleRows(i * c.bufferSize, c.bufferSize), outFreq);
 		filterbankInv.process(outFreq, output.middleRows(i * c.bufferSize, c.bufferSize));
 	}
-	int offset = c.frameSize / c.bufferSize - 1;
-	float error = (input.topRows((nFrames - offset) * c.bufferSize) - output.bottomRows((nFrames - offset) * c.bufferSize)).abs2().mean();
-	error /= input.topRows((nFrames - offset) * c.bufferSize).abs2().mean();
+	int offset = c.bufferSize; // frameSize - bufferSize = 2 * bufferSize - bufferSize
+	float error = (input.topRows(nFrames * c.bufferSize - offset) - output.bottomRows(nFrames * c.bufferSize - offset)).abs2().mean();
+	error /= input.topRows(nFrames * c.bufferSize - offset).abs2().mean();
 
 	fmt::print("Output error: {}\n", error);
 	EXPECT_LT(error, 1e-6f);
 }
 
-// Description: Send random signal through Standard filterbank and reconstruct it.
+// Description: Send random signal through Hann filterbank and reconstruct it.
 // pass/fail: check reconstruction error is below threshold.
 TEST(Filterbank, ReconstructionStandard)
 {
 	const int nFrames = 100; // number of frames to process
 
-	FilterbankAnalysis filterbank;
-	filterbank.setStandardFilterbank();
+	auto c = FilterbankAnalysis::Coefficients();
+	c.filterbankType = c.HANN;
+	c.nBands = FFTConfiguration::getNBands(4 * c.bufferSize);
+	FilterbankAnalysis filterbank(c);
 
-	FilterbankSynthesis filterbankInv;
-	filterbankInv.setStandardFilterbank();
-
-	auto c = filterbankInv.getCoefficients();
+	auto cInv = FilterbankSynthesis::Coefficients();
+	cInv.filterbankType = cInv.HANN;
+	cInv.nBands = FFTConfiguration::getNBands(4 * cInv.bufferSize);
+	FilterbankSynthesis filterbankInv(cInv);
 
 	ArrayXXf input(nFrames * c.bufferSize, c.nChannels);
 	input.setRandom();
@@ -104,9 +110,9 @@ TEST(Filterbank, ReconstructionStandard)
 		filterbank.process(input.middleRows(i * c.bufferSize, c.bufferSize), outFreq);
 		filterbankInv.process(outFreq, output.middleRows(i * c.bufferSize, c.bufferSize));
 	}
-	int offset = c.frameSize / c.bufferSize - 1;
-	float error = (input.topRows((nFrames - offset) * c.bufferSize) - output.bottomRows((nFrames - offset) * c.bufferSize)).abs2().mean();
-	error /= input.topRows((nFrames - offset) * c.bufferSize).abs2().mean();
+	int offset = 3 * c.bufferSize; // frameSize - bufferSize = 4 * bufferSize - bufferSize
+	float error = (input.topRows(nFrames * c.bufferSize - offset) - output.bottomRows(nFrames * c.bufferSize - offset)).abs2().mean();
+	error /= input.topRows(nFrames * c.bufferSize - offset).abs2().mean();
 
 	fmt::print("Output error: {}\n", error);
 	EXPECT_LT(error, 1e-6f);
