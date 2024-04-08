@@ -25,8 +25,13 @@ struct FFTConfiguration
     static int getFFTSize(int nBands) { return (nBands - 1) * 2; }
     static int getNBands(int fftSize) { return fftSize / 2 + 1; }
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.rows() == c.fftSize) && (input.cols() > 0); }
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(getNBands(c.fftSize), input.cols()); }
+    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.fftSize, 2); } // time samples. Number of channels is arbitrary
+    
+    static Eigen::ArrayXXcf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf::Zero(getNBands(c.fftSize), input.cols()); } // frequency bins. Number of channels is arbitrary
+
+    static bool validInput(Input input, const Coefficients& c) { return (input.rows() == c.fftSize) && (input.cols() > 0) && input.allFinite(); }
+
+    static bool validOutput(Output output, const Coefficients& c) { return (output.rows() == getNBands(c.fftSize)) && (output.cols() > 0) && output.allFinite(); }
 
     // exception for constructing FFT with invalid FFT size
     class ExceptionFFT : public std::runtime_error {

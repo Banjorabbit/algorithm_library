@@ -23,8 +23,13 @@ struct IIRFilterNonParametricConfiguration
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.cols() == c.nChannels) && (input.rows() > 0); }
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.rows(), c.nChannels); }
+    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(100, c.nChannels); } // time samples. Number of samples can be arbitrary
+
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(input.rows(), c.nChannels); } // time samples
+
+    static bool validInput(Input input, const Coefficients& c) { return (input.cols() == c.nChannels) && (input.rows() > 0) && input.allFinite(); }
+
+    static bool validOutput(Output output, const Coefficients& c) { return (output.cols() == c.nChannels) && (output.rows() > 0) && output.allFinite(); }
 
     template<typename Talgo>
     struct Example

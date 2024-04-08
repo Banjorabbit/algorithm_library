@@ -13,8 +13,6 @@ struct CriticalBandsConfiguration
     using Input = I::Real2D;
     using Output = O::Real2D;
 
-    static int getNCriticalBands(float sampleRate);
-
     struct Coefficients
     {
         int nBands = 257;
@@ -24,12 +22,21 @@ struct CriticalBandsConfiguration
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
-    static auto validInput(Input input, const Coefficients& c) 
+    static int getNCriticalBands(float sampleRate);
+
+    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.nBands, 2).abs2(); } // power spectrum. Number of channels can be arbitrary
+
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(getNCriticalBands(c.sampleRate), input.cols()); } // power spectrum in critical bands
+
+    static bool validInput(Input input, const Coefficients& c) 
     { 
-        return (input >= 0).all() && (input.rows() == c.nBands) && (input.cols() > 0);
+        return (input.rows() == c.nBands) && (input.cols() > 0) && (input >= 0).all();
     }
     
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(getNCriticalBands(c.sampleRate), input.cols()); }
+    static bool validOutput(Output output, const Coefficients& c) 
+    { 
+        return (output.rows() == getNCriticalBands(c.sampleRate)) && (output.cols() > 0) && (output >= 0).all();
+    }
 
     template<typename Talgo>
     struct Example

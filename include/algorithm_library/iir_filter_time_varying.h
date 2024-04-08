@@ -32,16 +32,31 @@ struct IIRFilterTimeVaryingConfiguration
         DEFINE_TUNABLE_PARAMETERS(filterType)
     };
 
-    static auto validInput(Input input, const Coefficients& c) 
+    static std::tuple<Eigen::ArrayXXf, Eigen::ArrayXf, Eigen::ArrayXf, Eigen::ArrayXf> initInput(const Coefficients& c) 
     { 
-        bool test = (input.xTime.cols() == c.nChannels) && (input.xTime.rows() > 0);
+        int nSamples = 100; // Number of samples can be arbitrary
+        Eigen::ArrayXXf xTime = Eigen::ArrayXXf::Random(nSamples, c.nChannels); // time samples
+        Eigen::ArrayXf cutoff = (3.14159f * 8000.f / 16000.f * Eigen::ArrayXf::Random(nSamples).abs2()).tan(); // cutoff frequency in Hz prewarped: tan(pi * f/fs)
+        Eigen::ArrayXf gain = 10.f * Eigen::ArrayXf::Random(nSamples).abs2(); // linear gain
+        Eigen::ArrayXf resonance = 5.f * Eigen::ArrayXf::Random(nSamples).abs2(); // resonance/Q-value
+        return std::make_tuple(xTime, cutoff, gain, resonance);
+    }
+
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(input.xTime.rows(), c.nChannels); } // time samples
+
+    static bool validInput(Input input, const Coefficients& c) 
+    { 
+        bool test = (input.xTime.cols() == c.nChannels) && (input.xTime.rows() > 0) && input.xTime.allFinite();
         test &= (input.cutoff.rows() == input.xTime.rows()) && (input.cutoff >= 0.f).all();
         test &= (input.gain.rows() == input.xTime.rows()) && (input.gain >= 0.f).all();
         test &= (input.resonance.rows() == input.xTime.rows()) && (input.resonance > 0.f).all();
         return test;
     }
 
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.xTime.rows(), c.nChannels); }
+    static bool validOutput(Output output, const Coefficients& c) 
+    {
+        return (output.rows() > 0) && (output.cols() == c.nChannels) && output.allFinite();
+    }
 
     template<typename Talgo>
     struct Example
@@ -118,16 +133,31 @@ struct IIRFilterCascadeTimeVaryingConfiguration
         DEFINE_NO_TUNABLE_PARAMETERS
     };
 
-    static auto validInput(Input input, const Coefficients& c) 
+    static std::tuple<Eigen::ArrayXXf, Eigen::ArrayXXf, Eigen::ArrayXXf, Eigen::ArrayXXf> initInput(const Coefficients& c) 
     { 
-        bool test = (input.xTime.cols() == c.nChannels) && (input.xTime.rows() > 0);
-        test &= (input.cutoff.cols() == c.nSos) && (input.cutoff.rows() == input.xTime.rows()) && (input.cutoff >= 0.f).all();
-        test &= (input.gain.cols() == c.nSos) && (input.gain.rows() == input.xTime.rows()) && (input.gain >= 0.f).all();
-        test &= (input.resonance.cols() == c.nSos) && (input.resonance.rows() == input.xTime.rows()) && (input.resonance >= 0.f).all();
+        int nSamples = 100; // Number of samples can be arbitrary
+        Eigen::ArrayXXf xTime = Eigen::ArrayXXf::Random(nSamples, c.nChannels); // time samples
+        Eigen::ArrayXXf cutoff = (3.14159f * 8000.f / 16000.f * Eigen::ArrayXXf::Random(nSamples, c.nSos).abs2()).tan(); // cutoff frequency in Hz prewarped: tan(pi * f/fs)
+        Eigen::ArrayXXf gain = 10.f * Eigen::ArrayXXf::Random(nSamples, c.nSos).abs2(); // linear gain
+        Eigen::ArrayXXf resonance = 5.f * Eigen::ArrayXXf::Random(nSamples, c.nSos).abs2(); // resonance/Q-value
+        return std::make_tuple(xTime, cutoff, gain, resonance);
+    }
+
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(input.xTime.rows(), c.nChannels); } // time samples
+
+    static bool validInput(Input input, const Coefficients& c) 
+    { 
+        bool test = (input.xTime.cols() == c.nChannels) && (input.xTime.rows() > 0) && input.xTime.allFinite();
+        test &= (input.cutoff.rows() == input.xTime.rows()) && (input.cutoff.cols() == c.nSos) && (input.cutoff >= 0.f).all();
+        test &= (input.gain.rows() == input.xTime.rows()) && (input.gain.cols() == c.nSos) && (input.gain >= 0.f).all();
+        test &= (input.resonance.rows() == input.xTime.rows()) && (input.resonance.cols() == c.nSos) && (input.resonance > 0.f).all();
         return test;
     }
 
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.xTime.rows(), c.nChannels); }
+    static bool validOutput(Output output, const Coefficients& c) 
+    {
+        return (output.rows() > 0) && (output.cols() == c.nChannels) && output.allFinite();
+    }
 
     template<typename Talgo>
     struct Example

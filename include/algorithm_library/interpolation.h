@@ -23,8 +23,18 @@ struct InterpolationSampleConfiguration
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.samples.size() == 4) && (input.fractionalDelay >= 0.f) && (input.fractionalDelay <= 1.f);	}
-    static auto initOutput(Input input, const Coefficients& c) { return 0.f; }
+    static std::tuple<Eigen::Array4f, float> initInput(const Coefficients& c) 
+    { 
+        Eigen::Array4f samples = Eigen::Array4f::Random(); // size 4 array samples. Interpolation is done between samples 1 and 2
+        float fractionalDelay = 0.5f; // fractional index to interpolate. It must be between 0.0 - 1.0
+        return std::make_tuple(samples, fractionalDelay); 
+    }
+
+    static float initOutput(Input input, const Coefficients& c) { return 0.f; } // output is a single float value (interpolated value
+
+    static bool validInput(Input input, const Coefficients& c) { return (input.samples.size() == 4) && input.samples.allFinite() && (input.fractionalDelay >= 0.f) && (input.fractionalDelay <= 1.f);	}
+    
+    static bool validOutput(Output output, const Coefficients& c) { return std::isfinite(output); }
 
     template<typename Talgo>
     struct Example
@@ -71,8 +81,31 @@ struct InterpolationConfiguration
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.samples.size() >= 4) && (input.fractionalIndices >= 1.0).all() && (input.fractionalIndices <= (input.samples.size() - 2.f)).all();	}
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.fractionalIndices.size()); }
+    static std::tuple<Eigen::ArrayXf, Eigen::ArrayXf> initInput(const Coefficients& c) 
+    { 
+        int nSamples = 100;
+        Eigen::ArrayXf samples = Eigen::ArrayXf::Random(nSamples); // samples. Number of samples can be arbitrary
+        Eigen::ArrayXf fractionalIndices = Eigen::ArrayXf::Random(nSamples).abs() * (nSamples - 3.f) + 1.f; // indices must be between 1.0 and samples.size()-2.0
+        return std::make_tuple(samples, fractionalIndices); 
+    }
+
+    static Eigen::ArrayXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf::Zero(input.samples.size()); } // interpolated samples
+
+    static bool validInput(Input input, const Coefficients& c) 
+    { 
+        if (input.fractionalIndices.size() < 1) return false; // if not at least one value
+        for (auto i = 1; i < input.fractionalIndices.size(); i++) // if not ordered in increasing order
+        {
+            if (input.fractionalIndices(i) < input.fractionalIndices(i - 1))
+                return false;
+        }
+        float minFractional = input.fractionalIndices(0);
+        float maxFractional = input.fractionalIndices(input.fractionalIndices.size() - 1);
+        if (minFractional < 1.0 || maxFractional > input.samples.size() - 2.0) { return false; } // if not in the interval [1.0, samples.size()-2.0]
+        return input.samples.size() > 3 && input.samples.allFinite(); // if not at least 4 samples
+    }
+    
+    static bool validOutput(Output output, const Coefficients& c) { return output.allFinite(); }
 
     template<typename Talgo>
     struct Example

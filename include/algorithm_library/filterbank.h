@@ -45,8 +45,13 @@ struct FilterbankAnalysisConfiguration : public FilterbankConfiguration
     using Input = I::Real2D;
     using Output = O::Complex2D;
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels); }
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(c.nBands, c.nChannels); }
+    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.bufferSize, c.nChannels); } // time samples. 
+
+    static Eigen::ArrayXXcf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf::Zero(c.nBands, c.nChannels); } // frequency bins
+
+    static bool validInput(Input input, const Coefficients& c) { return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels) && input.allFinite(); }
+
+    static bool validOutput(Output output, const Coefficients& c) { return (output.rows() == c.nBands) && (output.cols() == c.nChannels) && output.allFinite(); }    
     
     template<typename Talgo>
     struct Example
@@ -88,8 +93,13 @@ struct FilterbankSynthesisConfiguration : public FilterbankConfiguration
     using Input = I::Complex2D;
     using Output = O::Real2D;
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.rows() == c.nBands) && (input.cols() == c.nChannels); }
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(c.bufferSize, c.nChannels); }
+    static Eigen::ArrayXXcf initInput(const Coefficients& c) { return Eigen::ArrayXXcf::Random(c.nBands, c.nChannels); } // frequency bins
+
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(c.bufferSize, c.nChannels); } // time samples
+
+    static bool validInput(Input input, const Coefficients& c) { return (input.rows() == c.nBands) && (input.cols() == c.nChannels) && input.allFinite(); }
+
+    static bool validOutput(Output output, const Coefficients& c) { return (output.rows() == c.bufferSize) && (output.cols() == c.nChannels) && output.allFinite(); }
 
     template<typename Talgo>
     struct Example

@@ -37,9 +37,19 @@ struct BaseFilterMinMaxConfiguration
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels);}
-    static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple( Eigen::ArrayXXf(input.rows(), c.nChannels), Eigen::ArrayXXf(input.rows(), c.nChannels) ); }
+    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(1000, c.nChannels); } // time samples. Number of samples can be arbitrary
+
+    static std::tuple<Eigen::ArrayXXf, Eigen::ArrayXXf> initOutput(Input input, const Coefficients& c) { return std::make_tuple( Eigen::ArrayXXf::Zero(input.rows(), c.nChannels), Eigen::ArrayXXf::Zero(input.rows(), c.nChannels) ); } // minimum and maximum time samples. Number of samples can be arbitrary
+
+    static bool validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels) && input.allFinite();}
     
+    static bool validOutput(Output output, const Coefficients& c) 
+    { 
+        bool flag = (output.minValue.rows() > 0) && (output.minValue.cols() == c.nChannels) && output.minValue.allFinite();
+        flag &= (output.maxValue.rows() > 0) && (output.maxValue.cols() == c.nChannels) && output.maxValue.allFinite();
+        return flag;
+    }
+
     template<typename Talgo>
     struct Example
     {
@@ -112,9 +122,14 @@ struct BaseFilterExtremumConfiguration
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels);}
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(input.rows(), c.nChannels); }
+    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(1000, c.nChannels); } // time samples. Number of samples can be arbitrary
+
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(input.rows(), c.nChannels); } // extremum time samples. Number of samples can be arbitrary
+
+    static bool validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels) && input.allFinite();}
     
+    static bool validOutput(Output output, const Coefficients& c) { return (output.rows() > 0) && (output.cols() == c.nChannels) && output.allFinite(); }
+   
     template<typename Talgo>
     struct Example
     {

@@ -40,8 +40,35 @@ struct DesignIIRNonParametricConfiguration
         DEFINE_NO_TUNABLE_PARAMETERS
     };
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.frequencies.rows() > 0) && (input.frequencies > 0).all() && (input.frequencies.rows() == input.gaindB.rows()); }
-    static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::Array<float, 6, Eigen::Dynamic>::Zero(6, c.nGains), float()); }
+    static std::tuple<Eigen::ArrayXf, Eigen::ArrayXf> initInput(const Coefficients& c) // frequency and gain pairs
+    { 
+        Eigen::ArrayXf frequencies = Eigen::ArrayXf::LinSpaced(c.nGains, std::log(0.005f * c.sampleRate), std::log(0.25f * c.sampleRate)).exp() ; // logarithmic spacing
+        Eigen::ArrayXf gaindB = Eigen::ArrayXf::Random(c.nGains) * 20; // random gain
+        return std::make_tuple(frequencies, gaindB); 
+    }
+
+    static std::tuple<Eigen::Array<float, 6, Eigen::Dynamic>, float> initOutput(Input input, const Coefficients& c) // second-order sections and gain
+    { 
+        Eigen::ArrayXXf sos = Eigen::ArrayXXf::Zero(6, c.nGains);
+        sos.row(0).setOnes();
+        sos.row(3).setOnes();
+        return std::make_tuple(sos, 1.f); 
+    }
+
+    static bool validInput(Input input, const Coefficients& c) 
+    { 
+        bool flag = (input.frequencies.rows() == c.nGains) && (input.frequencies.rows() >= 2) && (input.frequencies > 0.f).all(); // number of frequency/gain pairs must be at least 2 to allow interpolation
+        flag &= (input.gaindB.rows() == c.nGains) && input.gaindB.allFinite();
+        return flag; 
+    }
+
+    static bool validOutput(Output output, const Coefficients& c) 
+    { 
+        bool flag = (output.sos.cols() == c.nGains) && (output.sos.rows() == 6) && output.sos.allFinite();
+        flag &= (output.sos.row(3) == Eigen::ArrayXf::Ones(c.nGains).transpose()).all();
+        flag &= output.gain >= 0;
+        return flag; 
+    }
 
     template<typename Talgo>
     struct Example
