@@ -61,9 +61,6 @@ namespace InterfaceTests // this namespace contains interface tests and should b
     template <typename T>
     struct hasPublicProcessOn<T, decltype(void(&T::processOn))> : std::true_type {};
 
-    template<typename Talgo, typename... Ts>
-    using TestType = decltype(&Talgo::process(std::declval<Ts>()...))(Ts...);
-
     template<typename Talgo>
     bool assertInterfaceTest()
     {
