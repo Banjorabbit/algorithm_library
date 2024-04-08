@@ -24,12 +24,19 @@ struct ActivityDetectionConfiguration
         DEFINE_TUNABLE_PARAMETERS(smoothingTConstant)
     };
 
-    static auto validInput(Input input, const Coefficients& c) 
+    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // power spectrum
+    
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(c.nBands, c.nChannels); } // activity between 0 and 1
+
+    static bool validInput(Input input, const Coefficients& c) 
     { 
-        return (input >= 0).all() && (input.rows() == c.nBands) && (input.cols() == c.nChannels);
+        return (input.rows() == c.nBands) && (input.cols() == c.nChannels) && (input >= 0.f).all();
     }
 
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(c.nBands, c.nChannels); }
+    static bool validOutput(Output output, const Coefficients& c)
+    {
+        return (output.rows() == c.nBands) && (output.cols() == c.nChannels) && (output >= 0).all() && (output <= 1.f).all();
+    }
 
     template<typename Talgo>
     struct Example
@@ -80,12 +87,19 @@ struct ActivityDetectionFusedConfiguration
         DEFINE_TUNABLE_PARAMETERS(activityThreshold)
     };
 
-    static auto validInput(Input input, const Coefficients& c) 
+    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // power spectrum
+
+    static bool initOutput(Input input, const Coefficients& c) { return false; } // activity flag
+    
+    static bool validInput(Input input, const Coefficients& c) 
     { 
-        return (input >= 0).all() && (input.rows() == c.nBands) && (input.cols() == c.nChannels);
+        return (input.rows() == c.nBands) && (input.cols() == c.nChannels) && (input >= 0).all();
     }
 
-    static auto initOutput(Input input, const Coefficients& c) { return bool(); }
+    static bool validOutput(Output output, const Coefficients& c) 
+    { 
+        return true; // bool value is always valid
+    }
 
     template<typename Talgo>
     struct Example

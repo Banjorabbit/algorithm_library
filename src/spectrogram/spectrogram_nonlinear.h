@@ -42,13 +42,11 @@ public:
     FilterbankAnalysisWOLA filterbank2;
     DEFINE_MEMBER_ALGORITHMS(filterbank0, filterbank1, filterbank2)
 
-    static inline int getNFrames(int nSamples, int bufferSize) { return nSamples / bufferSize; }
-
 private:
 
     void inline processOn(Input input, Output output)
     {
-        for (auto nFrame = 0; nFrame < getNFrames(input.size(), C.bufferSize); nFrame++)
+        for (auto nFrame = 0; nFrame < Configuration::getNFrames(input.size(), C.bufferSize); nFrame++)
         {
             frame = input.segment(nFrame * C.bufferSize, C.bufferSize);
 

@@ -17,13 +17,11 @@ public:
     FilterbankAnalysisWOLA filterbank;
     DEFINE_MEMBER_ALGORITHMS(filterbank)
 
-    static inline int getNFrames(int nSamples, int bufferSize) { return nSamples / bufferSize; }
-
 private:
 
     void inline processOn(Input input, Output output)
     {
-        for (auto nFrame = 0; nFrame < getNFrames(input.size(), C.bufferSize); nFrame++)
+        for (auto nFrame = 0; nFrame < Configuration::getNFrames(input.size(), C.bufferSize); nFrame++)
         {
             filterbank.process(input.segment(nFrame * C.bufferSize, C.bufferSize), filterbankOut);
             output.col(nFrame) = filterbankOut.abs2();

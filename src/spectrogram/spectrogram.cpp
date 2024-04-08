@@ -19,12 +19,6 @@ Algorithm<SpectrogramConfiguration>::Algorithm(const Coefficients& c)
 
 Spectrogram::Spectrogram(const Coefficients& c) : Algorithm<SpectrogramConfiguration>(c) {}
 
-// static function so it doesn't matter which getNFrames we are using
-int Spectrogram::getNFrames(int inputSize, int bufferSize) 
-{
-    return SpectrogramFilterbank::getNFrames(inputSize, bufferSize);
-}
-
 int Spectrogram::getValidFFTSize(int fftSize)
 {
     return FFTReal::getValidFFTSize(fftSize);

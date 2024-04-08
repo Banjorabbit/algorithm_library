@@ -23,11 +23,18 @@ struct SpectrogramConfiguration
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.rows() > 0); }
-    static auto initOutput(Input input, const Coefficients& c)
+    static inline int getNFrames(int nSamples, int bufferSize) { return nSamples / bufferSize; } // number of frames (columns) in output
+
+    static Eigen::ArrayXf initInput(const Coefficients& c) { return Eigen::ArrayXf::Random(10 * c.bufferSize); } // time samples. Number of samples is arbitrary
+
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) // power spectrogram
     {
-        return Eigen::ArrayXXf(c.nBands, input.rows() / c.bufferSize);
+        return Eigen::ArrayXXf(c.nBands, getNFrames(input.rows(), c.bufferSize));
     }
+
+    static bool validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && input.allFinite(); }
+
+    static bool validOutput(Output output, const Coefficients& c) { return (output.rows() == c.nBands) && (output.cols() > 0) && output.allFinite(); }
 
     template<typename Talgo>
     struct Example
@@ -58,6 +65,5 @@ public:
     Spectrogram() = default;
     Spectrogram(const Coefficients& c);
 
-    static int getNFrames(int inputSize, int bufferSize); // get number of output frames given the size of the input signal and the bufferSize
     static int getValidFFTSize(int fftSize); // return valid FFT size larger or equal to fftSize
 };

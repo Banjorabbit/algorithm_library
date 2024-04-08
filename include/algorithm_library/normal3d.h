@@ -28,8 +28,13 @@ struct Normal3dConfiguration
         DEFINE_TUNABLE_PARAMETERS(distance1, distance2)
     };
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.rows() == c.nValuesX) && (input.cols() > 0); }
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf(3 * c.nValuesX, input.cols()); }
+    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.nValuesX, 10); } // number of y values is arbitrary
+
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(3 * c.nValuesX, input.cols()); }
+
+    static bool validInput(Input input, const Coefficients& c) { return (input.rows() == c.nValuesX) && (input.cols() > 0) && input.allFinite(); }
+
+    static bool validOutput(Output output, const Coefficients& c) { return (output.rows() == 3 * c.nValuesX) && (output.cols() > 0) && output.allFinite(); }
 
     template<typename Talgo>
     struct Example

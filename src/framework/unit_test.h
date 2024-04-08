@@ -61,10 +61,13 @@ namespace InterfaceTests // this namespace contains interface tests and should b
     template <typename T>
     struct hasPublicProcessOn<T, decltype(void(&T::processOn))> : std::true_type {};
 
+    template<typename Talgo, typename... Ts>
+    using TestType = decltype(&Talgo::process(std::declval<Ts>()...))(Ts...);
 
     template<typename Talgo>
     bool assertInterfaceTest()
     {
+        // The following tests are compile-time tests.
         static_assert(!hasPublicProcessOn<Talgo>(), "processOn is declared as public method.");
 
         constexpr bool flagReset = std::is_same<decltype(&Talgo::reset), decltype(&Talgo::BaseAlgorithm::reset)>::value;
@@ -100,10 +103,18 @@ namespace InterfaceTests // this namespace contains interface tests and should b
         constexpr bool flagSetSetup = std::is_same<decltype(&Talgo::setSetup), decltype(&Talgo::BaseAlgorithm::setSetup)>::value;
         static_assert(flagSetSetup, "setSetup() is declared in derived algorithm and hiding setSetup() in base class.");
 
-        constexpr bool flagProcess = std::is_same<decltype(&Talgo::process), decltype(&Talgo::BaseAlgorithm::process)>::value;
-        static_assert(flagProcess, "process() is declared in derived algorithm and hiding process() in base class.");
-
+        // The following tests require an algo object, either because the tested methods are overloaded or return type is auto deducted. 
+        // They are therefore run-time tests.
         Talgo algo;
+
+        void (Talgo:: * ipprocess)(typename Talgo::Input, typename Talgo::Output) = &Talgo::process;
+        void (Talgo:: * ipprocess2)(typename Talgo::Input, typename Talgo::Output) = &Talgo::BaseAlgorithm::process;
+        bool flagProcess = ipprocess == ipprocess2;
+        if (!flagProcess)
+        {
+            fmt::print("assertInterfaceTest failed: process(Input, Output) is declared in derived algorithm and hiding process(Input, Output) in base class.\n");
+        }
+
         auto c = algo.getCoefficients();
         void (Talgo:: * ipsc)(const decltype(c)&) = &Talgo::setCoefficients;
         void (Talgo:: * ipsc2)(const decltype(c)&) = &Talgo::BaseAlgorithm::setCoefficients;
@@ -249,7 +260,7 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 
         if (!successFlag)
         {
-            fmt::print("algorithmInterfaceTest failed.");
+            fmt::print("algorithmInterfaceTest failed.\n");
         }
         fmt::print("----------------------------------------------------------------------------------------------------------------------------------\n");
         return successFlag;

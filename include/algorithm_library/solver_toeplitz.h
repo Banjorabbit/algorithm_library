@@ -28,8 +28,26 @@ struct SolverToeplitzConfiguration
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.aToeplitz.size() > 0) && (input.aToeplitz.size() == input.BRighthand.rows()) && (input.BRighthand.cols() == c.nRHS); }
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf(input.BRighthand.rows(), c.nRHS); }
+    static std::tuple<Eigen::ArrayXcf, Eigen::ArrayXXcf> initInput(const Coefficients& c) 
+    { 
+        int dimension = 8; // dimension of toeplitz matrix is arbitrary
+        Eigen::ArrayXcf aToeplitz = Eigen::ArrayXcf::Random(dimension); // first row in A toeplitz matrix: A X = B
+        aToeplitz(0) = 1.f;
+        Eigen::ArrayXXcf BRightHand = Eigen::ArrayXXcf::Random(dimension, c.nRHS); // B matrix: A X = B
+        return std::make_tuple(aToeplitz, BRightHand);
+    }
+
+    static Eigen::ArrayXXcf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf::Zero(input.BRighthand.rows(), c.nRHS); } // X matrix: A X = B
+
+    static bool validInput(Input input, const Coefficients& c) 
+    {
+        bool flag = (input.aToeplitz.size() > 0) && input.aToeplitz.allFinite();
+        flag &= (input.BRighthand.rows() == input.aToeplitz.size() ) && (input.BRighthand.cols() == c.nRHS) && input.BRighthand.allFinite();
+        return flag;
+    }
+
+    static bool validOutput(Output output, const Coefficients& c) { return (output.rows() > 0) && (output.cols() == c.nRHS) && output.allFinite();; }
+    
 
     template<typename Talgo>
     struct Example

@@ -4,7 +4,7 @@
 struct PreprocessingPathConfiguration
 {
     using Input = I::Real2D;
-    using Output = O::Real2D;
+    using Output = O::Real;
 
     struct Coefficients
     {
@@ -20,16 +20,19 @@ struct PreprocessingPathConfiguration
         DEFINE_NO_TUNABLE_PARAMETERS
     };
 
-    static auto validInput(Input input, const Coefficients& c) 
+    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.bufferSize, c.nChannels); } // time samples
+
+    static Eigen::ArrayXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf::Zero(c.bufferSize); } // time samples
+
+    static bool validInput(Input input, const Coefficients& c) 
     { 
-        if (c.bufferMode == SINGLE_BUFFER)
-        {
-            return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels);
-        }
-        return (input.cols() == c.nChannels);
+        return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels) && input.allFinite();
     }
     
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.rows()); }
+    static bool validOutput(Output output, const Coefficients& c) 
+    { 
+        return (output.rows() == c.bufferSize) && output.allFinite();
+    }
 
     template<typename Talgo>
     struct Example

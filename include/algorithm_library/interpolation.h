@@ -96,8 +96,7 @@ struct InterpolationConfiguration
         if (input.fractionalIndices.size() < 1) return false; // if not at least one value
         for (auto i = 1; i < input.fractionalIndices.size(); i++) // if not ordered in increasing order
         {
-            if (input.fractionalIndices(i) < input.fractionalIndices(i - 1))
-                return false;
+            if (input.fractionalIndices(i) < input.fractionalIndices(i - 1)) { return false; } 
         }
         float minFractional = input.fractionalIndices(0);
         float maxFractional = input.fractionalIndices(input.fractionalIndices.size() - 1);

@@ -204,7 +204,7 @@ PYBIND11_MODULE(PythonAlgorithmLibrary, m)
   DEFINE_PYTHON_INTERFACE(SolverToeplitz);
   DEFINE_PYTHON_INTERFACE(Spectrogram)
     .def("getValidFFTSize", [] (Spectrogram& algo, int fftSize) { return Spectrogram::getValidFFTSize(fftSize); })
-    .def("getNFrames", [](Spectrogram& algo, int inputSize, int bufferSize) { return Spectrogram::getNFrames(inputSize, bufferSize); });
+    .def("getNFrames", [](Spectrogram& algo, int inputSize, int bufferSize) { return Spectrogram::Configuration::getNFrames(inputSize, bufferSize); });
   DEFINE_PYTHON_INTERFACE(Spline);
   DEFINE_PYTHON_INTERFACE(DCRemover);
   DEFINE_PYTHON_INTERFACE(ActivityDetection);

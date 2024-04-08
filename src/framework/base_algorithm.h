@@ -39,7 +39,6 @@ struct SingleBufferImplementation : public AlgorithmBuffer<Tconfiguration>::Buff
     void reset() override { algo.reset(); }
     BufferMode getBufferMode() const final { return algo.getCoefficients().bufferMode; }
     int getBufferSize() const final { return algo.getCoefficients().bufferSize; }
-    int getNChannels() const final { return algo.getCoefficients().nChannels; }
     int getDelaySamples() const override { return algo.getDelaySamples(); }
 };
 
@@ -66,7 +65,7 @@ struct MultiBufferImplementation : public SingleBufferImplementation<Talgo, Tcon
         if (remainingSamples > 0)
         {
             auto const c = Base::getCoefficients();
-            typename I::getType<typename Algorithm<Tconfiguration>::Input>::type bufferIn(c.bufferSize, c.nChannels);
+            auto bufferIn = Tconfiguration::initInput(c);
             bufferIn.topRows(remainingSamples) = input.middleRows(i, remainingSamples);
             bufferIn.bottomRows(c.bufferSize - remainingSamples).setZero();
             typename O::getType<typename Algorithm<Tconfiguration>::Output>::type bufferOut = Tconfiguration::initOutput(bufferIn, c);
@@ -85,7 +84,7 @@ struct AsynchronousBufferImplementation : public MultiBufferImplementation<Talgo
     AsynchronousBufferImplementation(const typename Tconfiguration::Coefficients& c) : Base{ c }
     { 
         index = 0; 
-        bufferIn.resize(c.bufferSize, c.nChannels);
+        bufferIn = Tconfiguration::initInput(c);
         bufferOut = Tconfiguration::initOutput(bufferIn, c);
         bufferIn.setZero();
         bufferOut.setZero();
@@ -158,6 +157,25 @@ public:
         static_cast<Talgo&>(*this).processOn(input, output);
     }
 
+    // templated process functions that allows to call process with tuples
+    template<typename... TupleTypes>
+    void process(const std::tuple<TupleTypes...>& input, Output output)
+    {
+        processImpl(input, std::make_index_sequence<sizeof...(TupleTypes)>{}, output);
+    }
+
+    template<typename... TupleTypes>
+    void process(Input input, std::tuple<TupleTypes...>& output)
+    {
+        processImpl(input, output, std::make_index_sequence<sizeof...(TupleTypes)>{});
+    }
+
+    template<typename... TupleTypesInput, typename... TupleTypesOutput>
+    void process(const std::tuple<TupleTypesInput...>& input, std::tuple<TupleTypesOutput...>& output)
+    {
+        processImpl(input, std::make_index_sequence<sizeof...(TupleTypesInput)>{}, output, std::make_index_sequence<sizeof...(TupleTypesOutput)>{});
+    }
+
     void reset()
     {
         resetVariables();
@@ -226,4 +244,24 @@ protected:
 
     Coefficients C;
     Parameters P;
+
+private:
+    // template implementations that allow to call process with tuples
+    template<typename TupleType, std::size_t... Is>
+    void processImpl(const TupleType& input, std::index_sequence<Is...>, Output output)
+    {
+        process({std::get<Is>(input)...}, output);
+    }
+
+    template<typename TupleType, std::size_t... Is>
+    void processImpl(Input input, TupleType& output, std::index_sequence<Is...>)
+    {
+        process(input, {std::get<Is>(output)...});
+    }
+
+    template<typename TupleTypeInput, std::size_t... IsInput, typename TupleTypeOutput, std::size_t... IsOutput>
+    void processImpl(const TupleTypeInput& input, std::index_sequence<IsInput...>, TupleTypeInput& output, std::index_sequence<IsOutput...>)
+    {
+        process({std::get<IsInput>(input)...}, {std::get<IsOutput>(output)...});
+    }
 };
