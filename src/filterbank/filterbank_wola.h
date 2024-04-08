@@ -108,6 +108,7 @@ public:
     {
         if (win.size() == frameSize)
         {
+            C.filterbankType = C.USER_DEFINED; // force overwrite
             window = win;
         }
     }

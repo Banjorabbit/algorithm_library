@@ -10,9 +10,9 @@ class SpectrogramNonlinear: public AlgorithmImplementation<SpectrogramConfigurat
 public:
     SpectrogramNonlinear(Coefficients c = Coefficients()) : 
         BaseAlgorithm{c},
-        filterbank0({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::HANN}),
-        filterbank1({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::HANN}),
-        filterbank2({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::HANN})
+        filterbank0({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
+        filterbank1({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
+        filterbank2({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED})
     {
         // set windows
         int frameSize = filterbank0.getFrameSize();

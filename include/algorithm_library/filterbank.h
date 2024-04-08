@@ -12,9 +12,9 @@ struct FilterbankConfiguration
         int nChannels = 2;
         int bufferSize = 128;
         int nBands = 257;
-        enum FilterbankTypes { HANN, SQRT_HANN, WOLA};
+        enum FilterbankTypes { HANN, SQRT_HANN, WOLA, USER_DEFINED};
         FilterbankTypes filterbankType = HANN;
-        DEFINE_TUNABLE_ENUM(FilterbankTypes, {{HANN, "Hann"}, {SQRT_HANN, "Sqrt Hann"}, {WOLA, "Wola"}})
+        DEFINE_TUNABLE_ENUM(FilterbankTypes, {{HANN, "Hann"}, {SQRT_HANN, "Sqrt Hann"}, {WOLA, "Wola"}, {USER_DEFINED, "User Defined"}})
         DEFINE_TUNABLE_COEFFICIENTS(nChannels, bufferSize, nBands, filterbankType)
     };
 
