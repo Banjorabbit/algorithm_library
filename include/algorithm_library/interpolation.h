@@ -89,7 +89,7 @@ struct InterpolationConfiguration
         return std::make_tuple(samples, fractionalIndices); 
     }
 
-    static Eigen::ArrayXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf::Zero(input.samples.size()); } // interpolated samples
+    static Eigen::ArrayXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf::Zero(input.fractionalIndices.size()); } // interpolated samples
 
     static bool validInput(Input input, const Coefficients& c) 
     { 
