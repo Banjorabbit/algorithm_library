@@ -26,7 +26,7 @@ struct DCRemoverConfiguration
         DEFINE_TUNABLE_PARAMETERS(cutoffFrequency)
     };
 
-    static Eigen::ArrayXXf initOutput(const Coefficients& c) { return Eigen::ArrayXXf::Random(100, c.nChannels); } // time samples. Number of samples can be arbitrary
+    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(100, c.nChannels); } // time samples. Number of samples can be arbitrary
 
     static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(input.rows(), input.cols()); } // time samples. Number of samples can be arbitrary
 
