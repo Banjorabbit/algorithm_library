@@ -223,8 +223,29 @@ public:
     template<typename Tsetup>
     void setSetupTree(const Tsetup& s) { static_cast<Talgo&>(*this).setSetupTreeImpl(s); }
 
-    auto validInput(Input input) const { return Configuration::validInput(input, C); }
+    auto initInput() const { return Configuration::initInput(C); }
     auto initOutput(Input input) const { return Configuration::initOutput(input, C); }
+    auto validInput(Input input) const { return Configuration::validInput(input, C); }
+    auto validOutput(Output output) const { return Configuration::validOutput(output, C); }
+    
+    // template functions to allow to call initOutput, validInput, validOutput with tuples
+    template<typename... TupleTypes>
+    auto initOutput(const std::tuple<TupleTypes...>& input) const
+    {
+        return initOutputImpl(input, std::make_index_sequence<sizeof...(TupleTypes)>{});
+    }
+    
+    template<typename... TupleTypes>
+    auto validInput(const std::tuple<TupleTypes...>& input) const
+    {
+        return validInputImpl(input, std::make_index_sequence<sizeof...(TupleTypes)>{});
+    }
+
+    template<typename... TupleTypes>
+    auto validOutput(std::tuple<TupleTypes...>& output) const
+    {
+        return validOutputImpl(output, std::make_index_sequence<sizeof...(TupleTypes)>{});
+    }
 
 protected:
     // these functions will be overridden if defined in derived Talgo
@@ -246,7 +267,7 @@ protected:
     Parameters P;
 
 private:
-    // template implementations that allow to call process with tuples
+    // template implementations that allow to call methods with tuples
     template<typename TupleType, std::size_t... Is>
     void processImpl(const TupleType& input, std::index_sequence<Is...>, Output output)
     {
@@ -260,8 +281,27 @@ private:
     }
 
     template<typename TupleTypeInput, std::size_t... IsInput, typename TupleTypeOutput, std::size_t... IsOutput>
-    void processImpl(const TupleTypeInput& input, std::index_sequence<IsInput...>, TupleTypeInput& output, std::index_sequence<IsOutput...>)
+    void processImpl(const TupleTypeInput& input, std::index_sequence<IsInput...>, TupleTypeOutput& output, std::index_sequence<IsOutput...>)
     {
         process({std::get<IsInput>(input)...}, {std::get<IsOutput>(output)...});
     }
+
+    template<typename TupleType, std::size_t... Is>
+    auto initOutputImpl(const TupleType& input, std::index_sequence<Is...>) const
+    {
+        return initOutput({std::get<Is>(input)...});
+    }
+
+    template<typename TupleType, std::size_t... Is>
+    auto validInputImpl(const TupleType& input, std::index_sequence<Is...>) const
+    {
+        return validInput({std::get<Is>(input)...});
+    }
+
+    template<typename TupleType, std::size_t... Is>
+    auto validOutputImpl(TupleType& output, std::index_sequence<Is...>) const
+    {
+        return validOutput({std::get<Is>(output)...});
+    }
+
 };
