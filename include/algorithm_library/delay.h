@@ -28,27 +28,6 @@ struct DelayConfiguration
     { 
         return (output.rows() > 0) && (output.cols() == c.nChannels) && output.allFinite();
     }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf input;
-        Eigen::ArrayXXf output;
-        int delayLength, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            delayLength = c.delayLength;
-            nChannels = c.nChannels;
-            input = Eigen::ArrayXXf(delayLength, nChannels);
-            output = initOutput(input, c);
-        }
-
-        void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == delayLength) && (output.cols() == nChannels); }
-    };
 };
 
 class Delay : public Algorithm<DelayConfiguration>

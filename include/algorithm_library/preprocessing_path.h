@@ -32,31 +32,7 @@ struct PreprocessingPathConfiguration
     static bool validOutput(Output output, const Coefficients& c) 
     { 
         return (output.rows() == c.bufferSize) && output.allFinite();
-    }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf input;
-        Eigen::ArrayXf output;
-        int bufferSize, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(Coefficients c): algo(c)
-        {
-            bufferSize = c.bufferSize;
-            nChannels = c.nChannels;
-            input = Eigen::ArrayXXf::Random(bufferSize, nChannels);
-            output = initOutput(input, c);
-        }
-
-        void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const 
-        { 
-            return output.allFinite() && (output.rows() == bufferSize);
-        }
-    };  
+    }  
 };
 
 class PreprocessingPath : public AlgorithmBuffer<PreprocessingPathConfiguration>

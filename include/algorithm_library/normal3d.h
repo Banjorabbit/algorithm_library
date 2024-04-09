@@ -35,28 +35,6 @@ struct Normal3dConfiguration
     static bool validInput(Input input, const Coefficients& c) { return (input.rows() == c.nValuesX) && (input.cols() > 0) && input.allFinite(); }
 
     static bool validOutput(Output output, const Coefficients& c) { return (output.rows() == 3 * c.nValuesX) && (output.cols() > 0) && output.allFinite(); }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf input;
-        Eigen::ArrayXXf output;
-        int nValuesY, nValuesX;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nValuesX = c.nValuesX;
-            nValuesY = 10;
-            input.resize(nValuesX, nValuesY);
-            input.setRandom();
-            output = initOutput(input, c);
-        }
-    
-        inline void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const { return output.allFinite() && (output.cols() == nValuesY) && (output.rows() == 3 * nValuesX); }
-    };
 };
 
 class Normal3d : public Algorithm<Normal3dConfiguration>

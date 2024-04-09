@@ -60,28 +60,6 @@ struct DesignIIRMinPhaseConfiguration
         flag &= output.gain >= 0;
         return flag;
     }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        int nBands, nOrder;
-        Eigen::ArrayXf magnitudeSpectrum;
-        Eigen::Array<float, 6, Eigen::Dynamic> sos;
-        float gain;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nBands = c.nBands;
-            nOrder = c.nOrder;
-            magnitudeSpectrum = Eigen::ArrayXf::Random(nBands).abs2();
-            std::tie(sos,gain) = initOutput(magnitudeSpectrum, c);
-        }
-
-        void processAlgorithm() { algo.process(magnitudeSpectrum, {sos, gain}); }
-        bool isExampleOutputValid() const { return sos.allFinite() && std::isfinite(gain) && (sos.cols() == getNSos(nOrder)) && (sos.rows() == 6); }
-    };
 };
 
 class DesignIIRMinPhase : public Algorithm<DesignIIRMinPhaseConfiguration>

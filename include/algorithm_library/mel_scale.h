@@ -27,33 +27,6 @@ struct MelScaleConfiguration
     static bool validInput(Input input, const Coefficients& c) { return (input.cols() > 0) && (input.rows() == c.nBands) && (input >= 0).all();	}
     
     static bool validOutput(Output output, const Coefficients& c) { return (output.cols() > 0) && (output.rows() == c.nMels) && (output >= 0).all(); }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf input;
-        Eigen::ArrayXXf output;
-        int nMels, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nMels = c.nMels;
-            nChannels = 2;
-            input = Eigen::ArrayXXf::Random(512, nChannels).abs2();
-            output = initOutput(input, c);
-        }
-
-        void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const 
-        { 
-            bool test = output.allFinite();
-            test &= (output >= 0).all();
-            test &= (output.rows() == nMels) && (output.cols() == nChannels);
-            return test;
-        }
-    };
 };
 
 class MelScale : public Algorithm<MelScaleConfiguration>

@@ -37,33 +37,6 @@ struct CriticalBandsConfiguration
     { 
         return (output.rows() == getNCriticalBands(c.sampleRate)) && (output.cols() > 0) && (output >= 0).all();
     }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        int nChannels = 2;
-        int nCriticalBands;
-        Eigen::ArrayXXf xPower;
-        Eigen::ArrayXXf yPower;
-
-        Example() : Example(Coefficients()) {}
-        Example(Coefficients c): algo(c)
-        {
-            xPower = Eigen::ArrayXXf::Random(c.nBands, nChannels).abs2();
-            yPower = initOutput(xPower, c);
-            nCriticalBands = algo.getNCriticalBands(c.sampleRate);
-        }
-
-        void processAlgorithm() { algo.process(xPower, yPower); }
-        bool isExampleOutputValid() const 
-        {
-            bool test = yPower.allFinite();
-            test &= (yPower >= 0).all();
-            test &= (yPower.cols() == nChannels) && (yPower.rows() == nCriticalBands);
-            return test; 
-        }
-    };
 };
 
 struct CriticalBandsSumConfiguration : public CriticalBandsConfiguration {};

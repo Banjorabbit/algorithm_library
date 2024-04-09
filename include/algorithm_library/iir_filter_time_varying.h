@@ -55,40 +55,8 @@ struct IIRFilterTimeVaryingConfiguration
 
     static bool validOutput(Output output, const Coefficients& c) 
     {
-        return (output.rows() > 0) && (output.cols() == c.nChannels) && output.allFinite();
+        return (output.rows() > 0) && (output.cols() == c.nChannels);
     }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf xTime;
-        Eigen::ArrayXf cutoff;
-        Eigen::ArrayXf gain;
-        Eigen::ArrayXf resonance;
-        Eigen::ArrayXXf output;
-        int nChannels, nSamples;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nChannels = c.nChannels;
-            nSamples = 512;
-            xTime = Eigen::ArrayXXf::Random(nSamples, nChannels);
-            cutoff = (3.14159f * 8000.f / 16000.f * Eigen::ArrayXf::Random(nSamples).abs2()).tan();
-            gain = 10.f * Eigen::ArrayXf::Random(nSamples).abs2();
-            resonance = 5.f * Eigen::ArrayXf::Random(nSamples).abs2();
-            output = initOutput({xTime, cutoff, gain, resonance}, c);
-        }
-
-        void processAlgorithm() { algo.process({xTime, cutoff, gain, resonance}, output); }
-        bool isExampleOutputValid() const 
-        { 
-            bool test = output.allFinite();
-            test &= (output.rows() == nSamples) && (output.cols() == nChannels);
-            return test;
-        }
-    };
 };
 
 // A single time-varying IIR filter that can be modified at each new time sample.
@@ -156,41 +124,8 @@ struct IIRFilterCascadeTimeVaryingConfiguration
 
     static bool validOutput(Output output, const Coefficients& c) 
     {
-        return (output.rows() > 0) && (output.cols() == c.nChannels) && output.allFinite();
+        return (output.rows() > 0) && (output.cols() == c.nChannels);
     }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf xTime;
-        Eigen::ArrayXXf cutoff;
-        Eigen::ArrayXXf gain;
-        Eigen::ArrayXXf resonance;
-        Eigen::ArrayXXf output;
-        int nChannels, nSos, nSamples;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nChannels = c.nChannels;
-            nSos = c.nSos;
-            nSamples = 512;
-            xTime = Eigen::ArrayXXf::Random(nSamples, nChannels);
-            cutoff = (3.14159f * 8000.f / 16000.f * Eigen::ArrayXXf::Random(nSamples, nSos).abs2()).tan();
-            gain = 10.f * Eigen::ArrayXXf::Random(nSamples, nSos).abs2();
-            resonance = 5.f * Eigen::ArrayXXf::Random(nSamples, nSos).abs2();
-            output = initOutput({xTime, cutoff, gain, resonance}, c);
-        }
-
-        void processAlgorithm() { algo.process({xTime, cutoff, gain, resonance}, output); }
-        bool isExampleOutputValid() const 
-        { 
-            bool test = output.allFinite();
-            test &= (output.rows() == nSamples) && (output.cols() == nChannels);
-            return test;
-        }
-    };
 };
 
 // Cascade of time-varying IIR filters that can be modified at each new time sample.

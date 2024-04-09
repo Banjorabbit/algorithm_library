@@ -35,28 +35,6 @@ struct SpectrogramConfiguration
     static bool validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && input.allFinite(); }
 
     static bool validOutput(Output output, const Coefficients& c) { return (output.rows() == c.nBands) && (output.cols() > 0) && output.allFinite(); }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXf input;
-        Eigen::ArrayXXf output;
-        int nBands, nFrames;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nFrames = 10;
-            nBands = c.nBands;
-            input.resize(nFrames * c.bufferSize);
-            input.setRandom();
-            output = initOutput(input, c);
-        }
-
-        inline void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == nBands) && (output.cols() == nFrames); }
-    };
 };
 
 class Spectrogram : public Algorithm<SpectrogramConfiguration>

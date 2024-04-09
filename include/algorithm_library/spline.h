@@ -60,33 +60,6 @@ struct SplineConfiguration
     }
 
     static bool validOutput(Output output, const Coefficients& c) { return (output.rows() > 0) && (output.cols() > 0) && output.allFinite(); }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf xGiven;
-        Eigen::ArrayXXf yGiven;
-        Eigen::ArrayXXf xDesired;
-        Eigen::ArrayXXf yDesired;
-        int nOS, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            int n = c.nGiven; // number of input samples per channel
-            nOS = 100; // number of output samples per channel
-            nChannels = 2;
-            xGiven = Eigen::ArrayXf::LinSpaced(n, 0, n - 1).replicate(1, nChannels);
-            yGiven.resize(n, nChannels);
-            yGiven.setRandom();
-            xDesired = Eigen::ArrayXf::LinSpaced(nOS, 0, n - 1).replicate(1, nChannels);
-            yDesired = initOutput({xGiven, yGiven, xDesired}, c);
-        }
-
-        inline void processAlgorithm() { algo.process({ xGiven, yGiven, xDesired }, yDesired); }
-        bool isExampleOutputValid() const { return yDesired.allFinite() && (yDesired.rows() == nOS) && (yDesired.cols() == nChannels); }
-    };
 };
 
 class Spline : public Algorithm<SplineConfiguration>

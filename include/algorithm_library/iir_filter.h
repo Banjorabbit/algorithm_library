@@ -26,31 +26,6 @@ struct IIRFilterConfiguration
     static bool validInput(Input input, const Coefficients& c) { return (input.cols() == c.nChannels) && (input.rows() > 0) && input.allFinite(); }
 
     static bool validOutput(Output output, const Coefficients& c) { return (output.cols() == c.nChannels) && (output.rows() > 0) && output.allFinite(); }    
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf input;
-        Eigen::ArrayXXf output;
-        int nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nChannels = 2;
-            input = Eigen::ArrayXXf::Random(512, nChannels);
-            output = initOutput(input, c);
-        }
-
-        void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const 
-        { 
-            bool test = output.allFinite();
-            test &= (output.rows() > 0) && (output.cols() == nChannels);
-            return test;
-        }
-    };
 };
 
 class IIRFilter : public Algorithm<IIRFilterConfiguration>

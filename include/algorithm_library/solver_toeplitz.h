@@ -47,32 +47,6 @@ struct SolverToeplitzConfiguration
     }
 
     static bool validOutput(Output output, const Coefficients& c) { return (output.rows() > 0) && (output.cols() == c.nRHS) && output.allFinite();; }
-    
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXcf aToeplitz;
-        Eigen::ArrayXXcf BRighthand;
-        Eigen::ArrayXXcf output;
-        int nRHS;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c)
-        {
-            nRHS = c.nRHS;
-            aToeplitz.resize(8);
-            aToeplitz.setRandom();
-            aToeplitz(0) = 1;
-            BRighthand.resize(8, nRHS);
-            BRighthand.setRandom();
-            output = initOutput({aToeplitz, BRighthand}, c);
-        }
-
-        inline void processAlgorithm() { algo.process({ aToeplitz, BRighthand }, output); }
-        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == 8) && (output.cols() == nRHS); }
-    };
 };
 
 class SolverToeplitz : public Algorithm<SolverToeplitzConfiguration>

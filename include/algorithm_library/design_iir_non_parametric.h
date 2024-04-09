@@ -69,31 +69,6 @@ struct DesignIIRNonParametricConfiguration
         flag &= output.gain >= 0;
         return flag; 
     }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        int nBands, nGains;
-        Eigen::ArrayXf frequencies, gaindB;
-        Eigen::Array<float, 6, Eigen::Dynamic> sos;
-        float gain;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nBands = c.nBands;
-            nGains = c.nGains;
-            frequencies.resize(nGains);
-            gaindB.resize(nGains);
-            frequencies << 80, 500, 1000, 2400, 4000;
-            gaindB << 5, 10, -10, 0, 7;
-            std::tie(sos, gain) = initOutput({frequencies, gaindB}, c);
-        }
-
-        void processAlgorithm() { algo.process({frequencies, gaindB}, {sos, gain}); }
-        bool isExampleOutputValid() const { return sos.allFinite() && std::isfinite(gain) && (sos.cols() == nGains) && (sos.rows() == 6); }
-    };
 };
 
 class DesignIIRNonParametric : public Algorithm<DesignIIRNonParametricConfiguration>

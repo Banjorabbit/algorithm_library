@@ -35,26 +35,6 @@ struct InterpolationSampleConfiguration
     static bool validInput(Input input, const Coefficients& c) { return (input.samples.size() == 4) && input.samples.allFinite() && (input.fractionalDelay >= 0.f) && (input.fractionalDelay <= 1.f);	}
     
     static bool validOutput(Output output, const Coefficients& c) { return std::isfinite(output); }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::Array4f samples;
-        float fractionalIndex; // index must be between 0.0 - 1.0
-        float output; // output has same size as fractionalIndices
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c)
-        {
-            samples.setRandom();
-            fractionalIndex = 0.3f;
-            output = 0.f;
-        }
-
-        void processAlgorithm() { algo.process({ samples, fractionalIndex }, output); }
-        bool isExampleOutputValid() const { return std::isfinite(output); }
-    };
 };
 
 class InterpolationSample : public Algorithm<InterpolationSampleConfiguration>
@@ -101,27 +81,6 @@ struct InterpolationConfiguration
     }
     
     static bool validOutput(Output output, const Coefficients& c) { return output.allFinite(); }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXf samples;
-        Eigen::ArrayXf fractionalIndices; // indices must be between 1.0 and samples.size()-2.0 and in non-decreasing order
-        Eigen::ArrayXf output; // output has same size as fractionalIndices
-
-        Example(const Coefficients& c = {})
-        {
-            const int N = 256;
-            samples = Eigen::ArrayXf::Random(N);
-            fractionalIndices = Eigen::ArrayXf::Random(N).abs() * (N - 3.f) + 1.f; // indices must be between 1.0 and N-2.0
-            std::sort(&fractionalIndices(0), &fractionalIndices(0) + N - 1); // indices must be in increasing order
-            output = initOutput({samples, fractionalIndices}, c);
-        }
-
-        inline void processAlgorithm() { algo.process({ samples, fractionalIndices }, output); }
-        bool isExampleOutputValid() const { return output.isFinite().all(); }
-    };
 };
 
 class Interpolation : public Algorithm<InterpolationConfiguration>
@@ -153,26 +112,6 @@ struct InterpolationConstantConfiguration
     static bool validInput(Input input, const Coefficients& c) { return (input.size() > 3) && input.allFinite(); }
 
     static bool validOutput(Output output, const Coefficients& c) { return output.allFinite(); }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXf samples;
-        Eigen::ArrayXf output;
-        int n;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            n = 256;
-            samples = Eigen::ArrayXf::Random(n);
-            output = initOutput(samples, c); // interpolation needs 4 values, so there will be 3 less outputs than inputs
-        }
-
-        inline void processAlgorithm() { algo.process(samples, output); }
-        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == n-3); }
-    };
 };
 
 class InterpolationConstant : public Algorithm<InterpolationConstantConfiguration>

@@ -33,28 +33,6 @@ struct DCRemoverConfiguration
     static bool validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels) && input.allFinite(); }
 
     static bool validOutput(Output output, const Coefficients& c) { return (output.rows() > 0) && (output.cols() == c.nChannels); }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        int nSamples, nChannels;
-        Eigen::ArrayXXf input;
-        Eigen::ArrayXXf output;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c)
-        {
-            nSamples = 100;
-            nChannels = c.nChannels;
-            input.resize(nSamples, nChannels);
-            input.setRandom();
-            output = initOutput(input, c);
-        }
-
-        inline void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == nSamples) && (output.cols() == nChannels); }
-    };
 };
 
 class DCRemover : public Algorithm<DCRemoverConfiguration>

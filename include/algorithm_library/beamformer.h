@@ -33,31 +33,7 @@ struct BeamformerConfiguration
     static bool validOutput(Output output, const Coefficients& c) 
     { 
         return (output.rows() == c.nBands) && output.allFinite();
-    }
-    
-    
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXcf xFreq;
-        bool speechActivity;
-        int nBands;
-        Eigen::ArrayXcf yFreq;
-
-        Example() : Example(Coefficients()) {}
-        Example(Coefficients c): algo(c)
-        {
-            nBands = c.nBands;
-            xFreq = Eigen::ArrayXXcf::Random(nBands, c.nChannels);
-            speechActivity = true;
-            yFreq = initOutput({xFreq, speechActivity}, c);
-        }
-
-        void processAlgorithm() { algo.process({xFreq, speechActivity}, yFreq); }
-        bool isExampleOutputValid() const { return yFreq.allFinite() && (yFreq.rows() == nBands); }
-    };  
+    } 
 };
 
 class Beamformer : public Algorithm<BeamformerConfiguration>

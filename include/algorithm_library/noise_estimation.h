@@ -36,33 +36,6 @@ struct NoiseEstimationConfiguration
     { 
         return (output.rows() == c.nBands) && (output.cols() == c.nChannels) && (output >= 0.f).all();
     }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf input;
-        Eigen::ArrayXXf output;
-        int nBands, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nChannels = c.nChannels;
-            nBands = c.nBands;
-            input = Eigen::ArrayXXf::Random(nBands, nChannels).abs2();
-            output = initOutput(input, c);
-        }
-
-        void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const 
-        { 
-            bool test = output.allFinite();
-            test &= (output >= 0).all();
-            test &= (output.rows() == nBands) && (output.cols() == nChannels);
-            return test;
-        }
-    };
 };
 
 class NoiseEstimation : public Algorithm<NoiseEstimationConfiguration>
@@ -104,34 +77,6 @@ struct NoiseEstimationActivityConfiguration
     }
 
     static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::ArrayXXf(c.nBands, c.nChannels), Eigen::ArrayXXf(c.nBands, c.nChannels)); }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf input;
-        Eigen::ArrayXXf output;
-        Eigen::ArrayXXf activity;
-        int nBands, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nChannels = c.nChannels;
-            nBands = c.nBands;
-            input = Eigen::ArrayXXf::Random(nBands, nChannels).abs2();
-            std::tie(output, activity) = initOutput(input, c);
-        }
-
-        void processAlgorithm() { algo.process(input, {output, activity}); }
-        bool isExampleOutputValid() const 
-        { 
-            bool test = output.allFinite() && activity.allFinite();
-            test &= (output >= 0).all() && (activity >= 0).all();
-            test &= (output.rows() == nBands) && (output.cols() == nChannels) && (activity.rows() == nBands) && (activity.cols() == nChannels);
-            return test;
-        }
-    };
 };
 
 class NoiseEstimationActivity : public Algorithm<NoiseEstimationActivityConfiguration>
@@ -173,34 +118,6 @@ struct NoiseEstimationActivityFusedConfiguration
     }
 
     static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::ArrayXXf::Zero(c.nBands, c.nChannels), bool()); }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf input;
-        Eigen::ArrayXXf output;
-        bool activity;
-        int nBands, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nChannels = c.nChannels;
-            nBands = c.nBands;
-            input = Eigen::ArrayXXf::Random(nBands, nChannels).abs2();
-            std::tie(output, activity) = initOutput(input, c);
-        }
-
-        void processAlgorithm() { algo.process(input, {output, activity}); }
-        bool isExampleOutputValid() const 
-        { 
-            bool test = output.allFinite();
-            test &= (output >= 0).all();
-            test &= (output.rows() == nBands) && (output.cols() == nChannels);
-            return test;
-        }
-    };
 };
 
 class NoiseEstimationActivityFused : public Algorithm<NoiseEstimationActivityFusedConfiguration>

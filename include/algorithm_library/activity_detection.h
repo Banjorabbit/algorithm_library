@@ -37,27 +37,6 @@ struct ActivityDetectionConfiguration
     {
         return (output.rows() == c.nBands) && (output.cols() == c.nChannels) && (output >= 0).all() && (output <= 1.f).all();
     }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf input;
-        Eigen::ArrayXXf output;
-        int nBands, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nChannels = c.nChannels;
-            nBands = c.nBands;
-            input = Eigen::ArrayXXf::Random(nBands, nChannels).abs2();
-            output = initOutput(input, c);
-        }
-
-        void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const { return (output>=0).all() && (output.rows() == nBands) && (output.cols() == nChannels); }
-    };
 };
 
 class ActivityDetection : public Algorithm<ActivityDetectionConfiguration>
@@ -100,27 +79,6 @@ struct ActivityDetectionFusedConfiguration
     { 
         return true; // bool value is always valid
     }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf input;
-        bool output;
-        int nBands, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nChannels = c.nChannels;
-            nBands = c.nBands;
-            input = Eigen::ArrayXXf::Random(nBands, nChannels).abs2();
-            output = initOutput(input, c);
-        }
-
-        void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const { return true; } // output is a bool so it is always valid
-    };
 };
 
 class ActivityDetectionFused : public Algorithm<ActivityDetectionFusedConfiguration>

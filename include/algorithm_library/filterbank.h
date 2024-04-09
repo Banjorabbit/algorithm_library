@@ -52,28 +52,6 @@ struct FilterbankAnalysisConfiguration : public FilterbankConfiguration
     static bool validInput(Input input, const Coefficients& c) { return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels) && input.allFinite(); }
 
     static bool validOutput(Output output, const Coefficients& c) { return (output.rows() == c.nBands) && (output.cols() == c.nChannels) && output.allFinite(); }    
-    
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf input;
-        Eigen::ArrayXXcf output;
-        int nBands, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nBands = c.nBands;
-            nChannels = c.nChannels;
-            input.resize(c.bufferSize, nChannels);
-            input.setRandom();
-            output = initOutput(input, c);
-        }
-    
-        inline void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == nBands) && (output.cols() == nChannels); }
-    };
 };
 
 // Analysis filterbank
@@ -100,28 +78,6 @@ struct FilterbankSynthesisConfiguration : public FilterbankConfiguration
     static bool validInput(Input input, const Coefficients& c) { return (input.rows() == c.nBands) && (input.cols() == c.nChannels) && input.allFinite(); }
 
     static bool validOutput(Output output, const Coefficients& c) { return (output.rows() == c.bufferSize) && (output.cols() == c.nChannels) && output.allFinite(); }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXcf input;
-        Eigen::ArrayXXf output;
-        int bufferSize, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            bufferSize = c.bufferSize;
-            nChannels = c.nChannels;
-            input.resize(c.nBands, nChannels);
-            input.setRandom();
-            output = initOutput(input, c);
-        }
-
-        inline void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == bufferSize) && (output.cols() == nChannels); }
-    };
 };
 
 class FilterbankSynthesis : public Algorithm<FilterbankSynthesisConfiguration>

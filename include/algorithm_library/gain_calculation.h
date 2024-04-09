@@ -40,33 +40,6 @@ struct GainCalculationConfiguration
     { 
         return (output.rows() == c.nBands) && (output.cols() == c.nChannels) && (output >= 0).all();
     }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf snrAposteriori;
-        Eigen::ArrayXXf gain;
-        int nBands, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            nChannels = c.nChannels;
-            nBands = c.nBands;
-            snrAposteriori = Eigen::ArrayXXf::Random(nBands, nChannels).abs2() + 1;
-            gain = initOutput(snrAposteriori, c);
-        }
-
-        void processAlgorithm() { algo.process(snrAposteriori, gain); }
-        bool isExampleOutputValid() const 
-        { 
-            bool test = gain.allFinite();
-            test &= (gain >= 0).all();
-            test &= (gain.rows() == nBands) && (gain.cols() == nChannels);
-            return test;
-        }
-    };
 };
 
 class GainCalculation : public Algorithm<GainCalculationConfiguration>

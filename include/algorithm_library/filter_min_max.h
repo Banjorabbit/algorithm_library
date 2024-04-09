@@ -49,36 +49,6 @@ struct BaseFilterMinMaxConfiguration
         flag &= (output.maxValue.rows() > 0) && (output.maxValue.cols() == c.nChannels) && output.maxValue.allFinite();
         return flag;
     }
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf minValue;
-        Eigen::ArrayXXf maxValue;
-        Eigen::ArrayXXf input;
-        int samples, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            samples = 1000;
-            nChannels = c.nChannels;
-            input.resize(samples, nChannels);
-            input.setRandom();
-            std::tie(minValue, maxValue) = initOutput(input, c);
-        }
-
-        inline void processAlgorithm() { algo.process(input, { minValue, maxValue }); }
-        bool isExampleOutputValid() const 
-        { 
-            bool test = minValue.allFinite() && maxValue.allFinite();
-            test &= (minValue.rows() == samples) && (maxValue.rows() == samples);
-            test &= (minValue.cols() == nChannels) && (maxValue.cols() == nChannels);
-            return test;
-        }
-
-    };
 };
 
 struct FilterMinMaxConfiguration : public BaseFilterMinMaxConfiguration {};
@@ -129,28 +99,6 @@ struct BaseFilterExtremumConfiguration
     static bool validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels) && input.allFinite();}
     
     static bool validOutput(Output output, const Coefficients& c) { return (output.rows() > 0) && (output.cols() == c.nChannels) && output.allFinite(); }
-   
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        Eigen::ArrayXXf output;
-        Eigen::ArrayXXf input;
-        int samples, nChannels;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            samples = 1000;
-            nChannels = c.nChannels;
-            input.resize(samples, nChannels);
-            input.setRandom();
-            output = initOutput(input, c);
-        }
-
-        inline void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const { return output.allFinite() && (output.cols() == nChannels) && (output.rows() == samples); }
-    };
 };
 
 struct FilterMaxConfiguration : public BaseFilterExtremumConfiguration {};

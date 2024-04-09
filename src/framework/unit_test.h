@@ -157,33 +157,35 @@ namespace InterfaceTests // this namespace contains interface tests and should b
     template<typename Talgo>
     bool mallocDEBUGTest()
     {
-        typename Talgo::Configuration::template Example<Talgo> example;
+        Talgo algo;
+        auto input = algo.initInput();
+        auto output = algo.initOutput(input);
         Eigen::internal::set_is_malloc_allowed(false);
-        example.processAlgorithm();
+        algo.process(input, output);
         Eigen::internal::set_is_malloc_allowed(true);
         return true;
     }
 
     template<typename Talgo>
-    bool processExampleTest()
+    bool processTest()
     {
         Talgo algo;
         auto input = algo.initInput();
         auto output = algo.initOutput(input);
         if (!algo.validInput(input))
         {
-            fmt::print("processExampleTest failed: initial input is not valid.\n");
+            fmt::print("processTest failed: initial input is not valid.\n");
             return false;
         }
         if (!algo.validOutput(output))
         {
-            fmt::print("processExampleTest failed: initial output is not valid.\n");
+            fmt::print("processTest failed: initial output is not valid.\n");
             return false;
         }
         algo.process(input, output);
         if (!algo.validOutput(output))
         {
-            fmt::print("processExampleTest failed: first output is not valid.\n");
+            fmt::print("processTest failed: first output is not valid.\n");
             return false;
         }
         double durationMin = 1e10;
@@ -202,7 +204,7 @@ namespace InterfaceTests // this namespace contains interface tests and should b
         fmt::print("Execution time of processOn is (min - avg. - max): {:.3f} us - {:.3f} us - {:.3f} us.\n", durationMin, durationAvg, durationMax);
         if (!algo.validOutput(output))
         {
-            fmt::print("processExampleTest failed: output is not valid.\n");
+            fmt::print("processTest failed: output is not valid.\n");
             return false;
         }
         return true;
@@ -245,7 +247,7 @@ namespace InterfaceTests // this namespace contains interface tests and should b
         auto successFlag = coefficientsTest<Talgo>();
         successFlag &= parametersTest<Talgo>();
         successFlag &= versionAlgorithmTest<Talgo>();
-        successFlag &= processExampleTest<Talgo>();
+        successFlag &= processTest<Talgo>();
         if (testMallocFlag)
         {
             successFlag &= mallocDEBUGTest<Talgo>();

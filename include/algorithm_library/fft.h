@@ -38,27 +38,6 @@ struct FFTConfiguration
     public:
         ExceptionFFT(int fftSize) : std::runtime_error("FFT size = " + std::to_string(fftSize) + " is not supported.") { }
     };
-
-    template<typename Talgo>
-    struct Example
-    {
-        Talgo algo;
-        int nChannels = 2;
-        int fftSize;
-        Eigen::ArrayXXf input;
-        Eigen::ArrayXXcf output;
-
-        Example() : Example(Coefficients()) {}
-        Example(const Coefficients& c) : algo(c)
-        {
-            fftSize = c.fftSize;
-            input = Eigen::ArrayXXf::Random(c.fftSize, nChannels);
-            output = initOutput(input, c);
-        }
-
-        inline void processAlgorithm() { algo.process(input, output); }
-        bool isExampleOutputValid() const { return output.allFinite() && (output.rows() == getNBands(fftSize)) && (output.cols() == nChannels); }
-    };
 };
 
 class FFT : public Algorithm<FFTConfiguration>
