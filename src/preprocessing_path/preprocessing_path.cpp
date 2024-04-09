@@ -1,24 +1,27 @@
 #include "preprocessing_path/beamformer_path.h"
 
-using BeamformerPathSingleBufferImpl = SingleBufferImplementation<BeamformerPath, PreprocessingPathConfiguration>;
-using BeamformerPathMultiBufferImpl = MultiBufferImplementation<BeamformerPath, PreprocessingPathConfiguration>;
-using BeamformerPathAsynchronousBufferImpl = AsynchronousBufferImplementation<BeamformerPath, PreprocessingPathConfiguration>;
-
 template<>
 Algorithm<PreprocessingPathConfiguration>::Algorithm(const Coefficients& c) 
 { 
-    switch (c.bufferMode)
-    {
-        case SINGLE_BUFFER:
-            pimpl = std::make_unique<BeamformerPathSingleBufferImpl>(c); 
-            break;
-        case MULTI_BUFFER:
-            pimpl = std::make_unique<BeamformerPathMultiBufferImpl>(c); 
-            break;
-        case ASYNCHRONOUS_BUFFER:
-            pimpl = std::make_unique<BeamformerPathAsynchronousBufferImpl>(c); 
-            break;
-    }
+    pimpl = std::make_unique<BufferImplementation<BeamformerPath, PreprocessingPathConfiguration>>(c);
 } 
+
+template<>
+void AlgorithmBuffer<PreprocessingPathConfiguration>::setBufferMode(BufferMode bufferMode)
+{
+    if (bufferMode == MULTI_BUFFER)
+    {
+        if (static_cast<BufferBaseImplementation*>(Base::pimpl.get())->getBufferMode() != MULTI_BUFFER)
+        {
+            auto c = pimpl->getCoefficients();
+            pimpl = std::make_unique<BufferImplementation<BeamformerPath, PreprocessingPathConfiguration>>(c);
+        }
+    }
+    else
+    {
+        auto c = pimpl->getCoefficients();
+        pimpl = std::make_unique<AsynchronousBufferImplementation<BeamformerPath, PreprocessingPathConfiguration>>(c);
+    }
+}
 
 PreprocessingPath::PreprocessingPath(const Coefficients& c) : AlgorithmBuffer<PreprocessingPathConfiguration>(c) {}

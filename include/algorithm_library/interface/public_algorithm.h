@@ -64,7 +64,7 @@ protected:
     std::unique_ptr<BaseImplementation> pimpl; // PIMPL. Define in derived source file
 };
 
-enum BufferMode {SINGLE_BUFFER, MULTI_BUFFER, ASYNCHRONOUS_BUFFER };
+enum BufferMode {MULTI_BUFFER, ASYNCHRONOUS_BUFFER };
 
 // AlgorithmBuffer<Tconfiguration> is a class that derives from Algorithm<Tconfiguration>
 // It is for algorithms that have a dynamic size input/output array and allows to change
@@ -88,7 +88,6 @@ public:
 
     // check if conditions for AlgorithmBuffer<Tconfiguration> are fulfilled
     static_assert(std::is_same<int, decltype(Coefficients::bufferSize)>::value, "Coefficients must have integer variable bufferSize"); // Coefficients has integer member variable bufferSize
-    static_assert(std::is_same<BufferMode, decltype(Coefficients::bufferMode)>::value, "Coefficients must have Buffermode variable bufferMode"); // Coefficients has BufferMode member variable bufferMode
     static_assert(Eigen::Dynamic == I::getType<Input>::type::RowsAtCompileTime, "Input number of rows must be dynamic"); // input rows size is Dynamic
     static_assert(Eigen::Dynamic == O::getType<Output>::type::RowsAtCompileTime, "Output number of rows must be dynamic"); // output rows size is Dynamic
 
@@ -102,11 +101,14 @@ public:
         virtual BufferMode getBufferMode() const = 0;
         virtual int getBufferSize() const = 0;
         virtual int getDelaySamples() const = 0;
+        virtual void processAnySize(Input input, Output output) = 0;
     };
 
     BufferMode getBufferMode() const { return static_cast<BufferBaseImplementation*>(Base::pimpl.get())->getBufferMode(); }
     int getBufferSize() const { return static_cast<BufferBaseImplementation*>(Base::pimpl.get())->getBufferSize(); }
     int getDelaySamples() const { return static_cast<BufferBaseImplementation*>(Base::pimpl.get())->getDelaySamples(); }
+    void processAnySize(Input input, Output output) { static_cast<BufferBaseImplementation*>(Base::pimpl.get())->processAnySize(input, output); }
+    void setBufferMode(BufferMode bufferMode); // define in source file
 
 protected:
     ~AlgorithmBuffer() = default;

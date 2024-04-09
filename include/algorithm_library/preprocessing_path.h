@@ -11,8 +11,7 @@ struct PreprocessingPathConfiguration
         int bufferSize = 128;
         float sampleRate = 16000.f;
         int nChannels = 4;
-        BufferMode bufferMode = SINGLE_BUFFER;
-        DEFINE_TUNABLE_COEFFICIENTS(bufferSize, sampleRate, nChannels, bufferMode);
+        DEFINE_TUNABLE_COEFFICIENTS(bufferSize, sampleRate, nChannels);
     };
 
     struct Parameters

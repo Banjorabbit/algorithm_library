@@ -12,12 +12,10 @@ TEST(PreprocessingPath, Interface)
 	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<BeamformerPath>(testMallocFlag));
 }
 
-TEST(PreprocessingPath, Single)
+TEST(PreprocessingPath, SetAsynchronousMode)
 {
     PreprocessingPath prePath;
-
-    auto c = prePath.getCoefficients();
-    c.nChannels = 1;
-    c.bufferMode = ASYNCHRONOUS_BUFFER;
-    prePath.setCoefficients(c);
+    prePath.setBufferMode(BufferMode::ASYNCHRONOUS_BUFFER);
+    auto mode = prePath.getBufferMode();
+    EXPECT_TRUE(mode == BufferMode::ASYNCHRONOUS_BUFFER);
 }

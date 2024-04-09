@@ -22,75 +22,66 @@ struct Implementation : public Algorithm<Tconfiguration>::BaseImplementation
 };
 
 template<typename Talgo, typename Tconfiguration>
-struct SingleBufferImplementation : public AlgorithmBuffer<Tconfiguration>::BufferBaseImplementation
+struct BufferImplementation : public AlgorithmBuffer<Tconfiguration>::BufferBaseImplementation
 {
-    using Base = typename AlgorithmBuffer<Tconfiguration>::BufferBaseImplementation;
+    BufferImplementation() = default;
+    BufferImplementation(const typename Tconfiguration::Coefficients& c) : algo{ c } {}
 
-    SingleBufferImplementation() : algo{} {}
-    SingleBufferImplementation(const typename Tconfiguration::Coefficients& c) : algo{ c } {}
     Talgo algo;
-    void process(typename Algorithm<Tconfiguration>::Input input, typename Algorithm<Tconfiguration>::Output output) override { algo.process(input, output); }
-    typename Algorithm<Tconfiguration>::Coefficients getCoefficients() const final { return algo.getCoefficients(); }
-    typename Algorithm<Tconfiguration>::Parameters getParameters() const final { return algo.getParameters(); }
-    typename Algorithm<Tconfiguration>::Setup getSetup() const final { return algo.getSetup(); }
-    void setCoefficients(const typename Algorithm<Tconfiguration>::Coefficients& c) final { algo.setCoefficients(c); }
-    void setParameters(const typename Algorithm<Tconfiguration>::Parameters& p) final { algo.setParameters(p); }
-    void setSetup(const typename Algorithm<Tconfiguration>::Setup& s) final { algo.setSetup(s); }
-    void reset() override { algo.reset(); }
-    BufferMode getBufferMode() const final { return algo.getCoefficients().bufferMode; }
-    int getBufferSize() const final { return algo.getCoefficients().bufferSize; }
-    int getDelaySamples() const override { return algo.getDelaySamples(); }
-};
 
+    void process(typename Talgo::Input input, typename Talgo::Output output)          final    { algo.process(input, output); }
+    typename Talgo::Coefficients getCoefficients()                              const final    { return algo.getCoefficients(); }
+    typename Talgo::Parameters getParameters()                                  const final    { return algo.getParameters(); }
+    typename Talgo::Setup getSetup()                                            const final    { return algo.getSetup(); }
+    void setCoefficients(const typename Talgo::Coefficients& c)                       final    { algo.setCoefficients(c); }
+    void setParameters(const typename Talgo::Parameters& p)                           final    { algo.setParameters(p); }
+    void setSetup(const typename Talgo::Setup& s)                                     final    { algo.setSetup(s); }
+    void reset()                                                                      override { algo.reset(); }
+    BufferMode getBufferMode()                                                  const override { return BufferMode::MULTI_BUFFER; }
+    int getBufferSize()                                                         const final    { return algo.getCoefficients().bufferSize; }
+    int getDelaySamples()                                                       const override { return algo.getDelaySamples(); }
 
-template<typename Talgo, typename Tconfiguration>
-struct MultiBufferImplementation : public SingleBufferImplementation<Talgo, Tconfiguration>
-{
-    using Base = SingleBufferImplementation<Talgo, Tconfiguration>;
-    
-    MultiBufferImplementation() : MultiBufferImplementation(Algorithm<Tconfiguration>::Coefficients()) {}
-    MultiBufferImplementation(const typename Tconfiguration::Coefficients& c) : Base{ c } { }
-
-    void process(typename Algorithm<Tconfiguration>::Input input, typename Algorithm<Tconfiguration>::Output output) override 
+    // zeropad the input to be a multiple of Configuration.bufferSize and process the entire input by successive calls to process
+    void processAnySize(typename Talgo::Input input, typename Talgo::Output output)   override 
     { 
         int i = 0;
-        const int bufferSize = Base::getBufferSize();
+        const int bufferSize = getBufferSize();
         // Process as many full buffers as possible
         for (; i <= (input.rows() - bufferSize); i += bufferSize)
         {
-            Base::algo.process(input.middleRows(i, bufferSize), output.middleRows(i, bufferSize));
+            algo.process(input.middleRows(i, bufferSize), output.middleRows(i, bufferSize));
         }
         // if we have been given a size that is not an integer multiple of bufferSize, zeropad and process. 
         const int remainingSamples = static_cast<int>(input.rows()) - i;
         if (remainingSamples > 0)
         {
-            auto const c = Base::getCoefficients();
-            auto bufferIn = Tconfiguration::initInput(c);
+            auto bufferIn = algo.initInput();
             bufferIn.topRows(remainingSamples) = input.middleRows(i, remainingSamples);
-            bufferIn.bottomRows(c.bufferSize - remainingSamples).setZero();
-            typename O::getType<typename Algorithm<Tconfiguration>::Output>::type bufferOut = Tconfiguration::initOutput(bufferIn, c);
-            Base::algo.process(bufferIn, bufferOut);
+            bufferIn.bottomRows(bufferSize - remainingSamples).setZero();
+            auto bufferOut = algo.initOutput(bufferIn);
+            algo.process(bufferIn, bufferOut);
             output.bottomRows(remainingSamples) = bufferOut.topRows(remainingSamples);
         }
     }
 };
 
 template<typename Talgo, typename Tconfiguration>
-struct AsynchronousBufferImplementation : public MultiBufferImplementation<Talgo, Tconfiguration>
+struct AsynchronousBufferImplementation : public BufferImplementation<Talgo, Tconfiguration>
 {
-    using Base = MultiBufferImplementation<Talgo, Tconfiguration>;
+    using Base = BufferImplementation<Talgo, Tconfiguration>;
 
     AsynchronousBufferImplementation() : AsynchronousBufferImplementation(Algorithm<Tconfiguration>::Coefficients()) {}
     AsynchronousBufferImplementation(const typename Tconfiguration::Coefficients& c) : Base{ c }
     { 
         index = 0; 
-        bufferIn = Tconfiguration::initInput(c);
-        bufferOut = Tconfiguration::initOutput(bufferIn, c);
+        bufferIn = Base::algo.initInput();
+        bufferOut = Base::algo.initOutput(bufferIn);
         bufferIn.setZero();
         bufferOut.setZero();
     }
 
-    void process(typename Algorithm<Tconfiguration>::Input input, typename Algorithm<Tconfiguration>::Output output) final 
+    // Create an internal buffer and fill it with input values in a for-loop. Every time the buffer is full, call process and output the result. This results in an additional delay equal to bufferSize
+    void processAnySize(typename Algorithm<Tconfiguration>::Input input, typename Algorithm<Tconfiguration>::Output output) final 
     { 
         int const bufferSize = Base::getBufferSize();
         for (auto i = 0; i < input.rows(); i++)
@@ -114,12 +105,14 @@ struct AsynchronousBufferImplementation : public MultiBufferImplementation<Talgo
         Base::reset();
     }
 
-    // when processing asynchronously, and extra buffer is added to the delay in the process() method
+    BufferMode getBufferMode() const final { return BufferMode::ASYNCHRONOUS_BUFFER; }
+
+    // when processing asynchronously an extra buffer is added to the delay in the process() method
     int getDelaySamples() const final { return Base::getDelaySamples() + Base::getBufferSize(); }
 
     int index;
-    typename I::getType<typename Algorithm<Tconfiguration>::Input>::type bufferIn;
-    typename O::getType<typename Algorithm<Tconfiguration>::Output>::type bufferOut;
+    typename I::getType<typename Talgo::Input>::type bufferIn;
+    typename O::getType<typename Talgo::Output>::type bufferOut;
 };
 
 template<typename Tconfiguration, typename Talgo>
