@@ -26,7 +26,7 @@ struct InterpolationSampleConfiguration
     static std::tuple<Eigen::Array4f, float> initInput(const Coefficients& c) 
     { 
         Eigen::Array4f samples = Eigen::Array4f::Random(); // size 4 array samples. Interpolation is done between samples 1 and 2
-        float fractionalDelay = 0.5f; // fractional index to interpolate. It must be between 0.0 - 1.0
+        float fractionalDelay = 0.3f; // fractional index to interpolate. It must be between 0.0 - 1.0
         return std::make_tuple(samples, fractionalDelay); 
     }
 
@@ -72,7 +72,7 @@ struct InterpolationConfiguration
     struct Input
     {
         I::Real samples;
-        I::Real fractionalIndices; // fractional indices to interpolate. They must be in increasing order. Since 4 points are needed to do cubic interpolation it is not possible to interpolate indices smaller than 1.0 and larger than samples.size()-2.0
+        I::Real fractionalIndices; // fractional indices to interpolate. Since 4 points are needed to do cubic interpolation it is not possible to interpolate indices smaller than 1.0 and larger than samples.size()-2.0
     };
 
     using Output = O::Real;
@@ -94,10 +94,6 @@ struct InterpolationConfiguration
     static bool validInput(Input input, const Coefficients& c) 
     { 
         if (input.fractionalIndices.size() < 1) return false; // if not at least one value
-        for (auto i = 1; i < input.fractionalIndices.size(); i++) // if not ordered in increasing order
-        {
-            if (input.fractionalIndices(i) < input.fractionalIndices(i - 1)) { return false; } 
-        }
         float minFractional = input.fractionalIndices(0);
         float maxFractional = input.fractionalIndices(input.fractionalIndices.size() - 1);
         if (minFractional < 1.0 || maxFractional > input.samples.size() - 2.0) { return false; } // if not in the interval [1.0, samples.size()-2.0]
@@ -150,8 +146,13 @@ struct InterpolationConstantConfiguration
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
-    static auto validInput(Input input, const Coefficients& c) { return (input.size() >= 4); }
-    static auto initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.size() - 3); }
+    static Eigen::ArrayXf initInput(const Coefficients& c) { return Eigen::ArrayXf::Random(100); } // interpolation samples. Number of samples can be arbitrary
+
+    static Eigen::ArrayXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf(input.size() - 3); } // interpolated samples
+
+    static bool validInput(Input input, const Coefficients& c) { return (input.size() > 3) && input.allFinite(); }
+
+    static bool validOutput(Output output, const Coefficients& c) { return output.allFinite(); }
 
     template<typename Talgo>
     struct Example
