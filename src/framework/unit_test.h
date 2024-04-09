@@ -167,16 +167,32 @@ namespace InterfaceTests // this namespace contains interface tests and should b
     template<typename Talgo>
     bool processExampleTest()
     {
-        typename Talgo::Configuration::template Example<Talgo> example;
-        example.processAlgorithm();
-
+        Talgo algo;
+        auto input = algo.initInput();
+        auto output = algo.initOutput(input);
+        if (!algo.validInput(input))
+        {
+            fmt::print("processExampleTest failed: initial input is not valid.\n");
+            return false;
+        }
+        if (!algo.validOutput(output))
+        {
+            fmt::print("processExampleTest failed: initial output is not valid.\n");
+            return false;
+        }
+        algo.process(input, output);
+        if (!algo.validOutput(output))
+        {
+            fmt::print("processExampleTest failed: first output is not valid.\n");
+            return false;
+        }
         double durationMin = 1e10;
         double durationAvg = 0;
         double durationMax = 0;
         for (auto i = 0; i < 100; i++)
         {
             auto start = std::chrono::steady_clock::now();
-            example.processAlgorithm();
+            algo.process(input, output);
             auto end = std::chrono::steady_clock::now();
             auto time = std::chrono::duration<double, std::micro>(end - start).count();
             durationMin = std::min(durationMin, time);
@@ -184,7 +200,7 @@ namespace InterfaceTests // this namespace contains interface tests and should b
             durationMax = std::max(durationMax, time);
         }
         fmt::print("Execution time of processOn is (min - avg. - max): {:.3f} us - {:.3f} us - {:.3f} us.\n", durationMin, durationAvg, durationMax);
-        if (!example.isExampleOutputValid())
+        if (!algo.validOutput(output))
         {
             fmt::print("processExampleTest failed: output is not valid.\n");
             return false;
