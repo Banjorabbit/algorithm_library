@@ -102,7 +102,7 @@ public:
 
 private:
 
-        void processOn(Input magnitudeSpectrum, Output output)
+    void processOn(Input magnitudeSpectrum, Output output)
     {
         assert(magnitudeSpectrum.rows() == C.nBands);
         minPhaseCalculator.process(magnitudeSpectrum, xFreq);
@@ -145,6 +145,11 @@ private:
         float gainDen;
         TF2SOS(A, output.sos.bottomRows(3), gainDen);
         output.gain /= gainDen;
+        if (output.gain < 0) // gain must be positive
+        {
+            output.gain = -output.gain;
+            output.sos.topRows(3) = -output.sos.topRows(3);
+        }
     }
     
     size_t getDynamicSizeVariables() const final
