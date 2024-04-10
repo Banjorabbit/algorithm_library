@@ -19,6 +19,7 @@ struct Implementation : public Algorithm<Tconfiguration>::BaseImplementation
     void setParameters(const typename Algorithm<Tconfiguration>::Parameters& p) final { algo.setParameters(p); }
     void setSetup(const typename Algorithm<Tconfiguration>::Setup& s) final { algo.setSetup(s); }
     void reset() override { algo.reset(); }
+    nlohmann::json getDebugJson() const final { nlohmann::json j = algo.getSetupTree(); return j; }
 };
 
 template<typename Talgo, typename Tconfiguration>
@@ -26,6 +27,8 @@ struct BufferImplementation : public AlgorithmBuffer<Tconfiguration>::BufferBase
 {
     BufferImplementation() = default;
     BufferImplementation(const typename Tconfiguration::Coefficients& c) : algo{ c } {}
+    template<typename TcoefficientsTree>
+    BufferImplementation(const TcoefficientsTree& cTree) { algo.setCoefficientsTree(cTree); }
 
     Talgo algo;
 
@@ -37,6 +40,7 @@ struct BufferImplementation : public AlgorithmBuffer<Tconfiguration>::BufferBase
     void setParameters(const typename Talgo::Parameters& p)                           final    { algo.setParameters(p); }
     void setSetup(const typename Talgo::Setup& s)                                     final    { algo.setSetup(s); }
     void reset()                                                                      override { algo.reset(); }
+    nlohmann::json getDebugJson()                                               const final    { nlohmann::json j = algo.getSetupTree(); return j; }
     BufferMode getBufferMode()                                                  const override { return BufferMode::MULTI_BUFFER; }
     int getBufferSize()                                                         const final    { return algo.getCoefficients().bufferSize; }
     int getDelaySamples()                                                       const override { return algo.getDelaySamples(); }
@@ -73,6 +77,15 @@ struct AsynchronousBufferImplementation : public BufferImplementation<Talgo, Tco
     AsynchronousBufferImplementation() : AsynchronousBufferImplementation(Algorithm<Tconfiguration>::Coefficients()) {}
     AsynchronousBufferImplementation(const typename Tconfiguration::Coefficients& c) : Base{ c }
     { 
+        index = 0; 
+        bufferIn = Base::algo.initInput();
+        bufferOut = Base::algo.initOutput(bufferIn);
+        bufferIn.setZero();
+        bufferOut.setZero();
+    }
+    template<typename TcoefficientsTree>
+    AsynchronousBufferImplementation(const TcoefficientsTree& cTree) : Base{ cTree } 
+    {
         index = 0; 
         bufferIn = Base::algo.initInput();
         bufferOut = Base::algo.initOutput(bufferIn);
@@ -185,13 +198,17 @@ public:
     template<typename T = Coefficients>
     typename std::enable_if<std::is_empty<T>::value>::type setCoefficients(const Coefficients& c) 
     {
+        auto p = getParameters();
         static_cast<Talgo&>(*this) = Talgo();
+        setParameters(p);
     }
 
     template<typename T = Coefficients>
     typename std::enable_if<!std::is_empty<T>::value>::type setCoefficients(const Coefficients& c)
     {
+        auto p = getParameters();
         static_cast<Talgo&>(*this) = Talgo(c);
+        setParameters(p);
     } 
 
     void setParameters(const Parameters& p) 

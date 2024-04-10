@@ -39,6 +39,7 @@ public:
     void setParameters(const Parameters& p) { pimpl->setParameters(p); }
     void setSetup(const Setup& s) { pimpl->setSetup(s); }
 
+    nlohmann::json getDebugJson() const { return pimpl->getDebugJson(); }
     auto validInput(Input input) const { return Configuration::validInput(input, getCoefficients()); }
     auto initOutput(Input input) const { return Configuration::initOutput(input, getCoefficients()); }
 
@@ -56,6 +57,7 @@ public:
         virtual void setParameters(const Parameters& p) = 0;
         virtual void setSetup(const Setup& s) = 0;
         virtual void reset() = 0;
+        virtual nlohmann::json getDebugJson() const = 0;
     };
     
 protected:
