@@ -14,13 +14,17 @@ void AlgorithmBuffer<PreprocessingPathConfiguration>::setBufferMode(BufferMode b
         if (static_cast<BufferBaseImplementation*>(Base::pimpl.get())->getBufferMode() != MULTI_BUFFER)
         {
             auto c = pimpl->getCoefficients();
+            auto p = pimpl->getParameters();
             pimpl = std::make_unique<BufferImplementation<BeamformerPath, PreprocessingPathConfiguration>>(c);
+            pimpl->setParameters(p);
         }
     }
     else
     {
         auto c = pimpl->getCoefficients();
+        auto p = pimpl->getParameters();
         pimpl = std::make_unique<AsynchronousBufferImplementation<BeamformerPath, PreprocessingPathConfiguration>>(c);
+        pimpl->setParameters(p);
     }
 }
 
