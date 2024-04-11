@@ -9,9 +9,9 @@ Algorithm<PreprocessingPathConfiguration>::Algorithm(const Coefficients& c)
 template<>
 void AlgorithmBuffer<PreprocessingPathConfiguration>::setBufferMode(BufferMode bufferMode)
 {
-    if (bufferMode == MULTI_BUFFER)
+    if (bufferMode == SYNCHRONOUS_BUFFER)
     {
-        if (static_cast<BufferBaseImplementation*>(Base::pimpl.get())->getBufferMode() != MULTI_BUFFER)
+        if (static_cast<BufferBaseImplementation*>(Base::pimpl.get())->getBufferMode() != SYNCHRONOUS_BUFFER)
         {
             auto cTree = static_cast<BufferImplementation<BeamformerPath, PreprocessingPathConfiguration>*>(pimpl.get())->algo.getCoefficientsTree();
             auto pTree = static_cast<BufferImplementation<BeamformerPath, PreprocessingPathConfiguration>*>(pimpl.get())->algo.getParametersTree();

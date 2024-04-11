@@ -41,7 +41,7 @@ struct BufferImplementation : public AlgorithmBuffer<Tconfiguration>::BufferBase
     void setSetup(const typename Talgo::Setup& s)                                     final    { algo.setSetup(s); }
     void reset()                                                                      override { algo.reset(); }
     nlohmann::json getDebugJson()                                               const final    { nlohmann::json j = algo.getSetupTree(); return j; }
-    BufferMode getBufferMode()                                                  const override { return BufferMode::MULTI_BUFFER; }
+    BufferMode getBufferMode()                                                  const override { return BufferMode::SYNCHRONOUS_BUFFER; }
     int getBufferSize()                                                         const final    { return algo.getCoefficients().bufferSize; }
     int getDelaySamples()                                                       const override { return algo.getDelaySamples(); }
 
