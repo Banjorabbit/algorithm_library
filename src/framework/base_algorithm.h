@@ -75,16 +75,8 @@ struct AsynchronousBufferImplementation : public BufferImplementation<Talgo, Tco
     using Base = BufferImplementation<Talgo, Tconfiguration>;
 
     AsynchronousBufferImplementation() : AsynchronousBufferImplementation(Algorithm<Tconfiguration>::Coefficients()) {}
-    AsynchronousBufferImplementation(const typename Tconfiguration::Coefficients& c) : Base{ c }
-    { 
-        index = 0; 
-        bufferIn = Base::algo.initInput();
-        bufferOut = Base::algo.initOutput(bufferIn);
-        bufferIn.setZero();
-        bufferOut.setZero();
-    }
     template<typename TcoefficientsTree>
-    AsynchronousBufferImplementation(const TcoefficientsTree& cTree) : Base{ cTree } 
+    AsynchronousBufferImplementation(const TcoefficientsTree& c) : Base{ c } // this constructor is used both for the constructor with coefficients and coefficients tree
     {
         index = 0; 
         bufferIn = Base::algo.initInput();
