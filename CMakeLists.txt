@@ -73,6 +73,9 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
 # Let's ensure -std=c++xx instead of -std=g++xx
 set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_CXX_EXTENSIONS OFF)
 
+# Strip binary for release builds
+add_custom_command(TARGET "${PROJECT_NAME}" POST_BUILD COMMAND $<$<CONFIG:release>:${CMAKE_STRIP}> ARGS --strip-all $<TARGET_FILE:${PROJECT_NAME}> )
+
 # Let's nicely support folders in IDEs
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
