@@ -20,8 +20,7 @@ public:
     
     Eigen::ArrayXf getSosFilter(float cutoff, float gain, float resonance) const
     {
-        resonance += 1e-14f; // add small dither to prevent division by zero
-        float c1 = cutoff / resonance;
+        float c1 = cutoff / (resonance + 1e-16f); // add small dither to prevent division by zero
         float c2 = cutoff * resonance;
         float c3 = c2 + 1.f;
         float c0 = 1.f / (1.f + c1 * (c2 + 1.f));
@@ -125,7 +124,7 @@ private:
     {
         for (auto sample = 0; sample < input.xTime.rows(); sample++)
         {
-            const float c1 = input.cutoff(sample) / input.resonance(sample);
+            const float c1 = input.cutoff(sample) / (input.resonance(sample) + 1e-16f); // add small dither to prevent division by zero
             const float c2 = input.cutoff(sample) * input.resonance(sample);
             const float c3 = c2 + 1.f;
             const float c0 = 1.f / (1.f + c1 * c3);
