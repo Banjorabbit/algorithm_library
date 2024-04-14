@@ -20,6 +20,7 @@ public:
     
     Eigen::ArrayXf getSosFilter(float cutoff, float gain, float resonance) const
     {
+        resonance += 1e-14f; // add small dither to prevent division by zero
         float c1 = cutoff / resonance;
         float c2 = cutoff * resonance;
         float c3 = c2 + 1.f;
