@@ -143,4 +143,5 @@ Algorithm<ConfigurationName>::Algorithm(const Coefficients& c) \
 { \
     pimpl = std::make_unique<InternalAlgorithm##SingleBufferImpl>(c); \
 } \
-PublicAlgorithm::PublicAlgorithm(const Coefficients& c) : Algorithm<ConfigurationName>(c) {}
+PublicAlgorithm::PublicAlgorithm(const Coefficients& c) : Algorithm<ConfigurationName>(c) {} \
+extern "C" PublicAlgorithm* create##PublicAlgorithm##Instance() { return new PublicAlgorithm; }
