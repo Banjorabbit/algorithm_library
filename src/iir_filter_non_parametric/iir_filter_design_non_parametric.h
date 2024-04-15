@@ -54,7 +54,7 @@ private:
     {
         DesignIIRSpline::Coefficients coefficients;
         coefficients.nGains = c.nSos;
-        coefficients.nBands = FFTReal::getValidFFTSize(c.nSos * 16)/2+1; // must be significantly higher than the filter order
+        coefficients.nBands = FFTConfiguration::getValidFFTSize(c.nSos * 16)/2+1; // must be significantly higher than the filter order
         coefficients.sampleRate = c.sampleRate;
         return coefficients;
     }
@@ -116,7 +116,7 @@ private:
     {
         DesignIIRSpline::Coefficients coefficients;
         coefficients.nGains = c.nSos;
-        coefficients.nBands = FFTReal::getValidFFTSize(c.nSos * 16)/2+1; // must be significantly higher than the filter order
+        coefficients.nBands = FFTConfiguration::getValidFFTSize(c.nSos * 16)/2+1; // must be significantly higher than the filter order
         coefficients.sampleRate = c.sampleRate;
         return coefficients;
     }

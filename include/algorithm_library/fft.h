@@ -22,16 +22,19 @@ struct FFTConfiguration
 
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
-    static int getFFTSize(int nBands) { return (nBands - 1) * 2; }
-    static int getNBands(int fftSize) { return fftSize / 2 + 1; }
+    static inline int convertNBandsToFFTSize(int nBands) { return (nBands - 1) * 2; }
+    static inline int convertFFTSizeToNBands(int fftSize) { return fftSize / 2 + 1; }
+
+    static bool isFFTSizeValid(const int fftSize);
+    static int getValidFFTSize(const int fftSize); // return valid fftSize that is equal or greater than fftSize
 
     static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.fftSize, 2); } // time samples. Number of channels is arbitrary
     
-    static Eigen::ArrayXXcf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf::Zero(getNBands(c.fftSize), input.cols()); } // frequency bins. Number of channels is arbitrary
+    static Eigen::ArrayXXcf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf::Zero(convertFFTSizeToNBands(c.fftSize), input.cols()); } // frequency bins. Number of channels is arbitrary
 
     static bool validInput(Input input, const Coefficients& c) { return (input.rows() == c.fftSize) && (input.cols() > 0) && input.allFinite(); }
 
-    static bool validOutput(Output output, const Coefficients& c) { return (output.rows() == getNBands(c.fftSize)) && (output.cols() > 0) && output.allFinite(); }
+    static bool validOutput(Output output, const Coefficients& c) { return (output.rows() == convertFFTSizeToNBands(c.fftSize)) && (output.cols() > 0) && output.allFinite(); }
 
     // exception for constructing FFT with invalid FFT size
     class ExceptionFFT : public std::runtime_error {
@@ -47,5 +50,5 @@ public:
     FFT(const Coefficients& c);
 
     void inverse(I::Complex2D xFreq, O::Real2D yTime);
-    static bool isFFTSizeValid(const int fftSize);
+    
 };

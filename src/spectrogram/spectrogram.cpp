@@ -19,7 +19,7 @@ Algorithm<SpectrogramConfiguration>::Algorithm(const Coefficients& c)
 
 Spectrogram::Spectrogram(const Coefficients& c) : Algorithm<SpectrogramConfiguration>(c) {}
 
-int Spectrogram::getValidFFTSize(int fftSize)
+int SpectrogramConfiguration::getValidFFTSize(int fftSize)
 {
-    return FFTReal::getValidFFTSize(fftSize);
+    return FFTConfiguration::getValidFFTSize(fftSize);
 }

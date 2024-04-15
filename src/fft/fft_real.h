@@ -22,7 +22,7 @@ public:
     {
         out.resize((int)C.fftSize);
         if (!setup) { throw Configuration::ExceptionFFT(C.fftSize); }
-        assert(isFFTSizeValid(C.fftSize)); // assert that FFT size is valid. It is not extremely useful after the throwing exception, but it allows the exception to be caught in debug mode
+        assert(Configuration::isFFTSizeValid(C.fftSize)); // assert that FFT size is valid. It is not extremely useful after the throwing exception, but it allows the exception to be caught in debug mode
     }
 
     inline void inverse(I::Complex2D xFreq, O::Real2D yTime)
@@ -35,24 +35,6 @@ public:
             pffft_transform_ordered(setup.get(), yTime.col(channel).data(), yTime.col(channel).data(), nullptr, PFFFT_BACKWARD);
             yTime.col(channel) *= scale;
         }
-    }
-
-    static inline bool isFFTSizeValid(const int fftSize)
-    {
-        if (fftSize % 32 != 0 || fftSize < 32) { return false; } // first check size is integer factor of 32
-        PFFFT_Setup *setup = pffft_new_setup(fftSize, PFFFT_REAL);
-        if (!setup) { return false; }
-        pffft_destroy_setup(setup);
-        return true;
-    }
-
-    static int getValidFFTSize(int fftSize) 
-    { 
-        if (fftSize > validFFTSizes.back())
-        {
-            return static_cast<int>(std::pow(2, std::ceil(std::log2(fftSize)))); // return power of 2
-        }
-        return *std::upper_bound(validFFTSizes.begin(), validFFTSizes.end(), fftSize);
     }
 
 private:
@@ -76,18 +58,13 @@ private:
         return size;
     }
 
+    // defined in fft.cpp 
+    static void pffftSmartDestroy(PFFFT_Setup* s);
+    static PFFFT_Setup* pffftSmartCreate(int fftSize);
+
     float scale;
     std::shared_ptr<PFFFT_Setup> setup;
-    
-    static void pffftSmartDestroy(PFFFT_Setup* s) { if (s != nullptr) { pffft_destroy_setup(s); } } // only call delete function if shared pointer is not nullptr
-    static PFFFT_Setup* pffftSmartCreate(int fftSize) 
-    { 
-        if (fftSize % 32 == 0 && fftSize >= 32)  { return pffft_new_setup(fftSize, PFFFT_REAL); } 
-        return nullptr;
-    } 
-
     Eigen::ArrayXf out;
-    static const std::array<int,72> validFFTSizes; // defined in fft.cpp
 
     friend BaseAlgorithm;
 };

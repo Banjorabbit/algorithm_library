@@ -23,6 +23,8 @@ struct CriticalBandsConfiguration
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
     static int getNCriticalBands(float sampleRate);
+    static Eigen::ArrayXf getCenterFrequencies(float sampleRate);
+    static Eigen::ArrayXf getCornerFrequencies(float sampleRate);
 
     static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.nBands, 2).abs2(); } // power spectrum. Number of channels can be arbitrary
 
@@ -48,10 +50,7 @@ class CriticalBandsSum : public Algorithm<CriticalBandsSumConfiguration>
 public:
     CriticalBandsSum() = default;
     CriticalBandsSum(const Coefficients& c);
-    
-    static int getNCriticalBands(float sampleRate);
-    static Eigen::ArrayXf getCenterFrequencies(float sampleRate);
-    static Eigen::ArrayXf getCornerFrequencies(float sampleRate);
+
     void inverse(I::Real2D xPower, O::Real2D yPower);
 };
 
@@ -60,10 +59,7 @@ class CriticalBandsMean : public Algorithm<CriticalBandsMeanConfiguration>
 public:
     CriticalBandsMean() = default;
     CriticalBandsMean(const Coefficients& c);
-    
-    static int getNCriticalBands(float sampleRate);
-    static Eigen::ArrayXf getCenterFrequencies(float sampleRate);
-    static Eigen::ArrayXf getCornerFrequencies(float sampleRate);
+
     void inverse(I::Real2D xPower, O::Real2D yPower);
 };
 
@@ -72,9 +68,6 @@ class CriticalBandsMax : public Algorithm<CriticalBandsMaxConfiguration>
 public:
     CriticalBandsMax() = default;
     CriticalBandsMax(const Coefficients& c);
-    
-    static int getNCriticalBands(float sampleRate);
-    static Eigen::ArrayXf getCenterFrequencies(float sampleRate);
-    static Eigen::ArrayXf getCornerFrequencies(float sampleRate);
+
     void inverse(I::Real2D xPower, O::Real2D yPower);
 };

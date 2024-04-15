@@ -24,12 +24,12 @@ TEST(Filterbank, ReconstructionHighQuality)
 
 	auto c = FilterbankAnalysis::Coefficients();
 	c.filterbankType = c.WOLA;
-	c.nBands = FFTConfiguration::getNBands(4 * c.bufferSize);
+	c.nBands = FFTConfiguration::convertFFTSizeToNBands(4 * c.bufferSize);
 	FilterbankAnalysis filterbank(c);
 
 	auto cInv = FilterbankSynthesis::Coefficients();
 	cInv.filterbankType = cInv.WOLA;
-	cInv.nBands = FFTConfiguration::getNBands(4 * cInv.bufferSize);
+	cInv.nBands = FFTConfiguration::convertFFTSizeToNBands(4 * cInv.bufferSize);
 	FilterbankSynthesis filterbankInv(cInv);
 
 	ArrayXXf input(nFrames * c.bufferSize, c.nChannels);
@@ -58,12 +58,12 @@ TEST(Filterbank, ReconstructionSqrtHann)
 
 	auto c = FilterbankAnalysis::Coefficients();
 	c.filterbankType = c.SQRT_HANN;
-	c.nBands = FFTConfiguration::getNBands(2 * c.bufferSize);
+	c.nBands = FFTConfiguration::convertFFTSizeToNBands(2 * c.bufferSize);
 	FilterbankAnalysis filterbank(c);
 
 	auto cInv = FilterbankSynthesis::Coefficients();
 	cInv.filterbankType = cInv.SQRT_HANN;
-	cInv.nBands = FFTConfiguration::getNBands(2 * cInv.bufferSize);
+	cInv.nBands = FFTConfiguration::convertFFTSizeToNBands(2 * cInv.bufferSize);
 	FilterbankSynthesis filterbankInv(cInv);
 
 	ArrayXXf input(nFrames * c.bufferSize, c.nChannels);
@@ -92,12 +92,12 @@ TEST(Filterbank, ReconstructionStandard)
 
 	auto c = FilterbankAnalysis::Coefficients();
 	c.filterbankType = c.HANN;
-	c.nBands = FFTConfiguration::getNBands(4 * c.bufferSize);
+	c.nBands = FFTConfiguration::convertFFTSizeToNBands(4 * c.bufferSize);
 	FilterbankAnalysis filterbank(c);
 
 	auto cInv = FilterbankSynthesis::Coefficients();
 	cInv.filterbankType = cInv.HANN;
-	cInv.nBands = FFTConfiguration::getNBands(4 * cInv.bufferSize);
+	cInv.nBands = FFTConfiguration::convertFFTSizeToNBands(4 * cInv.bufferSize);
 	FilterbankSynthesis filterbankInv(cInv);
 
 	ArrayXXf input(nFrames * c.bufferSize, c.nChannels);

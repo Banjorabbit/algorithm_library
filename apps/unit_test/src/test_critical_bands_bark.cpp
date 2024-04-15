@@ -26,27 +26,27 @@ TEST(CriticalBandsBark, InterfaceMean)
 TEST(CriticalBandsBark, getters)
 {
 	float sampleRate = 44.1e3;
-	int nCritBands = CriticalBandsSum::getNCriticalBands(sampleRate);
+	int nCritBands = CriticalBandsConfiguration::getNCriticalBands(sampleRate);
 	fmt::print("Sample rate: {} Hz\n", sampleRate);
 	fmt::print("Number of critical bands: {}\n", nCritBands);
 
-	ArrayXf centerFreqs = CriticalBandsSum::getCenterFrequencies(sampleRate);
+	ArrayXf centerFreqs =  CriticalBandsConfiguration::getCenterFrequencies(sampleRate);
 	fmt::print("Center frequencies (Hz): {}\n", centerFreqs);
 	
-	ArrayXf cornerFreqs = CriticalBandsSum::getCornerFrequencies(sampleRate);
+	ArrayXf cornerFreqs = CriticalBandsConfiguration::getCornerFrequencies(sampleRate);
 	fmt::print("Corner frequencies (Hz): {}\n", cornerFreqs);
 
 	fmt::print("Setting new sample rate...\n");
 	
 	sampleRate = 16000;
-	nCritBands = CriticalBandsSum::getNCriticalBands(sampleRate);
+	nCritBands = CriticalBandsConfiguration::getNCriticalBands(sampleRate);
 	fmt::print("Sample rate: {} Hz\n", sampleRate);
 	fmt::print("Number of critical bands: {}\n", nCritBands);
 
-	centerFreqs = CriticalBandsSum::getCenterFrequencies(sampleRate);
+	centerFreqs = CriticalBandsConfiguration::getCenterFrequencies(sampleRate);
 	fmt::print("Center frequencies (Hz): {}\n", centerFreqs);
 	
-	cornerFreqs = CriticalBandsSum::getCornerFrequencies(sampleRate);
+	cornerFreqs = CriticalBandsConfiguration::getCornerFrequencies(sampleRate);
 	fmt::print("Corner frequencies (Hz): {}\n", cornerFreqs);
 }
 

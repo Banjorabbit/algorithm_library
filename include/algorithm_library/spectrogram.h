@@ -24,6 +24,7 @@ struct SpectrogramConfiguration
     struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
 
     static inline int getNFrames(int nSamples, int bufferSize) { return nSamples / bufferSize; } // number of frames (columns) in output
+    static int getValidFFTSize(int fftSize); // return valid FFT size larger or equal to fftSize
 
     static Eigen::ArrayXf initInput(const Coefficients& c) { return Eigen::ArrayXf::Random(10 * c.bufferSize); } // time samples. Number of samples is arbitrary
 
@@ -42,6 +43,4 @@ class Spectrogram : public Algorithm<SpectrogramConfiguration>
 public:
     Spectrogram() = default;
     Spectrogram(const Coefficients& c);
-
-    static int getValidFFTSize(int fftSize); // return valid FFT size larger or equal to fftSize
 };
