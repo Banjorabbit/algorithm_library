@@ -51,13 +51,33 @@ TEST(FFTReal, Reconstruction)
 
 	EXPECT_LT(error, 1e-9f);
 }
+
+// description: choose FFT size and check it is valid
+TEST(FFTReal, getValidFFTSize)
+{
+    int fftSize = 1024; // valid fft size
+    int fftSizeValid = FFTConfiguration::getValidFFTSize(fftSize);
+    fmt::print("Returned valid FFT size: {}\n", fftSizeValid); // should be 1024 (same as input)
+    EXPECT_TRUE(fftSizeValid == fftSize);
+
+    fftSize = 1023; // invalid fft size
+    fftSizeValid = FFTConfiguration::getValidFFTSize(fftSize);
+    fmt::print("Returned valid FFT size: {}\n", fftSizeValid); // should be 1024
+    EXPECT_TRUE(fftSizeValid == 1024);
+
+    fftSize = 1025; // invalid fft size
+    fftSizeValid = FFTConfiguration::getValidFFTSize(fftSize);
+    fmt::print("Returned valid FFT size: {}\n", fftSizeValid); // should be 1152
+    EXPECT_TRUE(fftSizeValid == 1152);
+}
+
 // description: Choose an invalid FFT size and check FFT correctly detects it
 // pass/fail: The FFT detects invalid size and throws exception
 TEST(FFTReal, InvalidFFTSize)
 {
 	// set fftSize to 1023 (invalid size)
 	int fftSize = 1023; // invalid FFT size;
-	bool isValid = FFTReal::isFFTSizeValid(fftSize);
+	bool isValid = FFTConfiguration::isFFTSizeValid(fftSize);
 	EXPECT_FALSE(isValid);
 
 	auto c = FFTReal::Coefficients();
