@@ -7,10 +7,10 @@
 
 // --------------------------------------------------- get filterbank configurations ----------------------------------------------------------------
 
-struct FilterbankWOLA
+namespace FilterbankWOLA
 {
 
-    static Eigen::ArrayXf getAnalysisWindow(const FilterbankConfiguration::Coefficients& c)
+    Eigen::ArrayXf getAnalysisWindow(const FilterbankConfiguration::Coefficients& c)
     {
         Eigen::ArrayXf window;
         const int fftSize = FFTConfiguration::getFFTSize(c.nBands);
@@ -33,7 +33,7 @@ struct FilterbankWOLA
         return window;
     }
 
-    static Eigen::ArrayXf getSynthesisWindow(const FilterbankConfiguration::Coefficients& c)
+    Eigen::ArrayXf getSynthesisWindow(const FilterbankConfiguration::Coefficients& c)
     {
         Eigen::ArrayXf window;
         const int fftSize = FFTConfiguration::getFFTSize(c.nBands);
@@ -66,7 +66,7 @@ struct FilterbankWOLA
     }
 
     // calculate delay as the group delay at 0 Hz of the prototype window:  Group Delay(z) = Real{ FFT{window * ramp} / FFT{window} } 
-    static float getDelaySamples(I::Real window)
+    float getDelaySamples(I::Real window)
     { 
         Eigen::ArrayXf ramp = Eigen::ArrayXf::LinSpaced(window.size(), 0, window.size()-1);
         return (window * ramp).sum() / (window.sum() + 1e-12f); 
