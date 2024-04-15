@@ -18,7 +18,12 @@ jobs:
       - name: Build 
         run: |
           mkdir build
-          cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release
-          cd build
+          mkdir build/unit_test
+          cmake -S apps/unit_test -B build/unit_test -DCMAKE_BUILD_TYPE=Release
+          cd build/unit_test
           make -j
+      - name: Run unit test
+        run: |
+          cd build/unit_test
+          ./DSP_Test        
       - run: echo "🍏 This job's status is ${{ job.status }}."
