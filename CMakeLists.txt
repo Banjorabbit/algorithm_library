@@ -39,9 +39,12 @@ file(GLOB_RECURSE SOURCE_LIST_UTILITIES_HEADERS CONFIGURE_DEPENDS "${PROJECT_SOU
 
 # add SHARED if a DLL is needed (see CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS comment above about exporting symbols)
 if (ALGORITHM_LIBRARY_SHARED_LIBRARY)
-  add_library(${PROJECT_NAME} SHARED ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${SOURCE_LIST_UTILITIES_HEADERS} ${HEADER_LIST_ALGORITHMS} )
+    add_library(${PROJECT_NAME} SHARED ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${SOURCE_LIST_UTILITIES_HEADERS} ${HEADER_LIST_ALGORITHMS} )
+
+    # Strip shared binary for release builds
+    add_custom_command(TARGET "${PROJECT_NAME}" POST_BUILD COMMAND $<$<CONFIG:release>:${CMAKE_STRIP}> ARGS --strip-all $<TARGET_FILE:${PROJECT_NAME}> )
 else()
-  add_library(${PROJECT_NAME} ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${SOURCE_LIST_UTILITIES_HEADERS} ${HEADER_LIST_ALGORITHMS} )
+    add_library(${PROJECT_NAME} ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${SOURCE_LIST_UTILITIES_HEADERS} ${HEADER_LIST_ALGORITHMS} )
 endif()
 
 # We enforce standards conformance on MSVC both compiler and  preprocessor: https://learn.microsoft.com/en-us/cpp/preprocessor/preprocessor-experimental-overview?view=msvc-160
@@ -72,9 +75,6 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
 
 # Let's ensure -std=c++xx instead of -std=g++xx
 set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_CXX_EXTENSIONS OFF)
-
-# Strip binary for release builds
-add_custom_command(TARGET "${PROJECT_NAME}" POST_BUILD COMMAND $<$<CONFIG:release>:${CMAKE_STRIP}> ARGS --strip-all $<TARGET_FILE:${PROJECT_NAME}> )
 
 # Let's nicely support folders in IDEs
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
