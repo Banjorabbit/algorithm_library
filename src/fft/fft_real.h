@@ -5,11 +5,6 @@
 
 // Wrapper for real pffft. 
 //
-// pffft requires 16 byte alligned data, and we don't know the allocation of input/output (float is 4 bytes). 
-// The assert in pffft.c is: #define VALIGNED(ptr) ((((uintptr_t)(ptr)) & 0xF) == 0)
-// Especially, frequency domain data has length FFTSize/2+1 so if first channel is 16 byte alligned then second channel is guaranteed not to be 16 byte alligned.
-// For this reason, FFT transform is using memory allocated on the stack.
-//
 // This class has a public inverse FFT function.
 // Supported FFT sizes are multiples of 32 and FFT class has a public isFFTSizeValid() method.
 // 

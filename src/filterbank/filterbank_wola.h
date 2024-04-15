@@ -145,7 +145,7 @@ private:
     }
 
     int frameSize, fftSize;
-    Eigen::ArrayXf window, fftBuffer; // advantage of FFTBuffer being allocated on heap is that zeropadding is kept between calls
+    Eigen::ArrayXf window, fftBuffer; 
     Eigen::ArrayXXf timeBuffer;
     int overlap, nFolds, maxSize;
 
@@ -215,7 +215,7 @@ private:
     }
 
     int fftSize, frameSize;
-    Eigen::ArrayXf window, fftBuffer; // advantage of FFTBuffer being allocated on heap is that zeropadding is kept between calls
+    Eigen::ArrayXf window, fftBuffer; 
     Eigen::ArrayXXf timeBuffer;
     int overlap, nFolds, maxSize;
 
