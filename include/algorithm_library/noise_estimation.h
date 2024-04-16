@@ -23,26 +23,20 @@ struct NoiseEstimationConfiguration
         DEFINE_TUNABLE_PARAMETERS(smoothingTConstant)
     };
 
-    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // power spectrum
+    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // power spectrum
 
-    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(c.nBands, c.nChannels); } // noise power spectrum estimate
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients &c) { return Eigen::ArrayXXf::Zero(c.nBands, c.nChannels); } // noise power spectrum estimate
 
-    static bool validInput(Input input, const Coefficients& c) 
-    { 
-        return (input.rows() == c.nBands) && (input.cols() == c.nChannels) && (input >= 0.f).all();
-    }
+    static bool validInput(Input input, const Coefficients &c) { return (input.rows() == c.nBands) && (input.cols() == c.nChannels) && (input >= 0.f).all(); }
 
-    static bool validOutput(Output output, const Coefficients& c) 
-    { 
-        return (output.rows() == c.nBands) && (output.cols() == c.nChannels) && (output >= 0.f).all();
-    }
+    static bool validOutput(Output output, const Coefficients &c) { return (output.rows() == c.nBands) && (output.cols() == c.nChannels) && (output >= 0.f).all(); }
 };
 
 class NoiseEstimation : public Algorithm<NoiseEstimationConfiguration>
 {
-public:
+  public:
     NoiseEstimation() = default;
-    NoiseEstimation(const Coefficients& c);
+    NoiseEstimation(const Coefficients &c);
 };
 
 // noise estimation based on an activity detector. This version has an additional output activity detector for each frequency bin
@@ -71,19 +65,16 @@ struct NoiseEstimationActivityConfiguration
         DEFINE_TUNABLE_PARAMETERS(smoothingTConstant)
     };
 
-    static auto validInput(Input input, const Coefficients& c) 
-    { 
-        return (input >= 0.f).all() && (input.rows() == c.nBands) && (input.cols() == c.nChannels);
-    }
+    static auto validInput(Input input, const Coefficients &c) { return (input >= 0.f).all() && (input.rows() == c.nBands) && (input.cols() == c.nChannels); }
 
-    static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::ArrayXXf(c.nBands, c.nChannels), Eigen::ArrayXXf(c.nBands, c.nChannels)); }
+    static auto initOutput(Input input, const Coefficients &c) { return std::make_tuple(Eigen::ArrayXXf(c.nBands, c.nChannels), Eigen::ArrayXXf(c.nBands, c.nChannels)); }
 };
 
 class NoiseEstimationActivity : public Algorithm<NoiseEstimationActivityConfiguration>
 {
-public:
+  public:
     NoiseEstimationActivity() = default;
-    NoiseEstimationActivity(const Coefficients& c);
+    NoiseEstimationActivity(const Coefficients &c);
 };
 
 // noise estimation based on an activity detector. This version has an additional output activity detector as a single boolean value
@@ -112,18 +103,14 @@ struct NoiseEstimationActivityFusedConfiguration
         DEFINE_TUNABLE_PARAMETERS(smoothingTConstant)
     };
 
-    static auto validInput(Input input, const Coefficients& c) 
-    { 
-        return (input >= 0.f).all() && (input.rows() == c.nBands) && (input.cols() == c.nChannels);
-    }
+    static auto validInput(Input input, const Coefficients &c) { return (input >= 0.f).all() && (input.rows() == c.nBands) && (input.cols() == c.nChannels); }
 
-    static auto initOutput(Input input, const Coefficients& c) { return std::make_tuple(Eigen::ArrayXXf::Zero(c.nBands, c.nChannels), bool()); }
+    static auto initOutput(Input input, const Coefficients &c) { return std::make_tuple(Eigen::ArrayXXf::Zero(c.nBands, c.nChannels), bool()); }
 };
 
 class NoiseEstimationActivityFused : public Algorithm<NoiseEstimationActivityFusedConfiguration>
 {
-public:
+  public:
     NoiseEstimationActivityFused() = default;
-    NoiseEstimationActivityFused(const Coefficients& c);
+    NoiseEstimationActivityFused(const Coefficients &c);
 };
-

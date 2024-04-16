@@ -1,7 +1,7 @@
 #pragma once
-#include "framework/framework.h"
 #include "algorithm_library/design_iir_non_parametric.h"
 #include "design_iir_min_phase/design_iir_min_phase_tf2sos.h"
+#include "framework/framework.h"
 #include "spline/spline_cubic.h"
 #include "utilities/fastonebigheader.h"
 
@@ -10,13 +10,11 @@
 // author: Kristian Timm Andersen
 class DesignIIRSpline : public AlgorithmImplementation<DesignIIRNonParametricConfiguration, DesignIIRSpline>
 {
-public:
-    DesignIIRSpline(const DesignIIRNonParametricConfiguration::Coefficients& c = Coefficients()) :
-        BaseAlgorithm(c),
-        splineCalculation({c.nGains + 4}),
-        filterDesigner(convertToDesignIIRMinPhaseTF2SOS(c))
-    { 
-        // add 2 frequency/gain points to the left and right of given points to ensure correct gradient 
+  public:
+    DesignIIRSpline(const DesignIIRNonParametricConfiguration::Coefficients &c = Coefficients())
+        : BaseAlgorithm(c), splineCalculation({c.nGains + 4}), filterDesigner(convertToDesignIIRMinPhaseTF2SOS(c))
+    {
+        // add 2 frequency/gain points to the left and right of given points to ensure correct gradient
         frequencies.resize(c.nGains + 4);
         gaindB.resize(c.nGains + 4);
         freqsFFT = Eigen::ArrayXf::LinSpaced(C.nBands, 0.f, C.sampleRate / 2); // desired frequency points for FFT
@@ -27,8 +25,7 @@ public:
     DesignIIRMinPhaseTF2SOS filterDesigner;
     DEFINE_MEMBER_ALGORITHMS(splineCalculation, filterDesigner)
 
-private:
-
+  private:
     void processOn(Input input, Output output)
     {
         frequencies.head(2) = -input.frequencies.head(2).reverse();
@@ -38,9 +35,9 @@ private:
         gaindB.head(2) = input.gaindB.head(2).reverse();
         gaindB.segment(2, input.gaindB.rows()) = input.gaindB;
         gaindB.tail(2) = input.gaindB.tail(2).reverse();
-        
+
         // calculate interpolation
-        splineCalculation.process({ frequencies, gaindB, freqsFFT }, gainFFT);
+        splineCalculation.process({frequencies, gaindB, freqsFFT}, gainFFT);
         // convert to linear scale
         gainFFT *= 0.166096404744368f; // 10^(gainFFT/20) = 2^(log2(10^(gainFFT/20))) = 2^(gainFFT/20*log2(10)) = 2^(gainFFT*0.166096404744368)
         gainFFT = gainFFT.unaryExpr(std::ref(fasterpow2));
@@ -58,7 +55,7 @@ private:
         return size;
     }
 
-    DesignIIRMinPhaseTF2SOS::Coefficients convertToDesignIIRMinPhaseTF2SOS(const Coefficients& c)
+    DesignIIRMinPhaseTF2SOS::Coefficients convertToDesignIIRMinPhaseTF2SOS(const Coefficients &c)
     {
         DesignIIRMinPhaseTF2SOS::Coefficients cMinPhase;
         cMinPhase.nOrder = 2 * c.nGains;

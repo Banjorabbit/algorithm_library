@@ -1,18 +1,18 @@
-#include "framework/framework.h"
 #include "algorithm_library/spectrogram.h"
 #include "filterbank/filterbank_wola.h"
+#include "framework/framework.h"
 
 // Spectrogram implemented as a nonlinear combination of several standard spectrograms. The criteria used for selecting the best time/frequency bin is the minimum power.
 //
 // author: Kristian Timm Andersen
-class SpectrogramNonlinear: public AlgorithmImplementation<SpectrogramConfiguration, SpectrogramNonlinear>
+class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfiguration, SpectrogramNonlinear>
 {
-public:
-    SpectrogramNonlinear(Coefficients c = Coefficients()) : 
-        BaseAlgorithm{c},
-        filterbank0({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
-        filterbank1({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
-        filterbank2({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED})
+  public:
+    SpectrogramNonlinear(Coefficients c = Coefficients())
+        : BaseAlgorithm{c},
+          filterbank0({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
+          filterbank1({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
+          filterbank2({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED})
     {
         // set windows
         int frameSize = filterbank0.getFrameSize();
@@ -22,7 +22,7 @@ public:
 
         filterbank0.setWindow(window);
 
-        window.segment(frameSize/2, c.bufferSize / 2) = windowSmall.tail(c.bufferSize / 2);
+        window.segment(frameSize / 2, c.bufferSize / 2) = windowSmall.tail(c.bufferSize / 2);
         window.tail((frameSize - c.bufferSize) / 2).setZero();
         window = window * sqrtPower / std::sqrt(window.abs2().sum());
         filterbank1.setWindow(window);
@@ -42,8 +42,7 @@ public:
     FilterbankAnalysisWOLA filterbank2;
     DEFINE_MEMBER_ALGORITHMS(filterbank0, filterbank1, filterbank2)
 
-private:
-
+  private:
     void inline processOn(Input input, Output output)
     {
         for (auto nFrame = 0; nFrame < Configuration::getNFrames(input.size(), C.bufferSize); nFrame++)
@@ -52,16 +51,15 @@ private:
 
             filterbank0.process(frame, filterbankOut);
             output.col(nFrame) = filterbankOut.abs2();
-            
+
             filterbank1.process(frame, filterbankOut);
             output.col(nFrame) = output.col(nFrame).min(filterbankOut.abs2());
-            
+
             filterbank2.process(frame, filterbankOut);
             output.col(nFrame) = output.col(nFrame).min(filterbankOut.abs2());
         }
-        
     }
-    
+
     size_t getDynamicSizeVariables() const final
     {
         size_t size = filterbankOut.getDynamicMemorySize();

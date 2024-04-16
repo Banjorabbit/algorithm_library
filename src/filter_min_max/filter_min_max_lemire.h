@@ -1,28 +1,27 @@
 #pragma once
-#include "framework/framework.h"
 #include "algorithm_library/filter_min_max.h"
+#include "framework/framework.h"
 
 // StreamingMinMax finds the minimum and maximum value over a
 // window with length C.Length for each new sample. It requires on
 // average no more than 3 comparisons per sample. The algorithm uses 2
 // double-ended queues for the minimum and maximum indices. A delay line
-// is also used internally since in a true streaming application you need 
+// is also used internally since in a true streaming application you need
 // to be able to call the algorithm succesively with new frames (or just 1 new sample),
-// and you are not guaranteed that the input frame is as long as C.Length. 
-// To be able to preallocate, the queues have been implemented as circular buffers. 
+// and you are not guaranteed that the input frame is as long as C.Length.
+// To be able to preallocate, the queues have been implemented as circular buffers.
 //
-// A symmetric version of StreamingMinMax has been implemented below called "Filter". 
-// It might be necessary to call the public ResetInitialValues function before Process, 
+// A symmetric version of StreamingMinMax has been implemented below called "Filter".
+// It might be necessary to call the public ResetInitialValues function before Process,
 // if certain initial conditions are required. Also versions that only find Min/Max have been implemented.
 //
 // ref: Daniel Lemire, STREAMING MAXIMUM - MINIMUM FILTER USING NO MORE THAN THREE COMPARISONS PER ELEMENT
 //
 // author : Kristian Timm Andersen
 
-
 class StreamingMinMaxLemire : public AlgorithmImplementation<StreamingMinMaxConfiguration, StreamingMinMaxLemire>
 {
-public:
+  public:
     StreamingMinMaxLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     {
         minIndex.resize(C.filterLength, C.nChannels);
@@ -37,25 +36,24 @@ public:
         resetVariables();
     }
 
-    void resetInitialValue(const float iOld) 
-    { 
-        reset(); 
-        inputOld.setConstant(iOld); 
+    void resetInitialValue(const float iOld)
+    {
+        reset();
+        inputOld.setConstant(iOld);
     }
 
     // Template const Eigen::ArrayBase& avoids memory copy from row array with stride
     template <typename Derived>
     void resetInitialValue(const Eigen::ArrayBase<Derived> &iOld)
-    { 
+    {
         if (iOld.size() == inputOld.size())
         {
             reset();
-            inputOld = iOld; 
+            inputOld = iOld;
         }
     }
 
-private:
-
+  private:
     void processOn(Input input, Output output)
     {
         for (auto channel = 0; channel < C.nChannels; channel++)
@@ -149,7 +147,7 @@ private:
         return size;
     }
 
-    void resetVariables() final 
+    void resetVariables() final
     {
         minIndex.setZero();
         maxIndex.setZero();
@@ -174,9 +172,8 @@ private:
 
 class FilterMinMaxLemire : public AlgorithmImplementation<FilterMinMaxConfiguration, FilterMinMaxLemire>
 {
-public:
-    FilterMinMaxLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c},
-        streaming{c}
+  public:
+    FilterMinMaxLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c}, streaming{c}
     {
         wHalf = (c.filterLength - 1) / 2;
         xEndHalf.resize(wHalf, c.nChannels);
@@ -188,20 +185,19 @@ public:
     void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
     void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
 
-private:
-
+  private:
     void processOn(Input input, Output output)
     {
         streaming.resetInitialValue(input.row(0).transpose());
         // this output is discarded and is only used to update internal values
-        streaming.process(input.topRows(wHalf), { output.minValue.topRows(wHalf), output.maxValue.topRows(wHalf) });
+        streaming.process(input.topRows(wHalf), {output.minValue.topRows(wHalf), output.maxValue.topRows(wHalf)});
         // This is the shifted streaming filter, which creates a symmetric window
         streaming.process(input.bottomRows(input.rows() - wHalf), {output.minValue.topRows(input.rows() - wHalf), output.maxValue.topRows(input.rows() - wHalf)});
-        xEndHalf = input.bottomRows<1>().replicate(wHalf,1);
-        streaming.process(xEndHalf, { output.minValue.bottomRows(wHalf), output.maxValue.bottomRows(wHalf)});
+        xEndHalf = input.bottomRows<1>().replicate(wHalf, 1);
+        streaming.process(xEndHalf, {output.minValue.bottomRows(wHalf), output.maxValue.bottomRows(wHalf)});
     }
 
-    size_t getDynamicSizeVariables() const final 
+    size_t getDynamicSizeVariables() const final
     {
         size_t size = xEndHalf.getDynamicMemorySize();
         return size;
@@ -215,7 +211,7 @@ private:
 
 class StreamingMaxLemire : public AlgorithmImplementation<StreamingMaxConfiguration, StreamingMaxLemire>
 {
-public:
+  public:
     StreamingMaxLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     {
         maxIndex.resize(C.filterLength, C.nChannels);
@@ -226,25 +222,24 @@ public:
         resetVariables();
     }
 
-    void resetInitialValue(const float iOld) 
-    { 
-        reset(); 
-        inputOld.setConstant(iOld); 
+    void resetInitialValue(const float iOld)
+    {
+        reset();
+        inputOld.setConstant(iOld);
     }
 
     // Template const Eigen::ArrayBase& avoids memory copy from row array with stride
     template <typename Derived>
     void resetInitialValue(const Eigen::ArrayBase<Derived> &iOld)
-    { 
+    {
         if (iOld.size() == inputOld.size())
         {
             reset();
-            inputOld = iOld; 
+            inputOld = iOld;
         }
     }
 
-private:
-
+  private:
     void processOn(Input input, Output output)
     {
         for (auto channel = 0; channel < C.nChannels; channel++)
@@ -287,7 +282,7 @@ private:
                 inputOld(channel) = input(i, channel);
             }
             upperFrontIndex(channel) = uf;
-           upperEndIndex(channel) = ue;
+            upperEndIndex(channel) = ue;
         }
         // update Index to allow next Process() to continue as if they are successive frames
         maxIndex -= static_cast<int>(input.rows());
@@ -303,7 +298,7 @@ private:
         return size;
     }
 
-    void resetVariables() final 
+    void resetVariables() final
     {
         maxIndex.setZero();
         maxValue.setZero();
@@ -322,7 +317,7 @@ private:
 
 class StreamingMinLemire : public AlgorithmImplementation<StreamingMinConfiguration, StreamingMinLemire>
 {
-public:
+  public:
     StreamingMinLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     {
         minIndex.resize(C.filterLength, C.nChannels);
@@ -333,25 +328,24 @@ public:
         resetVariables();
     }
 
-    void resetInitialValue(const float iOld) 
-    { 
-        reset(); 
-        inputOld.setConstant(iOld); 
+    void resetInitialValue(const float iOld)
+    {
+        reset();
+        inputOld.setConstant(iOld);
     }
 
     // Template const Eigen::ArrayBase& avoids memory copy from row array with stride
     template <typename Derived>
     void resetInitialValue(const Eigen::ArrayBase<Derived> &iOld)
-    { 
+    {
         if (iOld.size() == inputOld.size())
         {
             reset();
-            inputOld = iOld; 
+            inputOld = iOld;
         }
     }
 
-private:
-
+  private:
     void processOn(Input input, Output output)
     {
         for (auto channel = 0; channel < C.nChannels; channel++)
@@ -411,7 +405,7 @@ private:
         return size;
     }
 
-    void resetVariables() final 
+    void resetVariables() final
     {
         minIndex.setZero();
         minValue.setZero();
@@ -430,9 +424,8 @@ private:
 
 class FilterMaxLemire : public AlgorithmImplementation<FilterMaxConfiguration, FilterMaxLemire>
 {
-public:
-    FilterMaxLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c},
-        streaming{c}
+  public:
+    FilterMaxLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c}, streaming{c}
     {
         wHalf = (c.filterLength - 1) / 2;
         xEndHalf.resize(wHalf, c.nChannels);
@@ -444,8 +437,7 @@ public:
     void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
     void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
 
-private:
-
+  private:
     void processOn(Input input, Output output)
     {
         streaming.resetInitialValue(input.row(0));
@@ -453,11 +445,12 @@ private:
         streaming.process(input.topRows(wHalf), output.topRows(wHalf));
         // This is the shifted streaming filter, which creates a symmetric window
         streaming.process(input.bottomRows(input.rows() - wHalf), output.topRows(input.rows() - wHalf));
-        xEndHalf = input.bottomRows<1>().replicate(wHalf, 1);;
+        xEndHalf = input.bottomRows<1>().replicate(wHalf, 1);
+        ;
         streaming.process(xEndHalf, output.bottomRows(wHalf));
     }
 
-    size_t getDynamicSizeVariables() const final 
+    size_t getDynamicSizeVariables() const final
     {
         size_t size = xEndHalf.getDynamicMemorySize();
         return size;
@@ -471,9 +464,8 @@ private:
 
 class FilterMinLemire : public AlgorithmImplementation<FilterMinConfiguration, FilterMinLemire>
 {
-public:
-    FilterMinLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c}, 
-    streaming{c}
+  public:
+    FilterMinLemire(Coefficients c = Coefficients()) : BaseAlgorithm{c}, streaming{c}
     {
         wHalf = (c.filterLength - 1) / 2;
         xEndHalf.resize(wHalf, c.nChannels);
@@ -485,8 +477,7 @@ public:
     void resetInitialValue(const float iOld) { streaming.resetInitialValue(iOld); }
     void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
 
-private:
-
+  private:
     void processOn(Input input, Output output)
     {
         streaming.resetInitialValue(input.row(0));
@@ -498,7 +489,7 @@ private:
         streaming.process(xEndHalf, output.bottomRows(wHalf));
     }
 
-    size_t getDynamicSizeVariables() const final 
+    size_t getDynamicSizeVariables() const final
     {
         size_t size = xEndHalf.getDynamicMemorySize();
         return size;

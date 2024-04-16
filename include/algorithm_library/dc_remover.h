@@ -26,18 +26,21 @@ struct DCRemoverConfiguration
         DEFINE_TUNABLE_PARAMETERS(cutoffFrequency)
     };
 
-    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(100, c.nChannels); } // time samples. Number of samples can be arbitrary
+    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(100, c.nChannels); } // time samples. Number of samples can be arbitrary
 
-    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(input.rows(), input.cols()); } // time samples. Number of samples can be arbitrary
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients &c)
+    {
+        return Eigen::ArrayXXf::Zero(input.rows(), input.cols());
+    } // time samples. Number of samples can be arbitrary
 
-    static bool validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels) && input.allFinite(); }
+    static bool validInput(Input input, const Coefficients &c) { return (input.rows() > 0) && (input.cols() == c.nChannels) && input.allFinite(); }
 
-    static bool validOutput(Output output, const Coefficients& c) { return (output.rows() > 0) && (output.cols() == c.nChannels); }
+    static bool validOutput(Output output, const Coefficients &c) { return (output.rows() > 0) && (output.cols() == c.nChannels); }
 };
 
 class DCRemover : public Algorithm<DCRemoverConfiguration>
 {
-public:
+  public:
     DCRemover() = default;
-    DCRemover(const Coefficients& c);
- };
+    DCRemover(const Coefficients &c);
+};

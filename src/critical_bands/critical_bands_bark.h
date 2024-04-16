@@ -1,16 +1,16 @@
 #pragma once
-#include "framework/framework.h"
 #include "algorithm_library/critical_bands.h"
+#include "framework/framework.h"
 
 // Common CriticalBandsBark class that following classes inherit from and specialize
 class CriticalBandsBark
 {
-public:
+  public:
     CriticalBandsBark(CriticalBandsConfiguration::Coefficients c = CriticalBandsConfiguration::Coefficients())
     {
         // calculate number of critical bands
         nBandsCritical = CriticalBandsConfiguration::getNCriticalBands(c.sampleRate);
-    
+
         // convert Frequency corners to FFT indices
         auto nFFT = (c.nBands - 1) * 2; // number of FFT points
         Eigen::ArrayXi frequencyCornersIndex = (CriticalBandsConfiguration::getCornerFrequencies(c.sampleRate) * nFFT / c.sampleRate).round().cast<int>();
@@ -34,9 +34,9 @@ public:
         }
     }
 
-protected:
+  protected:
     size_t getDynamicSizeVariables() const
-    { 
+    {
         size_t size = indexStart.getDynamicMemorySize();
         size += nBandsSum.getDynamicMemorySize();
         return size;
@@ -51,19 +51,15 @@ protected:
 
 class CriticalBandsBarkSum : public CriticalBandsBark, public AlgorithmImplementation<CriticalBandsSumConfiguration, CriticalBandsBarkSum>
 {
-public:
-    CriticalBandsBarkSum(Coefficients c =  Coefficients()) :
-        CriticalBandsBark(c), 
-        BaseAlgorithm{c}
-    { }
+  public:
+    CriticalBandsBarkSum(Coefficients c = Coefficients()) : CriticalBandsBark(c), BaseAlgorithm{c} {}
 
     inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
 
-private:
-
+  private:
     inline void processOn(Input xPower, Output yPower)
     {
-       for (auto channel = 0; channel < xPower.cols(); channel++)
+        for (auto channel = 0; channel < xPower.cols(); channel++)
         {
             for (auto i = 0; i < nBandsCritical; i++)
             {
@@ -81,20 +77,15 @@ private:
 
 class CriticalBandsBarkMax : public CriticalBandsBark, public AlgorithmImplementation<CriticalBandsMaxConfiguration, CriticalBandsBarkMax>
 {
-public:
-
-    CriticalBandsBarkMax(Coefficients c =  Coefficients()) :
-        CriticalBandsBark(c), 
-        BaseAlgorithm{c}
-    { }
+  public:
+    CriticalBandsBarkMax(Coefficients c = Coefficients()) : CriticalBandsBark(c), BaseAlgorithm{c} {}
 
     inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
 
-private:
-
+  private:
     inline void processOn(Input xPower, Output yPower)
     {
-       for (auto channel = 0; channel < xPower.cols(); channel++)
+        for (auto channel = 0; channel < xPower.cols(); channel++)
         {
             for (auto i = 0; i < nBandsCritical; i++)
             {
@@ -112,20 +103,15 @@ private:
 
 class CriticalBandsBarkMean : public CriticalBandsBark, public AlgorithmImplementation<CriticalBandsMeanConfiguration, CriticalBandsBarkMean>
 {
-public:
-
-    CriticalBandsBarkMean(Coefficients c =  Coefficients()) :
-        CriticalBandsBark(c), 
-        BaseAlgorithm{c}
-    { }
+  public:
+    CriticalBandsBarkMean(Coefficients c = Coefficients()) : CriticalBandsBark(c), BaseAlgorithm{c} {}
 
     inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
 
-private:
-
+  private:
     inline void processOn(Input xPower, Output yPower)
     {
-       for (auto channel = 0; channel < xPower.cols(); channel++)
+        for (auto channel = 0; channel < xPower.cols(); channel++)
         {
             for (auto i = 0; i < nBandsCritical; i++)
             {

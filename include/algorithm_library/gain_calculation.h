@@ -27,24 +27,18 @@ struct GainCalculationConfiguration
         DEFINE_TUNABLE_PARAMETERS(minimumGaindB, exponential, upTConstant, downTConstant)
     };
 
-    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // a posteriori SNR
+    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // a posteriori SNR
 
-    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Ones(c.nBands, c.nChannels); } // linear gain
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients &c) { return Eigen::ArrayXXf::Ones(c.nBands, c.nChannels); } // linear gain
 
-    static bool validInput(Input input, const Coefficients& c) 
-    { 
-        return (input.rows() == c.nBands) && (input.cols() == c.nChannels) && (input >= 0).all();
-    }
+    static bool validInput(Input input, const Coefficients &c) { return (input.rows() == c.nBands) && (input.cols() == c.nChannels) && (input >= 0).all(); }
 
-    static bool validOutput(Output output, const Coefficients& c) 
-    { 
-        return (output.rows() == c.nBands) && (output.cols() == c.nChannels) && (output >= 0).all();
-    }
+    static bool validOutput(Output output, const Coefficients &c) { return (output.rows() == c.nBands) && (output.cols() == c.nChannels) && (output >= 0).all(); }
 };
 
 class GainCalculation : public Algorithm<GainCalculationConfiguration>
 {
-public:
+  public:
     GainCalculation() = default;
-    GainCalculation(const Coefficients& c);
+    GainCalculation(const Coefficients &c);
 };

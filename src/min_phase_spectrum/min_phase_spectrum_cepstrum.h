@@ -1,7 +1,7 @@
 #pragma once
-#include "framework/framework.h"
 #include "algorithm_library/min_phase_spectrum.h"
 #include "fft/fft_real.h"
+#include "framework/framework.h"
 
 // Calculate complex-valued minimum phase spectrum from a magnitude spectrum.
 //
@@ -10,10 +10,9 @@
 
 class MinPhaseSpectrumCepstrum : public AlgorithmImplementation<MinPhaseSpectrumConfiguration, MinPhaseSpectrumCepstrum>
 {
-public:
-    MinPhaseSpectrumCepstrum(Coefficients c =  Coefficients()) : BaseAlgorithm{c},
-        fft({ 2 * (C.nBands - 1) })
-    { 
+  public:
+    MinPhaseSpectrumCepstrum(Coefficients c = Coefficients()) : BaseAlgorithm{c}, fft({2 * (C.nBands - 1)})
+    {
         xLog.resize(C.nBands);
         xCepstrum.resize((C.nBands - 1) * 2);
     }
@@ -21,8 +20,7 @@ public:
     FFTReal fft;
     DEFINE_MEMBER_ALGORITHMS(fft)
 
-private:
-
+  private:
     inline void processOn(Input magnitude, Output spectrum)
     {
         using namespace std::complex_literals;
@@ -37,14 +35,13 @@ private:
             xCepstrum.segment(C.nBands, C.nBands - 2) = 0.f;
             // convert back
             fft.process(xCepstrum, xLog);
-            spectrum.col(channel) = xLog.real().exp() * (xLog.imag().cos() + 1.if*xLog.imag().sin()); //complex exponential exp(x+iy) = exp(x)*(cos(y)+i*sin(y)) is much faster according to profiling
+            spectrum.col(channel) =
+                xLog.real().exp() *
+                (xLog.imag().cos() + 1.if * xLog.imag().sin()); // complex exponential exp(x+iy) = exp(x)*(cos(y)+i*sin(y)) is much faster according to profiling
         }
     }
 
-    size_t getDynamicSizeVariables() const final
-    {
-        return xLog.getDynamicMemorySize() + xCepstrum.getDynamicMemorySize();
-    }
+    size_t getDynamicSizeVariables() const final { return xLog.getDynamicMemorySize() + xCepstrum.getDynamicMemorySize(); }
 
     Eigen::ArrayXcf xLog;
     Eigen::ArrayXf xCepstrum;

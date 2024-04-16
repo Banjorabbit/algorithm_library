@@ -1,7 +1,6 @@
-#include "gtest/gtest.h"
-#include "framework/unit_test.h"
 #include "framework/read_write_type.h"
-
+#include "framework/unit_test.h"
+#include "gtest/gtest.h"
 
 // --------------------------------------------- TEST CASES ---------------------------------------------
 
@@ -14,7 +13,7 @@ TEST(ReadWriteType, RunTwoThreads)
     ReadWriteType<int> data(i);
 
     // run write loop in separate thread
-    std::thread t1([&data](){
+    std::thread t1([&data]() {
         for (auto i = 0; i < 1000000; i++)
         {
             data.set(i);
@@ -25,7 +24,7 @@ TEST(ReadWriteType, RunTwoThreads)
     int iterFail = -1;
     int value = -1;
     int valueOld = -1;
-    for (int i = 0; i < 150000; i++) 
+    for (int i = 0; i < 150000; i++)
     {
         value = data.get();
         if (value < valueOld) // test pass criteria

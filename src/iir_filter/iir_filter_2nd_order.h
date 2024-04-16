@@ -1,6 +1,6 @@
 #pragma once
-#include "framework/framework.h"
 #include "algorithm_library/iir_filter.h"
+#include "framework/framework.h"
 
 // 2nd order Direct Form II Transposed IIR filter
 //
@@ -8,9 +8,9 @@
 
 class IIRFilter2ndOrder : public AlgorithmImplementation<IIRFilterConfiguration, IIRFilter2ndOrder>
 {
-public:
+  public:
     IIRFilter2ndOrder(Coefficients c = Coefficients()) : BaseAlgorithm{c}
-    { 
+    {
         C.nSos = 1; // overwrite in case another value is passed on
         state1.resize(c.nChannels);
         state2.resize(c.nChannels);
@@ -48,7 +48,8 @@ public:
     {
 
         Eigen::ArrayXf freqs = Eigen::ArrayXf::LinSpaced(nBands, 0, 3.14159);
-        return (b0*b0 + b1*b1 + b2*b2 + 2*(b0*b1+b1*b2)*freqs.cos() + 2*b0*b2*(2*freqs).cos()) / (1.f + a1*a1 + a2*a2 + 2*(a1+a1*a2)*freqs.cos() + 2*a2*(2*freqs).cos()).max(1e-20f);
+        return (b0 * b0 + b1 * b1 + b2 * b2 + 2 * (b0 * b1 + b1 * b2) * freqs.cos() + 2 * b0 * b2 * (2 * freqs).cos()) /
+               (1.f + a1 * a1 + a2 * a2 + 2 * (a1 + a1 * a2) * freqs.cos() + 2 * a2 * (2 * freqs).cos()).max(1e-20f);
     }
 
     Eigen::ArrayXf getFilter() const
@@ -58,8 +59,7 @@ public:
         return sos;
     }
 
-private:
-
+  private:
     inline void processOn(Input input, Output output)
     {
         for (auto sample = 0; sample < input.rows(); sample++)
@@ -82,13 +82,13 @@ private:
     }
 
     size_t getDynamicSizeVariables() const final
-    { 
+    {
         size_t size = state1.getDynamicMemorySize();
         size += state2.getDynamicMemorySize();
         return size;
     }
 
-    float b0, b1, b2, a1, a2; // coefficients
+    float b0, b1, b2, a1, a2;      // coefficients
     Eigen::ArrayXf state1, state2; // state variables
 
     friend BaseAlgorithm;
@@ -97,10 +97,8 @@ private:
 // Cascade of IIRFilter2ndOrder
 class IIRFilterCascaded : public AlgorithmImplementation<IIRFilterConfiguration, IIRFilterCascaded>
 {
-public:
-    IIRFilterCascaded(Coefficients c = Coefficients()) : BaseAlgorithm{c},
-        filters(c.nSos,c)
-    { gain = 1.f; }
+  public:
+    IIRFilterCascaded(Coefficients c = Coefficients()) : BaseAlgorithm{c}, filters(c.nSos, c) { gain = 1.f; }
 
     VectorAlgo<IIRFilter2ndOrder> filters;
     DEFINE_MEMBER_ALGORITHMS(filters)
@@ -137,12 +135,14 @@ public:
 
     float getGain() const { return gain; }
 
-private:
-
+  private:
     inline void processOn(Input input, Output output)
     {
         output = input * gain;
-        for (auto i = 0; i < C.nSos; i++) { filters[i].process(output, output); }
+        for (auto i = 0; i < C.nSos; i++)
+        {
+            filters[i].process(output, output);
+        }
     }
     float gain;
 

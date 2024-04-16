@@ -6,13 +6,13 @@
 // window with length C.Length for each new sample. It requires on
 // average no more than 3 comparisons per sample. The algorithm uses 2
 // double-ended queues for the minimum and maximum indices. A delay line
-// is also used internally since in a true streaming application you need 
+// is also used internally since in a true streaming application you need
 // to be able to call the algorithm succesively with new frames (or just 1 new sample),
-// and you are not guaranteed that the input frame is as long as C.Length. 
-// To be able to preallocate, the queues have been implemented as circular buffers. 
+// and you are not guaranteed that the input frame is as long as C.Length.
+// To be able to preallocate, the queues have been implemented as circular buffers.
 //
-// A symmetric version of StreamingMinMax has been implemented below called "Filter". 
-// It might be necessary to call the public ResetInitialValues function before Process, 
+// A symmetric version of StreamingMinMax has been implemented below called "Filter".
+// It might be necessary to call the public ResetInitialValues function before Process,
 // if certain initial conditions are required. Also versions that only find Min/Max have been implemented.
 //
 // ref: Daniel Lemire, STREAMING MAXIMUM - MINIMUM FILTER USING NO MORE THAN THREE COMPARISONS PER ELEMENT
@@ -35,45 +35,55 @@ struct BaseFilterMinMaxConfiguration
         DEFINE_TUNABLE_COEFFICIENTS(filterLength, nChannels)
     };
 
-    struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
+    struct Parameters
+    {
+        DEFINE_NO_TUNABLE_PARAMETERS
+    };
 
-    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(1000, c.nChannels); } // time samples. Number of samples can be arbitrary
+    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(1000, c.nChannels); } // time samples. Number of samples can be arbitrary
 
-    static std::tuple<Eigen::ArrayXXf, Eigen::ArrayXXf> initOutput(Input input, const Coefficients& c) { return std::make_tuple( Eigen::ArrayXXf::Zero(input.rows(), c.nChannels), Eigen::ArrayXXf::Zero(input.rows(), c.nChannels) ); } // minimum and maximum time samples. Number of samples can be arbitrary
+    static std::tuple<Eigen::ArrayXXf, Eigen::ArrayXXf> initOutput(Input input, const Coefficients &c)
+    {
+        return std::make_tuple(Eigen::ArrayXXf::Zero(input.rows(), c.nChannels), Eigen::ArrayXXf::Zero(input.rows(), c.nChannels));
+    } // minimum and maximum time samples. Number of samples can be arbitrary
 
-    static bool validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels) && input.allFinite();}
-    
-    static bool validOutput(Output output, const Coefficients& c) 
-    { 
+    static bool validInput(Input input, const Coefficients &c) { return (input.rows() > 0) && (input.cols() == c.nChannels) && input.allFinite(); }
+
+    static bool validOutput(Output output, const Coefficients &c)
+    {
         bool flag = (output.minValue.rows() > 0) && (output.minValue.cols() == c.nChannels) && output.minValue.allFinite();
         flag &= (output.maxValue.rows() > 0) && (output.maxValue.cols() == c.nChannels) && output.maxValue.allFinite();
         return flag;
     }
 };
 
-struct FilterMinMaxConfiguration : public BaseFilterMinMaxConfiguration {};
-struct StreamingMinMaxConfiguration : public BaseFilterMinMaxConfiguration {};
-
-class StreamingMinMax : public Algorithm<StreamingMinMaxConfiguration> 
+struct FilterMinMaxConfiguration : public BaseFilterMinMaxConfiguration
 {
-public:
-    StreamingMinMax() = default;
-    StreamingMinMax(const Coefficients& c);
-
-    // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
-    void resetInitialValue(float inputOld); 
-    void resetInitialValue(I::Real inputOld); 
+};
+struct StreamingMinMaxConfiguration : public BaseFilterMinMaxConfiguration
+{
 };
 
-class FilterMinMax : public Algorithm<FilterMinMaxConfiguration> 
+class StreamingMinMax : public Algorithm<StreamingMinMaxConfiguration>
 {
-public:
-    FilterMinMax() = default;
-    FilterMinMax(const Coefficients& c);
+  public:
+    StreamingMinMax() = default;
+    StreamingMinMax(const Coefficients &c);
 
     // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
-    void resetInitialValue(const float inputOld); 
-    void resetInitialValue(I::Real inputOld); 
+    void resetInitialValue(float inputOld);
+    void resetInitialValue(I::Real inputOld);
+};
+
+class FilterMinMax : public Algorithm<FilterMinMaxConfiguration>
+{
+  public:
+    FilterMinMax() = default;
+    FilterMinMax(const Coefficients &c);
+
+    // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
+    void resetInitialValue(const float inputOld);
+    void resetInitialValue(I::Real inputOld);
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -90,28 +100,42 @@ struct BaseFilterExtremumConfiguration
         DEFINE_TUNABLE_COEFFICIENTS(filterLength, nChannels)
     };
 
-    struct Parameters { DEFINE_NO_TUNABLE_PARAMETERS };
+    struct Parameters
+    {
+        DEFINE_NO_TUNABLE_PARAMETERS
+    };
 
-    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(1000, c.nChannels); } // time samples. Number of samples can be arbitrary
+    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(1000, c.nChannels); } // time samples. Number of samples can be arbitrary
 
-    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(input.rows(), c.nChannels); } // extremum time samples. Number of samples can be arbitrary
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients &c)
+    {
+        return Eigen::ArrayXXf::Zero(input.rows(), c.nChannels);
+    } // extremum time samples. Number of samples can be arbitrary
 
-    static bool validInput(Input input, const Coefficients& c) { return (input.rows() > 0) && (input.cols() == c.nChannels) && input.allFinite();}
-    
-    static bool validOutput(Output output, const Coefficients& c) { return (output.rows() > 0) && (output.cols() == c.nChannels) && output.allFinite(); }
+    static bool validInput(Input input, const Coefficients &c) { return (input.rows() > 0) && (input.cols() == c.nChannels) && input.allFinite(); }
+
+    static bool validOutput(Output output, const Coefficients &c) { return (output.rows() > 0) && (output.cols() == c.nChannels) && output.allFinite(); }
 };
 
-struct FilterMaxConfiguration : public BaseFilterExtremumConfiguration {};
-struct FilterMinConfiguration : public BaseFilterExtremumConfiguration {};
-struct StreamingMaxConfiguration : public BaseFilterExtremumConfiguration {};
-struct StreamingMinConfiguration : public BaseFilterExtremumConfiguration {};
+struct FilterMaxConfiguration : public BaseFilterExtremumConfiguration
+{
+};
+struct FilterMinConfiguration : public BaseFilterExtremumConfiguration
+{
+};
+struct StreamingMaxConfiguration : public BaseFilterExtremumConfiguration
+{
+};
+struct StreamingMinConfiguration : public BaseFilterExtremumConfiguration
+{
+};
 
 class StreamingMax : public Algorithm<StreamingMaxConfiguration>
 {
-public:
+  public:
     StreamingMax() = default;
-    StreamingMax(const Coefficients& c);
-    // It might be necessary to call the public ResetInitialValues function before Process, 
+    StreamingMax(const Coefficients &c);
+    // It might be necessary to call the public ResetInitialValues function before Process,
     // if certain initial conditions are required.
     void resetInitialValue(const float inputOld);
     void resetInitialValue(I::Real inputOld);
@@ -119,10 +143,10 @@ public:
 
 class StreamingMin : public Algorithm<StreamingMinConfiguration>
 {
-public:
+  public:
     StreamingMin() = default;
-    StreamingMin(const Coefficients& c);
-    // It might be necessary to call the public ResetInitialValues function before Process, 
+    StreamingMin(const Coefficients &c);
+    // It might be necessary to call the public ResetInitialValues function before Process,
     // if certain initial conditions are required.
     void resetInitialValue(const float inputOld);
     void resetInitialValue(I::Real inputOld);
@@ -130,22 +154,22 @@ public:
 
 class FilterMax : public Algorithm<FilterMaxConfiguration>
 {
-public:
+  public:
     FilterMax() = default;
-    FilterMax(const Coefficients& c);
+    FilterMax(const Coefficients &c);
 
     // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
-    void resetInitialValue(const float inputOld); 
-    void resetInitialValue(I::Real inputOld); 
+    void resetInitialValue(const float inputOld);
+    void resetInitialValue(I::Real inputOld);
 };
 
 class FilterMin : public Algorithm<FilterMinConfiguration>
 {
-public:
+  public:
     FilterMin() = default;
-    FilterMin(const Coefficients& c);
+    FilterMin(const Coefficients &c);
 
     // It might be necessary to call resetInitialValues function before process if certain initial conditions are required.
-    void resetInitialValue(const float inputOld); 
-    void resetInitialValue(I::Real inputOld); 
+    void resetInitialValue(const float inputOld);
+    void resetInitialValue(I::Real inputOld);
 };

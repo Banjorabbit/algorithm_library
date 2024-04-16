@@ -1,7 +1,7 @@
 #pragma once
-#include "framework/framework.h"
 #include "algorithm_library/iir_filter_non_parametric.h"
 #include "design_iir_non_parametric/design_iir_spline.h"
+#include "framework/framework.h"
 #include "iir_filter/iir_filter_2nd_order.h"
 #include "iir_filter_time_varying/state_variable_filter.h"
 
@@ -12,11 +12,11 @@
 // IIR filter is implemented using Transposed Direct Form II filter implemetation
 class IIRFilterTDFNonParametric : public AlgorithmImplementation<IIRFilterNonParametricConfiguration, IIRFilterTDFNonParametric>
 {
-public:
-    IIRFilterTDFNonParametric(Coefficients c = Coefficients()) : BaseAlgorithm{c},
-        filterDesignerNonParametric(convertToDesignIIRSplineCoefficients(c)),
-        filter({ c.nChannels, c.nSos})
-    { }
+  public:
+    IIRFilterTDFNonParametric(Coefficients c = Coefficients())
+        : BaseAlgorithm{c}, filterDesignerNonParametric(convertToDesignIIRSplineCoefficients(c)), filter({c.nChannels, c.nSos})
+    {
+    }
 
     DesignIIRSpline filterDesignerNonParametric;
     IIRFilterCascaded filter;
@@ -31,30 +31,20 @@ public:
     }
 
     // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    auto getPowerFrequencyResponse(int nBands) const
-    {
-        return filter.getPowerFrequencyResponse(nBands);
-    }
+    auto getPowerFrequencyResponse(int nBands) const { return filter.getPowerFrequencyResponse(nBands); }
 
-    auto getFilter() const
-    {
-        return filter.getFilter();
-    }
+    auto getFilter() const { return filter.getFilter(); }
 
     float getGain() const { return filter.getGain(); }
 
-private:
+  private:
+    inline void processOn(Input input, Output output) { filter.process(input, output); }
 
-    inline void processOn(Input input, Output output)
-    {
-        filter.process(input, output);
-    }
-
-    DesignIIRSpline::Coefficients convertToDesignIIRSplineCoefficients(const Coefficients & c)
+    DesignIIRSpline::Coefficients convertToDesignIIRSplineCoefficients(const Coefficients &c)
     {
         DesignIIRSpline::Coefficients coefficients;
         coefficients.nGains = c.nSos;
-        coefficients.nBands = FFTConfiguration::getValidFFTSize(c.nSos * 16)/2+1; // must be significantly higher than the filter order
+        coefficients.nBands = FFTConfiguration::getValidFFTSize(c.nSos * 16) / 2 + 1; // must be significantly higher than the filter order
         coefficients.sampleRate = c.sampleRate;
         return coefficients;
     }
@@ -65,15 +55,14 @@ private:
 // IIR filter is implemented using State Variable filter implemetation
 class IIRFilterSVFNonParametric : public AlgorithmImplementation<IIRFilterNonParametricConfiguration, IIRFilterSVFNonParametric>
 {
-public:
-    IIRFilterSVFNonParametric(Coefficients c = Coefficients()) : BaseAlgorithm{c},
-        filterDesignerNonParametric(convertToDesignIIRSplineCoefficients(c)),
-        filter({ c.nChannels, c.nSos})
-    { 
+  public:
+    IIRFilterSVFNonParametric(Coefficients c = Coefficients())
+        : BaseAlgorithm{c}, filterDesignerNonParametric(convertToDesignIIRSplineCoefficients(c)), filter({c.nChannels, c.nSos})
+    {
         filter.setFilterTypes({static_cast<long unsigned int>(c.nSos), StateVariableFilter::Parameters::USER_DEFINED});
         gain = Eigen::ArrayXf::Ones(c.nSos);
         cutoff = Eigen::ArrayXf::Constant(c.nSos, std::tan(3.14158f * 0.25f)); // tan(pi * f / fs)
-        resonance = Eigen::ArrayXf::Constant(c.nSos, .7071f); // 1/sqrt(2) = 0.7071 corresponds to a Butterworth filter
+        resonance = Eigen::ArrayXf::Constant(c.nSos, .7071f);                  // 1/sqrt(2) = 0.7071 corresponds to a Butterworth filter
     }
 
     DesignIIRSpline filterDesignerNonParametric;
@@ -93,40 +82,30 @@ public:
     }
 
     // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    auto getPowerFrequencyResponse(int nBands) const
-    {
-        return filter.getPowerFrequencyResponse(nBands, cutoff, gain, resonance);
-    }
+    auto getPowerFrequencyResponse(int nBands) const { return filter.getPowerFrequencyResponse(nBands, cutoff, gain, resonance); }
 
-    auto getFilter() const
-    {
-        return filter.getSosFilter(cutoff, gain, resonance);
-    }
+    auto getFilter() const { return filter.getSosFilter(cutoff, gain, resonance); }
 
     float getGain() const { return filter.getGain(); }
-    
-private:
 
-    inline void processOn(Input input, Output output)
-    {
-        filter.process({input, cutoff, gain, resonance}, output);
-    }
+  private:
+    inline void processOn(Input input, Output output) { filter.process({input, cutoff, gain, resonance}, output); }
 
-    DesignIIRSpline::Coefficients convertToDesignIIRSplineCoefficients(const Coefficients & c)
+    DesignIIRSpline::Coefficients convertToDesignIIRSplineCoefficients(const Coefficients &c)
     {
         DesignIIRSpline::Coefficients coefficients;
         coefficients.nGains = c.nSos;
-        coefficients.nBands = FFTConfiguration::getValidFFTSize(c.nSos * 16)/2+1; // must be significantly higher than the filter order
+        coefficients.nBands = FFTConfiguration::getValidFFTSize(c.nSos * 16) / 2 + 1; // must be significantly higher than the filter order
         coefficients.sampleRate = c.sampleRate;
         return coefficients;
     }
 
     size_t getDynamicSizeVariables() const final
-    { 
+    {
         size_t size = cutoff.getDynamicMemorySize();
         size += gain.getDynamicMemorySize();
         size += resonance.getDynamicMemorySize();
-        return size; 
+        return size;
     }
 
     Eigen::ArrayXf cutoff;

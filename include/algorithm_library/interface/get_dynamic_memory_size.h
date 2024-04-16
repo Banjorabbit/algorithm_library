@@ -4,13 +4,6 @@
 
 inline size_t getDynamicMemorySize() const
 {
-    if (MaxRowsAtCompileTime == Dynamic || MaxColsAtCompileTime == Dynamic)
-    {
-        return sizeof(DenseBase<Derived>::Scalar)*this->size();
-    }
-    else
-    {
-        return size_t(0);
-    }
-    
+    if (MaxRowsAtCompileTime == Dynamic || MaxColsAtCompileTime == Dynamic) { return sizeof(DenseBase<Derived>::Scalar) * this->size(); }
+    else { return size_t(0); }
 }

@@ -3,7 +3,7 @@
 
 // Approximation to modified Bessel function of first kind 0th order:
 // https://elec424.fandom.com/wiki/Modified_Bessel_Functions#Approximations_for_Modified_Bessel_Functions_of_the_First_Kind
-// 
+//
 // The input/output is an Eigen array and the approximation is hard coded to a certain order.
 //
 // author: Kristian Timm Andersen
@@ -11,7 +11,7 @@ inline Eigen::ArrayXf modifiedBesselFirstKindZeroOrder(I::Real x)
 {
     constexpr int order = 6; // hardcoded to use 1 + order terms in approximations
     const auto N = x.size();
-    float fac = 1; // factorial increasing in for-loop
+    float fac = 1;                               // factorial increasing in for-loop
     Eigen::ArrayXf i0 = Eigen::ArrayXf::Ones(N); // i0 approx that is accurate for small x
     for (auto i = 1; i <= order; i++)
     {
@@ -25,7 +25,7 @@ inline Eigen::ArrayXf modifiedBesselFirstKindZeroOrder(I::Real x)
     Eigen::ArrayXf powDen = Eigen::ArrayXf::Ones(x.size());
     for (auto i = 1; i <= order; i++)
     {
-        facNum *= (i*2-1)*(i*2-1);
+        facNum *= (i * 2 - 1) * (i * 2 - 1);
         facDen *= i;
         powDen *= 8 * x;
         i0a += facNum / (facDen * powDen);
@@ -37,7 +37,7 @@ inline Eigen::ArrayXf modifiedBesselFirstKindZeroOrder(I::Real x)
 
 // Approximation to modified Bessel function of first kind 0th order:
 // https://elec424.fandom.com/wiki/Modified_Bessel_Functions#Approximations_for_Modified_Bessel_Functions_of_the_First_Kind
-// 
+//
 // The input/output is a float scalar and the approximation is hard coded to a certain order.
 //
 // author: Kristian Timm Andersen
@@ -118,7 +118,7 @@ inline Eigen::ArrayXf sinc(const int nSamples, const int zcr)
     }
     else
     {
-        Eigen::ArrayXd input = Eigen::ArrayXd::LinSpaced((nSamples-1)/2, (-zcr + zcr/nSamples) * 3.141592653589793, 2 * zcr / nSamples * 3.141592653589793);
+        Eigen::ArrayXd input = Eigen::ArrayXd::LinSpaced((nSamples - 1) / 2, (-zcr + zcr / nSamples) * 3.141592653589793, 2 * zcr / nSamples * 3.141592653589793);
         input = input.sin() / input;
         Eigen::ArrayXf output(nSamples);
         output << input.cast<float>(), 1, input.reverse().cast<float>();

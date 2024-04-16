@@ -2,7 +2,4 @@
 
 DEFINE_ALGORITHM_CONSTRUCTOR(MelScale, MelScaleSpectrogram, MelScaleConfiguration)
 
-Eigen::ArrayXf MelScale::getCornerFrequencies() const
-{
-    return  static_cast<MelScaleSpectrogramSingleBufferImpl*>(pimpl.get())->algo.getCornerFrequencies();
-}
+Eigen::ArrayXf MelScale::getCornerFrequencies() const { return static_cast<MelScaleSpectrogramSingleBufferImpl *>(pimpl.get())->algo.getCornerFrequencies(); }

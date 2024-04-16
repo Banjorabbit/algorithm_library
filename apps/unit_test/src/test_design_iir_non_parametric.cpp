@@ -1,6 +1,6 @@
-#include "gtest/gtest.h"
-#include "framework/unit_test.h"
 #include "design_iir_non_parametric/design_iir_spline.h"
+#include "framework/unit_test.h"
+#include "gtest/gtest.h"
 
 using namespace Eigen;
 
@@ -8,6 +8,6 @@ using namespace Eigen;
 
 TEST(DesignIIRNonParametric, Interface)
 {
-	bool testMallocFlag = false;
-	EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<DesignIIRSpline>(testMallocFlag));
+    bool testMallocFlag = false;
+    EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<DesignIIRSpline>(testMallocFlag));
 }

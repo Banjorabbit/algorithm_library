@@ -1,24 +1,22 @@
 #pragma once
-#include "framework/framework.h"
 #include "algorithm_library/design_iir_min_phase.h"
-#include <unsupported/Eigen/Polynomials>
-#include "min_phase_spectrum/min_phase_spectrum_cepstrum.h"
 #include "fft/fft_real.h"
+#include "framework/framework.h"
+#include "min_phase_spectrum/min_phase_spectrum_cepstrum.h"
+#include <unsupported/Eigen/Polynomials>
 
 // Design minimum phase IIR filter from a magnitude spectrum. The IIR filter is factorized in a cascade of 2nd order sections.
 //
 // author: Kristian Timm Andersen
 class DesignIIRMinPhaseTF2SOS : public AlgorithmImplementation<DesignIIRMinPhaseConfiguration, DesignIIRMinPhaseTF2SOS>
 {
-public:
-    DesignIIRMinPhaseTF2SOS(const DesignIIRMinPhaseConfiguration::Coefficients& c = Coefficients()) : 
-        BaseAlgorithm(c),
-        minPhaseCalculator({c.nBands}),
-        fft({2*(c.nBands-1)})
+  public:
+    DesignIIRMinPhaseTF2SOS(const DesignIIRMinPhaseConfiguration::Coefficients &c = Coefficients())
+        : BaseAlgorithm(c), minPhaseCalculator({c.nBands}), fft({2 * (c.nBands - 1)})
     {
-        fftSize = 2 * (c.nBands-1);
+        fftSize = 2 * (c.nBands - 1);
         R.resize(2 * c.nOrder + 1, 2 * c.nOrder + 1);
-        R.block(c.nOrder, c.nOrder, c.nOrder+1, c.nOrder+1).setIdentity();
+        R.block(c.nOrder, c.nOrder, c.nOrder + 1, c.nOrder + 1).setIdentity();
         weight.resize(c.nBands);
         xFreq.resize(C.nBands);
         xPow.resize(C.nBands);
@@ -28,18 +26,15 @@ public:
         A.resize(C.nOrder + 1);
         B.resize(C.nOrder + 1);
         rootsStable.resize(C.nOrder + 1);
-        roots.resize(C.nOrder+1);
-        rootsPow.resize(C.nOrder+1);
+        roots.resize(C.nOrder + 1);
+        rootsPow.resize(C.nOrder + 1);
         if (c.weightType == c.MELSCALE)
         {
             weight(0) = 1.6f;
             Eigen::ArrayXf freq = Eigen::ArrayXf::LinSpaced(c.nBands - 1, 1, static_cast<float>(c.nBands - 1)) * c.sampleRate / fftSize;
-            weight.tail(c.nBands - 1) = 2595.f*(1.f + freq / 700).log10() / freq;
+            weight.tail(c.nBands - 1) = 2595.f * (1.f + freq / 700).log10() / freq;
         }
-        else
-        {
-            weight.setOnes();
-        }
+        else { weight.setOnes(); }
     }
 
     MinPhaseSpectrumCepstrum minPhaseCalculator;
@@ -54,12 +49,13 @@ public:
         const auto N = tf.size() - 1;
         const auto N1 = N - 1;
 
-        //// This code is equivalent to the PolynomialSolver (with different ordering of roots), but is slightly slower when profiling. If this is used then Eigen::EigenSolver<Eigen::MatrixXf> needs to be a member in class
-        //Eigen::MatrixXf companionMatrix = Eigen::MatrixXf::Zero(N, N);
-        //companionMatrix.diagonal(-1) = Eigen::VectorXf::Ones(N - 1);
-        //companionMatrix.row(0) = -tf.tail(N).transpose() / tf(0);
-        //D.EigenSolver.compute(companionMatrix);
-        //Eigen::VectorXcf poles = D.EigenSolver.eigenvalues();
+        //// This code is equivalent to the PolynomialSolver (with different ordering of roots), but is slightly slower when profiling. If this is used then
+        /// Eigen::EigenSolver<Eigen::MatrixXf> needs to be a member in class
+        // Eigen::MatrixXf companionMatrix = Eigen::MatrixXf::Zero(N, N);
+        // companionMatrix.diagonal(-1) = Eigen::VectorXf::Ones(N - 1);
+        // companionMatrix.row(0) = -tf.tail(N).transpose() / tf(0);
+        // D.EigenSolver.compute(companionMatrix);
+        // Eigen::VectorXcf poles = D.EigenSolver.eigenvalues();
 
         polynomialsolver.compute(tf.reverse().matrix());
         roots = polynomialsolver.roots();
@@ -67,7 +63,7 @@ public:
 
         auto start = 0;
         auto end = N1;
-        for (auto i = 0; i < N;i++)
+        for (auto i = 0; i < N; i++)
         {
             if (roots(i).imag() == 0)
             {
@@ -100,8 +96,7 @@ public:
         gain = gainA / gainSOS;
     }
 
-private:
-
+  private:
     void processOn(Input magnitudeSpectrum, Output output)
     {
         assert(magnitudeSpectrum.rows() == C.nBands);
@@ -151,7 +146,7 @@ private:
             output.sos.topRows(3) = -output.sos.topRows(3);
         }
     }
-    
+
     size_t getDynamicSizeVariables() const final
     {
         size_t size = weight.getDynamicMemorySize();

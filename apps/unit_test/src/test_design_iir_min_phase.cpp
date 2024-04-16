@@ -1,6 +1,6 @@
-#include "gtest/gtest.h"
-#include "framework/unit_test.h"
 #include "design_iir_min_phase/design_iir_min_phase_tf2sos.h"
+#include "framework/unit_test.h"
+#include "gtest/gtest.h"
 
 using namespace Eigen;
 
@@ -30,7 +30,7 @@ TEST(DesignIIRMinPhase, CheckCalculation)
     float errorSOS = (sos - sosRef).abs2().sum() / sosRef.abs2().sum();
     fmt::print("SOS relative error: {}\n", errorSOS);
     float errorGain = std::fabs(gain - 1.89722f);
-    errorGain = errorGain * errorGain / (1.89722f*1.89722f);
+    errorGain = errorGain * errorGain / (1.89722f * 1.89722f);
     fmt::print("gain relative error: {}\n", errorGain);
 
     EXPECT_LT(errorSOS, 1e-10f);

@@ -1,17 +1,17 @@
-#include "integration_test.h"
 #include "algorithm_library/dc_remover.h"
+#include "integration_test.h"
 
 // derived test class for DCRemover
 class TestDCRemover : public TestFixture<DCRemover>
 {
-public:
-	TestDCRemover() : TestFixture("createDCRemoverInstance") {}
+  public:
+    TestDCRemover() : TestFixture("createDCRemoverInstance") {}
 };
 
-TEST_F(TestDCRemover, printNChannels) {
+TEST_F(TestDCRemover, printNChannels)
+{
 
-	auto c = algoPtr->getCoefficients();
-	nlohmann::json j = c;
-	fmt::print("nChannels: {}\n", j.dump(4));
+    auto c = algoPtr->getCoefficients();
+    nlohmann::json j = c;
+    fmt::print("nChannels: {}\n", j.dump(4));
 }
-

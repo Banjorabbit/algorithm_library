@@ -1,43 +1,44 @@
+#include "activity_detection/activity_detection_noise_estimation.h"
+#include "beamformer/beamformer_mvdr.h"
 #include "benchmark/benchmark.h"
-#include "spline/spline_cubic.h"
-#include "interpolation/interpolation_cubic.h"
-#include "fft/fft_real.h"
-#include "solver_toeplitz/solver_toeplitz_system.h"
-#include "filterbank/filterbank_wola.h"
-#include "spectrogram/spectrogram_filterbank.h"
-#include "spectrogram/spectrogram_nonlinear.h"
-#include "normal3d/normal3d_diff.h"
-#include "min_phase_spectrum/min_phase_spectrum_cepstrum.h"
 #include "critical_bands/critical_bands_bark.h"
-#include "filter_min_max/filter_min_max_lemire.h"
 #include "dc_remover/dc_remover_first_order.h"
 #include "delay/circular_buffer.h"
-#include "noise_estimation/noise_estimation_activity_detection.h"
-#include "beamformer/beamformer_mvdr.h"
-#include "mel_scale/mel_scale_spectrogram.h"
-#include "activity_detection/activity_detection_noise_estimation.h"
-#include "preprocessing_path/beamformer_path.h"
 #include "design_iir_min_phase/design_iir_min_phase_tf2sos.h"
 #include "design_iir_non_parametric/design_iir_spline.h"
-#include "iir_filter/iir_filter_2nd_order.h"
-#include "iir_filter_time_varying/state_variable_filter.h"
-#include "iir_filter_non_parametric/iir_filter_design_non_parametric.h"
+#include "fft/fft_real.h"
+#include "filter_min_max/filter_min_max_lemire.h"
+#include "filterbank/filterbank_wola.h"
 #include "gain_calculation/gain_calculation_apriori.h"
+#include "iir_filter/iir_filter_2nd_order.h"
+#include "iir_filter_non_parametric/iir_filter_design_non_parametric.h"
+#include "iir_filter_time_varying/state_variable_filter.h"
+#include "interpolation/interpolation_cubic.h"
+#include "mel_scale/mel_scale_spectrogram.h"
+#include "min_phase_spectrum/min_phase_spectrum_cepstrum.h"
+#include "noise_estimation/noise_estimation_activity_detection.h"
+#include "normal3d/normal3d_diff.h"
+#include "preprocessing_path/beamformer_path.h"
+#include "solver_toeplitz/solver_toeplitz_system.h"
+#include "spectrogram/spectrogram_filterbank.h"
+#include "spectrogram/spectrogram_nonlinear.h"
+#include "spline/spline_cubic.h"
 
 // Macro for defining timing test using google benchmark framework
-#define DEFINE_BENCHMARK_ALGORITHM(algorithm) \
-static void algorithm##_process(benchmark::State& state) { \
-    algorithm algo; \
-    auto input = algo.initInput(); \
-    auto output = algo.initOutput(input); \
-	for (auto _ : state) \
-    { \
-        algo.process(input, output); \
-		benchmark::DoNotOptimize(algo); \
-        benchmark::DoNotOptimize(output); \
-	} \
-} \
-BENCHMARK(algorithm##_process);
+#define DEFINE_BENCHMARK_ALGORITHM(algorithm)                                                                                                                                 \
+    static void algorithm##_process(benchmark::State &state)                                                                                                                  \
+    {                                                                                                                                                                         \
+        algorithm algo;                                                                                                                                                       \
+        auto input = algo.initInput();                                                                                                                                        \
+        auto output = algo.initOutput(input);                                                                                                                                 \
+        for (auto _ : state)                                                                                                                                                  \
+        {                                                                                                                                                                     \
+            algo.process(input, output);                                                                                                                                      \
+            benchmark::DoNotOptimize(algo);                                                                                                                                   \
+            benchmark::DoNotOptimize(output);                                                                                                                                 \
+        }                                                                                                                                                                     \
+    }                                                                                                                                                                         \
+    BENCHMARK(algorithm##_process);
 
 // insert algorithms to be benchmarked. Be very careful about interpreting these results since the time depends on where in the list an algorithm is placed!
 DEFINE_BENCHMARK_ALGORITHM(CircularBuffer)
@@ -77,22 +78,19 @@ DEFINE_BENCHMARK_ALGORITHM(ActivityDetectionNoiseEstimation)
 DEFINE_BENCHMARK_ALGORITHM(ActivityDetectionFusedNoiseEstimation)
 DEFINE_BENCHMARK_ALGORITHM(GainCalculationApriori)
 
-
-
-
 // benchmark inverse FFT
-static void FFTInverse_process(benchmark::State& state) 
+static void FFTInverse_process(benchmark::State &state)
 {
-    FFTReal algo; 
-    auto input = algo.initInput(); 
-    auto output = algo.initOutput(input); 
-	for (auto _ : state) 
-    { 
-        algo.inverse(output, input); 
-		benchmark::DoNotOptimize(algo); 
-        benchmark::DoNotOptimize(input); 
-	} 
-} 
+    FFTReal algo;
+    auto input = algo.initInput();
+    auto output = algo.initOutput(input);
+    for (auto _ : state)
+    {
+        algo.inverse(output, input);
+        benchmark::DoNotOptimize(algo);
+        benchmark::DoNotOptimize(input);
+    }
+}
 BENCHMARK(FFTInverse_process);
 
 // main function

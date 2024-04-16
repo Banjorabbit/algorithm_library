@@ -1,35 +1,39 @@
 cmake_minimum_required(VERSION 3.16)
 
 # set project name and version
-project(AlgorithmLibrary VERSION 0.0.1
-	DESCRIPTION "Library of DSP algorithms"
-	LANGUAGES CXX C)
+project(
+  AlgorithmLibrary
+  VERSION 0.0.1
+  DESCRIPTION "Library of DSP algorithms"
+  LANGUAGES CXX C
+)
 
 # ---- Add dependencies via CPM ----
 
-#set folder for 3rd party libraries
+# set folder for 3rd party libraries
 set(ENV{CPM_SOURCE_CACHE} ${PROJECT_SOURCE_DIR}/extern)
 include(cmake/CPM.cmake)
 
 # add nlohmann json library
-CPMAddPackage(
-  NAME nlohmann_json
-  VERSION 3.11.2
-  GITHUB_REPOSITORY nlohmann/json #ArthurSonzogni/nlohmann_json_cmake_fetchcontent
-  OPTIONS "JSON_BuildTests OFF" "JSON_Install ON"
+cpmaddpackage(
+  NAME
+  nlohmann_json
+  VERSION
+  3.11.2
+  GITHUB_REPOSITORY
+  nlohmann/json # ArthurSonzogni/nlohmann_json_cmake_fetchcontent
+  OPTIONS
+  "JSON_BuildTests OFF"
+  "JSON_Install ON"
 )
 
 # add Eigen library (CMakeLists.txt in this project is not suitable for including as subdirectory, and it's a header-only project so only download it)
-CPMAddPackage(
-    NAME Eigen
-    URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip
-    DOWNLOAD_ONLY YES
-)
+cpmaddpackage(NAME Eigen URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip DOWNLOAD_ONLY YES)
 add_library(Eigen INTERFACE IMPORTED)
 target_include_directories(Eigen INTERFACE ${Eigen_SOURCE_DIR})
 
-# If we want the library to be SHARED, aka a DLL, then we have to tell cmake to export symbols for the applications that are using the DLL. Therefore, uncomment this line if add_library is SHARED
-#set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+# If we want the library to be SHARED, aka a DLL, then we have to tell cmake to export symbols for the applications that are using the DLL. Therefore, uncomment this line if
+# add_library is SHARED set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 file(GLOB_RECURSE HEADER_LIST_ALGORITHMS CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/include/*.h")
 file(GLOB_RECURSE SOURCE_LIST_CPP CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*.cpp")
@@ -38,25 +42,32 @@ file(GLOB_RECURSE SOURCE_LIST_UTILITIES_C CONFIGURE_DEPENDS "${PROJECT_SOURCE_DI
 file(GLOB_RECURSE SOURCE_LIST_UTILITIES_HEADERS CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/utilities/*.h")
 
 # add SHARED if a DLL is needed (see CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS comment above about exporting symbols)
-if (ALGORITHM_LIBRARY_SHARED_LIBRARY)
-    add_library(${PROJECT_NAME} SHARED ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${SOURCE_LIST_UTILITIES_HEADERS} ${HEADER_LIST_ALGORITHMS} )
+if(ALGORITHM_LIBRARY_SHARED_LIBRARY)
+  add_library(${PROJECT_NAME} SHARED ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${SOURCE_LIST_UTILITIES_HEADERS} ${HEADER_LIST_ALGORITHMS})
 
-    # Strip shared binary for release builds
-    add_custom_command(TARGET "${PROJECT_NAME}" POST_BUILD COMMAND $<$<CONFIG:release>:${CMAKE_STRIP}> ARGS --strip-all $<TARGET_FILE:${PROJECT_NAME}> )
+  # Strip shared binary for release builds
+  add_custom_command(
+    TARGET "${PROJECT_NAME}"
+    POST_BUILD
+    COMMAND $<$<CONFIG:release>:${CMAKE_STRIP}> ARGS --strip-all $<TARGET_FILE:${PROJECT_NAME}>
+  )
 else()
-    add_library(${PROJECT_NAME} ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${SOURCE_LIST_UTILITIES_HEADERS} ${HEADER_LIST_ALGORITHMS} )
+  add_library(${PROJECT_NAME} ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${SOURCE_LIST_UTILITIES_HEADERS} ${HEADER_LIST_ALGORITHMS})
 endif()
 
 # We enforce standards conformance on MSVC both compiler and  preprocessor: https://learn.microsoft.com/en-us/cpp/preprocessor/preprocessor-experimental-overview?view=msvc-160
-# The preproccessor is needed for macros to be interpreted correctly. Older versions of MSVC might not support these flags. The solution should be to update MSVC (should we print error?)
+# The preproccessor is needed for macros to be interpreted correctly. Older versions of MSVC might not support these flags. The solution should be to update MSVC (should we
+# print error?)
 target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive-; /Zc:preprocessor>")
 
-#target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Release>:-DNDEBUG -O2 -ffast-math -fno-exceptions -s -ffunction-sections -fdata-sections -flto>)
-  
+# target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Release>:-DNDEBUG -O2 -ffast-math -fno-exceptions -s -ffunction-sections -fdata-sections -flto>)
+
 # With MSVC, enable natvis files to improve debugging experience and increase warning level
 if(MSVC)
   target_sources(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${Eigen_SOURCE_DIR}/debug/msvc/eigen.natvis>)
-  target_compile_options(${PROJECT_NAME} PUBLIC /fp:fast /W4 -wd4127 -wd4100 -wd4459) # suppress warnings from 3rd party libraries - "C4100": unreferenced formal parameter, "C4127": conditional expression is constant, "C4459": Suppress 'declaration of 'var' hides global declaration'
+  # suppress warnings from 3rd party libraries - "C4100": unreferenced formal parameter, "C4127": conditional expression is constant, "C4459": Suppress 'declaration of 'var'
+  # hides global declaration'
+  target_compile_options(${PROJECT_NAME} PUBLIC /fp:fast /W4 -wd4127 -wd4100 -wd4459)
 
 else() # on GCC/CLANG increase warning level
   target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Werror -Wextra -Wno-unused-parameter) # "no-unused-parameter": suppress unused parameter warning
@@ -83,10 +94,11 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 source_group(
   TREE "${PROJECT_SOURCE_DIR}/include"
   PREFIX "Public Header Files"
-  FILES ${HEADER_LIST_ALGORITHMS})
+  FILES ${HEADER_LIST_ALGORITHMS}
+)
 
 source_group(
   TREE "${PROJECT_SOURCE_DIR}/src"
   PREFIX "Internal Files"
-  FILES ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${SOURCE_LIST_UTILITIES_HEADERS})
-  
+  FILES ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${SOURCE_LIST_UTILITIES_HEADERS}
+)

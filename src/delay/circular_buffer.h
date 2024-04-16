@@ -1,6 +1,6 @@
 #pragma once
-#include "framework/framework.h"
 #include "algorithm_library/delay.h"
+#include "framework/framework.h"
 
 // Circular buffer. There is a single channel version and a multi-channel version.
 //
@@ -9,13 +9,13 @@
 // Single channel version of circular buffer that is faster than the multi-channel version
 class CircularBufferSingleChannel : public AlgorithmImplementation<DelayConfiguration, CircularBufferSingleChannel>
 {
-public:
-    CircularBufferSingleChannel(Coefficients c =  Coefficients()) : BaseAlgorithm{c}
+  public:
+    CircularBufferSingleChannel(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     {
         C.nChannels = 1; // force number of channels to 1 since this is the single channel version
         buffer.resize(c.delayLength);
         resetVariables();
-     }
+    }
 
     inline void push(Input input)
     {
@@ -55,29 +55,49 @@ public:
         return value;
     }
 
-private:
-
+  private:
     // push input values into buffer and write output values from buffer
     inline void processOn(Input input, Output output)
     {
         for (auto sample = 0; sample < input.rows(); sample++)
         {
             increment();
-            output(sample,0) = buffer(index);
+            output(sample, 0) = buffer(index);
             buffer(index) = input(sample, 0);
         }
     }
 
-    inline void increment() { index++; if (index >= C.delayLength) { index = 0; } }
-    inline void increment(const int increment) { index += increment; while (index >= C.delayLength) { index -= C.delayLength; } }
-    inline void decrement() { index--; if (index < 0) { index = C.delayLength - 1; } }
-    inline void decrement(const int decrement) { index -= decrement; while (index < 0) { index += C.delayLength; } }
+    inline void increment()
+    {
+        index++;
+        if (index >= C.delayLength) { index = 0; }
+    }
+    inline void increment(const int increment)
+    {
+        index += increment;
+        while (index >= C.delayLength)
+        {
+            index -= C.delayLength;
+        }
+    }
+    inline void decrement()
+    {
+        index--;
+        if (index < 0) { index = C.delayLength - 1; }
+    }
+    inline void decrement(const int decrement)
+    {
+        index -= decrement;
+        while (index < 0)
+        {
+            index += C.delayLength;
+        }
+    }
 
     void resetVariables() final
     {
         buffer.setZero();
         index = C.delayLength - 1; // when pushing values, we first increment index and then write value
-        
     }
 
     size_t getDynamicSizeVariables() const final
@@ -94,8 +114,8 @@ private:
 
 class CircularBuffer : public AlgorithmImplementation<DelayConfiguration, CircularBuffer>
 {
-public:
-    CircularBuffer(Coefficients c =  Coefficients()) : BaseAlgorithm{c}
+  public:
+    CircularBuffer(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     {
         buffer.resize(c.delayLength, c.nChannels);
         reset();
@@ -139,8 +159,7 @@ public:
         return value;
     }
 
-private:
-
+  private:
     // push input values into buffer and write output values from buffer
     inline void processOn(Input input, Output output)
     {
@@ -152,16 +171,37 @@ private:
         }
     }
 
-    inline void increment() { index++; if (index >= C.delayLength) { index = 0; } }
-    inline void increment(const int increment) { index += increment; while (index >= C.delayLength) { index -= C.delayLength; } }
-    inline void decrement() { index--; if (index < 0) { index = C.delayLength - 1; } }
-    inline void decrement(const int decrement) { index -= decrement; while (index < 0) { index += C.delayLength; } }
+    inline void increment()
+    {
+        index++;
+        if (index >= C.delayLength) { index = 0; }
+    }
+    inline void increment(const int increment)
+    {
+        index += increment;
+        while (index >= C.delayLength)
+        {
+            index -= C.delayLength;
+        }
+    }
+    inline void decrement()
+    {
+        index--;
+        if (index < 0) { index = C.delayLength - 1; }
+    }
+    inline void decrement(const int decrement)
+    {
+        index -= decrement;
+        while (index < 0)
+        {
+            index += C.delayLength;
+        }
+    }
 
     void resetVariables() final
     {
         buffer.setZero();
         index = C.delayLength - 1; // when pushing values, we first increment index and then write value
-        
     }
 
     size_t getDynamicSizeVariables() const final

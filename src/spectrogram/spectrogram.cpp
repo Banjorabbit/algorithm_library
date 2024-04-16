@@ -4,22 +4,13 @@
 using FilterbankImpl = Implementation<SpectrogramFilterbank, SpectrogramConfiguration>;
 using NonlinearImpl = Implementation<SpectrogramNonlinear, SpectrogramConfiguration>;
 
-template<>
-Algorithm<SpectrogramConfiguration>::Algorithm(const Coefficients& c) 
+template <>
+Algorithm<SpectrogramConfiguration>::Algorithm(const Coefficients &c)
 {
-    if (c.algorithmType == c.NONLINEAR)
-    {
-        pimpl = std::make_unique<NonlinearImpl>(c);
-    }
-    else
-    {
-        pimpl = std::make_unique<FilterbankImpl>(c);
-    }
-} 
-
-Spectrogram::Spectrogram(const Coefficients& c) : Algorithm<SpectrogramConfiguration>(c) {}
-
-int SpectrogramConfiguration::getValidFFTSize(int fftSize)
-{
-    return FFTConfiguration::getValidFFTSize(fftSize);
+    if (c.algorithmType == c.NONLINEAR) { pimpl = std::make_unique<NonlinearImpl>(c); }
+    else { pimpl = std::make_unique<FilterbankImpl>(c); }
 }
+
+Spectrogram::Spectrogram(const Coefficients &c) : Algorithm<SpectrogramConfiguration>(c) {}
+
+int SpectrogramConfiguration::getValidFFTSize(int fftSize) { return FFTConfiguration::getValidFFTSize(fftSize); }

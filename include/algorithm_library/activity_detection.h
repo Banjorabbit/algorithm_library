@@ -1,7 +1,7 @@
 #pragma once
 #include "interface/interface.h"
 
-// Acticity detection calculated in the frequency domain based on noise estimation and activity detector. 
+// Acticity detection calculated in the frequency domain based on noise estimation and activity detector.
 //
 // author: Kristian Timm Andersen
 
@@ -24,16 +24,13 @@ struct ActivityDetectionConfiguration
         DEFINE_TUNABLE_PARAMETERS(smoothingTConstant)
     };
 
-    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // power spectrum
-    
-    static Eigen::ArrayXXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXf::Zero(c.nBands, c.nChannels); } // activity between 0 and 1
+    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // power spectrum
 
-    static bool validInput(Input input, const Coefficients& c) 
-    { 
-        return (input.rows() == c.nBands) && (input.cols() == c.nChannels) && (input >= 0.f).all();
-    }
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients &c) { return Eigen::ArrayXXf::Zero(c.nBands, c.nChannels); } // activity between 0 and 1
 
-    static bool validOutput(Output output, const Coefficients& c)
+    static bool validInput(Input input, const Coefficients &c) { return (input.rows() == c.nBands) && (input.cols() == c.nChannels) && (input >= 0.f).all(); }
+
+    static bool validOutput(Output output, const Coefficients &c)
     {
         return (output.rows() == c.nBands) && (output.cols() == c.nChannels) && (output >= 0).all() && (output <= 1.f).all();
     }
@@ -41,9 +38,9 @@ struct ActivityDetectionConfiguration
 
 class ActivityDetection : public Algorithm<ActivityDetectionConfiguration>
 {
-public:
+  public:
     ActivityDetection() = default;
-    ActivityDetection(const Coefficients& c);
+    ActivityDetection(const Coefficients &c);
 };
 
 // ActivityDetectionFused is a version of ActivityDetection where the output is combined into a single boolean value
@@ -66,24 +63,21 @@ struct ActivityDetectionFusedConfiguration
         DEFINE_TUNABLE_PARAMETERS(activityThreshold)
     };
 
-    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // power spectrum
+    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // power spectrum
 
-    static bool initOutput(Input input, const Coefficients& c) { return false; } // activity flag
-    
-    static bool validInput(Input input, const Coefficients& c) 
-    { 
-        return (input.rows() == c.nBands) && (input.cols() == c.nChannels) && (input >= 0).all();
-    }
+    static bool initOutput(Input input, const Coefficients &c) { return false; } // activity flag
 
-    static bool validOutput(Output output, const Coefficients& c) 
-    { 
+    static bool validInput(Input input, const Coefficients &c) { return (input.rows() == c.nBands) && (input.cols() == c.nChannels) && (input >= 0).all(); }
+
+    static bool validOutput(Output output, const Coefficients &c)
+    {
         return true; // bool value is always valid
     }
 };
 
 class ActivityDetectionFused : public Algorithm<ActivityDetectionFusedConfiguration>
 {
-public:
+  public:
     ActivityDetectionFused() = default;
-    ActivityDetectionFused(const Coefficients& c);
+    ActivityDetectionFused(const Coefficients &c);
 };

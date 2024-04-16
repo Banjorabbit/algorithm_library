@@ -1,6 +1,6 @@
 #pragma once
-#include "framework/framework.h"
 #include "algorithm_library/dc_remover.h"
+#include "framework/framework.h"
 
 using namespace Eigen;
 
@@ -15,43 +15,38 @@ using namespace Eigen;
 // author: Kristian Timm Andersen
 class DCRemoverFirstOrder : public AlgorithmImplementation<DCRemoverConfiguration, DCRemoverFirstOrder>
 {
-public:
-    DCRemoverFirstOrder(Coefficients c = Coefficients()) :
-        BaseAlgorithm{c}
+  public:
+    DCRemoverFirstOrder(Coefficients c = Coefficients()) : BaseAlgorithm{c}
     {
         delay.resize(c.nChannels);
         resetVariables();
         onParametersChanged();
     }
 
-private:
-
+  private:
     void processOn(Input input, Output output)
     {
         for (auto channel = 0; channel < C.nChannels; channel++)
         {
             for (auto sample = 0; sample < input.rows(); sample++)
             {
-                const float xi = coef1 * input(sample,channel);
+                const float xi = coef1 * input(sample, channel);
                 output(sample, channel) = xi + delay(channel);
                 delay(channel) = coef0 * output(sample, channel) - xi;
             }
         }
     }
 
-    void onParametersChanged() 
+    void onParametersChanged()
     {
         const float cosf = std::cos(2 * 3.14159265358979323846 * P.cutoffFrequency / C.sampleRate);
-        const float a = (1.f - std::sqrt(1.f - cosf*cosf))/cosf;
+        const float a = (1.f - std::sqrt(1.f - cosf * cosf)) / cosf;
 
         coef0 = a;
-        coef1 = (1+a)/2;
+        coef1 = (1 + a) / 2;
     }
-        
-    void resetVariables() final 
-    {
-        delay.setZero();
-    }
+
+    void resetVariables() final { delay.setZero(); }
 
     size_t getDynamicSizeVariables() const final
     {

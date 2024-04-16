@@ -19,24 +19,18 @@ struct PreprocessingPathConfiguration
         DEFINE_NO_TUNABLE_PARAMETERS
     };
 
-    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.bufferSize, c.nChannels); } // time samples
+    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(c.bufferSize, c.nChannels); } // time samples
 
-    static Eigen::ArrayXf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXf::Zero(c.bufferSize); } // time samples
+    static Eigen::ArrayXf initOutput(Input input, const Coefficients &c) { return Eigen::ArrayXf::Zero(c.bufferSize); } // time samples
 
-    static bool validInput(Input input, const Coefficients& c) 
-    { 
-        return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels) && input.allFinite();
-    }
-    
-    static bool validOutput(Output output, const Coefficients& c) 
-    { 
-        return (output.rows() == c.bufferSize) && output.allFinite();
-    }  
+    static bool validInput(Input input, const Coefficients &c) { return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels) && input.allFinite(); }
+
+    static bool validOutput(Output output, const Coefficients &c) { return (output.rows() == c.bufferSize) && output.allFinite(); }
 };
 
 class PreprocessingPath : public AlgorithmBuffer<PreprocessingPathConfiguration>
 {
-public:
+  public:
     PreprocessingPath() = default;
-    PreprocessingPath(const Coefficients& c);
+    PreprocessingPath(const Coefficients &c);
 };

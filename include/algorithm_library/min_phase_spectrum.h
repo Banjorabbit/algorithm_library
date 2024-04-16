@@ -5,7 +5,6 @@
 //
 // author: Kristian Timm Andersen
 
-
 struct MinPhaseSpectrumConfiguration
 {
     using Input = I::Real2D;
@@ -23,19 +22,18 @@ struct MinPhaseSpectrumConfiguration
         DEFINE_TUNABLE_PARAMETERS(minMagnitude)
     };
 
-    static Eigen::ArrayXXf initInput(const Coefficients& c) { return Eigen::ArrayXXf::Random(c.nBands, 2).abs2(); } // power spectrum. Number of channels is arbitrary
+    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(c.nBands, 2).abs2(); } // power spectrum. Number of channels is arbitrary
 
-    static Eigen::ArrayXXcf initOutput(Input input, const Coefficients& c) { return Eigen::ArrayXXcf::Zero(c.nBands, input.cols()); }
+    static Eigen::ArrayXXcf initOutput(Input input, const Coefficients &c) { return Eigen::ArrayXXcf::Zero(c.nBands, input.cols()); }
 
-    static bool validInput(Input input, const Coefficients& c) { return (input.rows() == c.nBands) && (input.cols() > 0) && (input >= 0).all(); }
+    static bool validInput(Input input, const Coefficients &c) { return (input.rows() == c.nBands) && (input.cols() > 0) && (input >= 0).all(); }
 
-    static bool validOutput(Output output, const Coefficients& c) { return (output.rows() == c.nBands) && (output.cols() > 0) && (output.allFinite()); }
+    static bool validOutput(Output output, const Coefficients &c) { return (output.rows() == c.nBands) && (output.cols() > 0) && (output.allFinite()); }
 };
 
 class MinPhaseSpectrum : public Algorithm<MinPhaseSpectrumConfiguration>
 {
-public:
+  public:
     MinPhaseSpectrum() = default;
-    MinPhaseSpectrum(const Coefficients& c);
+    MinPhaseSpectrum(const Coefficients &c);
 };
-
