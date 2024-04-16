@@ -32,6 +32,25 @@ cpmaddpackage(NAME Eigen URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/e
 add_library(Eigen INTERFACE IMPORTED)
 target_include_directories(Eigen INTERFACE ${Eigen_SOURCE_DIR})
 
+# add clang and cmake formatting (requires clang-format and cmake-format is installed)
+cpmaddpackage(
+  NAME
+  Format.cmake
+  VERSION
+  1.7.3
+  GITHUB_REPOSITORY
+  TheLartians/Format.cmake
+  OPTIONS
+  # set to yes skip cmake formatting
+  "FORMAT_SKIP_CMAKE NO"
+  # set to yes skip clang formatting
+  "FORMAT_SKIP_CLANG NO"
+  # path to exclude (optional, supports regular expressions)
+  "CMAKE_FORMAT_EXCLUDE cmake/CPM.cmake"
+  # extra arguments for cmake_format (optional)
+  "CMAKE_FORMAT_EXTRA_ARGS -c .cmake-format"
+)
+
 # If we want the library to be SHARED, aka a DLL, then we have to tell cmake to export symbols for the applications that are using the DLL. Therefore, uncomment this line if
 # add_library is SHARED set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
