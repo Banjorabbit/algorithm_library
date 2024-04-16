@@ -15,8 +15,7 @@ class IIRFilterTDFNonParametric : public AlgorithmImplementation<IIRFilterNonPar
   public:
     IIRFilterTDFNonParametric(Coefficients c = Coefficients())
         : BaseAlgorithm{c}, filterDesignerNonParametric(convertToDesignIIRSplineCoefficients(c)), filter({c.nChannels, c.nSos})
-    {
-    }
+    {}
 
     DesignIIRSpline filterDesignerNonParametric;
     IIRFilterCascaded filter;

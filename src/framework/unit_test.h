@@ -79,13 +79,11 @@ bool getSetTest()
 
 template <typename T, typename = void>
 struct hasPublicProcessOn : std::false_type
-{
-};
+{};
 
 template <typename T>
 struct hasPublicProcessOn<T, decltype(void(&T::processOn))> : std::true_type
-{
-};
+{};
 
 template <typename Talgo>
 bool assertInterfaceTest()

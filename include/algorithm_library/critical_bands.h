@@ -42,14 +42,11 @@ struct CriticalBandsConfiguration
 };
 
 struct CriticalBandsSumConfiguration : public CriticalBandsConfiguration
-{
-};
+{};
 struct CriticalBandsMeanConfiguration : public CriticalBandsConfiguration
-{
-};
+{};
 struct CriticalBandsMaxConfiguration : public CriticalBandsConfiguration
-{
-};
+{};
 
 class CriticalBandsSum : public Algorithm<CriticalBandsSumConfiguration>
 {

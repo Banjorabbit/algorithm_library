@@ -58,11 +58,9 @@ struct BaseFilterMinMaxConfiguration
 };
 
 struct FilterMinMaxConfiguration : public BaseFilterMinMaxConfiguration
-{
-};
+{};
 struct StreamingMinMaxConfiguration : public BaseFilterMinMaxConfiguration
-{
-};
+{};
 
 class StreamingMinMax : public Algorithm<StreamingMinMaxConfiguration>
 {
@@ -118,17 +116,13 @@ struct BaseFilterExtremumConfiguration
 };
 
 struct FilterMaxConfiguration : public BaseFilterExtremumConfiguration
-{
-};
+{};
 struct FilterMinConfiguration : public BaseFilterExtremumConfiguration
-{
-};
+{};
 struct StreamingMaxConfiguration : public BaseFilterExtremumConfiguration
-{
-};
+{};
 struct StreamingMinConfiguration : public BaseFilterExtremumConfiguration
-{
-};
+{};
 
 class StreamingMax : public Algorithm<StreamingMaxConfiguration>
 {

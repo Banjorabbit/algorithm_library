@@ -91,6 +91,5 @@ namespace Eigen
 {
 template <typename T>
 struct NumTraits<ConstrainedType<T>> : public NumTraits<T>
-{
-};
+{};
 } // namespace Eigen

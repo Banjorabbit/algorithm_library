@@ -30,8 +30,7 @@ struct FilterbankConfiguration
         ExceptionFilterbank(const Coefficients &c)
             : std::runtime_error(std::string("\nThis configuration is currently not supported:") + "\nbuffer size = " + std::to_string(c.bufferSize) +
                                  "\nnBands = " + std::to_string(c.nBands) + "\nfilterbankType = " + std::string(convertFilterbankTypeToJson(c)) + "\n")
-        {
-        }
+        {}
     };
 
     static nlohmann::json convertFilterbankTypeToJson(const Coefficients &c)
