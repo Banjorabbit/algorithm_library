@@ -1,0 +1,3 @@
+#include "calculate_filter_power_spectrum.h"
+
+DEFINE_ALGORITHM_CONSTRUCTOR(FilterPowerSpectrum, CalculateFilterPowerSpectrum, FilterPowerSpectrumConfiguration)

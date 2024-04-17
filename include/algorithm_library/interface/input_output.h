@@ -32,6 +32,7 @@ using Void = void *;
 using Real4X = In<Eigen::Array4Xf>;
 using Real4 = In<Eigen::Array4f>;
 using RealX2 = In<Eigen::ArrayX2f>;
+using Real6X = In<Eigen::Array<float, 6, Eigen::Dynamic>>;
 
 using Real32 = In<Eigen::Array<float, 3, 2>>;
 

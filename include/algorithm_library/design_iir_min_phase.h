@@ -55,7 +55,7 @@ struct DesignIIRMinPhaseConfiguration
     static bool validOutput(Output output, const Coefficients &c)
     {
         bool flag = (output.sos.cols() == getNSos(c.nOrder)) && (output.sos.rows() == 6) && output.sos.allFinite();
-        flag &= (output.sos.row(3) == Eigen::ArrayXf::Ones(getNSos(c.nOrder)).transpose()).all();
+        flag &= (output.sos.row(3) == 1.f).all();
         flag &= output.gain >= 0;
         return flag;
     }

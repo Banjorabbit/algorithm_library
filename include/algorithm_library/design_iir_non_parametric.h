@@ -65,7 +65,7 @@ struct DesignIIRNonParametricConfiguration
     static bool validOutput(Output output, const Coefficients &c)
     {
         bool flag = (output.sos.cols() == c.nGains) && (output.sos.rows() == 6) && output.sos.allFinite();
-        flag &= (output.sos.row(3) == Eigen::ArrayXf::Ones(c.nGains).transpose()).all();
+        flag &= (output.sos.row(3) == 1.f).all();
         flag &= output.gain >= 0;
         return flag;
     }

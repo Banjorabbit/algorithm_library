@@ -23,6 +23,7 @@
 #include "spectrogram/spectrogram_filterbank.h"
 #include "spectrogram/spectrogram_nonlinear.h"
 #include "spline/spline_cubic.h"
+#include "filter_power_spectrum/calculate_filter_power_spectrum.h"
 
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm)                                                                                                                                 \
@@ -77,6 +78,7 @@ DEFINE_BENCHMARK_ALGORITHM(MelScaleSpectrogram)
 DEFINE_BENCHMARK_ALGORITHM(ActivityDetectionNoiseEstimation)
 DEFINE_BENCHMARK_ALGORITHM(ActivityDetectionFusedNoiseEstimation)
 DEFINE_BENCHMARK_ALGORITHM(GainCalculationApriori)
+DEFINE_BENCHMARK_ALGORITHM(CalculateFilterPowerSpectrum)
 
 // benchmark inverse FFT
 static void FFTInverse_process(benchmark::State &state)
