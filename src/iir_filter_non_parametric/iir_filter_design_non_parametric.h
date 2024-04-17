@@ -14,7 +14,9 @@ class IIRFilterTDFNonParametric : public AlgorithmImplementation<IIRFilterNonPar
 {
   public:
     IIRFilterTDFNonParametric(Coefficients c = Coefficients())
-        : BaseAlgorithm{c}, filterDesignerNonParametric(convertToDesignIIRSplineCoefficients(c)), filter({c.nChannels, c.nSos})
+        : BaseAlgorithm{c}, filterDesignerNonParametric({.nBands = FFTConfiguration::convertFFTSizeToNBands(FFTConfiguration::getValidFFTSize(c.nSos * 16)),
+                                                         .nGains = c.nSos,
+                                                         .sampleRate = c.sampleRate}) // nBands must be significantly higher than the filter order
     {}
 
     DesignIIRSpline filterDesignerNonParametric;
@@ -39,15 +41,6 @@ class IIRFilterTDFNonParametric : public AlgorithmImplementation<IIRFilterNonPar
   private:
     inline void processOn(Input input, Output output) { filter.process(input, output); }
 
-    DesignIIRSpline::Coefficients convertToDesignIIRSplineCoefficients(const Coefficients &c)
-    {
-        DesignIIRSpline::Coefficients coefficients;
-        coefficients.nGains = c.nSos;
-        coefficients.nBands = FFTConfiguration::getValidFFTSize(c.nSos * 16) / 2 + 1; // must be significantly higher than the filter order
-        coefficients.sampleRate = c.sampleRate;
-        return coefficients;
-    }
-
     friend BaseAlgorithm;
 };
 
@@ -56,7 +49,9 @@ class IIRFilterSVFNonParametric : public AlgorithmImplementation<IIRFilterNonPar
 {
   public:
     IIRFilterSVFNonParametric(Coefficients c = Coefficients())
-        : BaseAlgorithm{c}, filterDesignerNonParametric(convertToDesignIIRSplineCoefficients(c)), filter({c.nChannels, c.nSos})
+        : BaseAlgorithm{c}, filterDesignerNonParametric({.nBands = FFTConfiguration::convertFFTSizeToNBands(FFTConfiguration::getValidFFTSize(c.nSos * 16)),
+                                                         .nGains = c.nSos,
+                                                         .sampleRate = c.sampleRate}) // nBands must be significantly higher than the filter order
     {
         filter.setFilterTypes({static_cast<long unsigned int>(c.nSos), StateVariableFilter::Parameters::USER_DEFINED});
         gain = Eigen::ArrayXf::Ones(c.nSos);
@@ -89,15 +84,6 @@ class IIRFilterSVFNonParametric : public AlgorithmImplementation<IIRFilterNonPar
 
   private:
     inline void processOn(Input input, Output output) { filter.process({input, cutoff, gain, resonance}, output); }
-
-    DesignIIRSpline::Coefficients convertToDesignIIRSplineCoefficients(const Coefficients &c)
-    {
-        DesignIIRSpline::Coefficients coefficients;
-        coefficients.nGains = c.nSos;
-        coefficients.nBands = FFTConfiguration::getValidFFTSize(c.nSos * 16) / 2 + 1; // must be significantly higher than the filter order
-        coefficients.sampleRate = c.sampleRate;
-        return coefficients;
-    }
 
     size_t getDynamicSizeVariables() const final
     {
