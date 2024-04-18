@@ -27,17 +27,10 @@ void IIRFilter::setFilter(I::Real2D sos, float gain)
     else { static_cast<Implementation<IIRFilterCascaded, IIRFilterConfiguration> *>(pimpl.get())->algo.setFilter(sos, gain); }
 }
 
-// get power frequency response evaluated uniformly from 0 to pi in nBands points
-Eigen::ArrayXf IIRFilter::getPowerFrequencyResponse(int nBands)
+Eigen::ArrayXXf IIRFilter::getSosFilter() const
 {
-    if (getCoefficients().nSos == 1) { return static_cast<Implementation<IIRFilter2ndOrder, IIRFilterConfiguration> *>(pimpl.get())->algo.getPowerFrequencyResponse(nBands); }
-    else { return static_cast<Implementation<IIRFilterCascaded, IIRFilterConfiguration> *>(pimpl.get())->algo.getPowerFrequencyResponse(nBands); }
-}
-
-Eigen::ArrayXXf IIRFilter::getFilter() const
-{
-    if (getCoefficients().nSos == 1) { return static_cast<Implementation<IIRFilter2ndOrder, IIRFilterConfiguration> *>(pimpl.get())->algo.getFilter(); }
-    else { return static_cast<Implementation<IIRFilterCascaded, IIRFilterConfiguration> *>(pimpl.get())->algo.getFilter(); }
+    if (getCoefficients().nSos == 1) { return static_cast<Implementation<IIRFilter2ndOrder, IIRFilterConfiguration> *>(pimpl.get())->algo.getSosFilter(); }
+    else { return static_cast<Implementation<IIRFilterCascaded, IIRFilterConfiguration> *>(pimpl.get())->algo.getSosFilter(); }
 }
 
 float IIRFilter::getGain() const

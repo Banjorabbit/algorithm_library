@@ -51,9 +51,6 @@ class IIRFilterNonParametric : public Algorithm<IIRFilterNonParametricConfigurat
     // [1  1   ... ]
     // [a1 aa1 ... ]
     // [a2 aa2 ... ]
-    Eigen::ArrayXXf getFilter() const;
+    Eigen::ArrayXXf getSosFilter() const;
     float getGain() const;
-
-    // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyResponse(int nBands) const;
 };

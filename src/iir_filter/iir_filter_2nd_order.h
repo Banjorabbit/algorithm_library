@@ -43,16 +43,7 @@ class IIRFilter2ndOrder : public AlgorithmImplementation<IIRFilterConfiguration,
         }
     }
 
-    // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyResponse(int nBands) const
-    {
-
-        Eigen::ArrayXf freqs = Eigen::ArrayXf::LinSpaced(nBands, 0, 3.14159);
-        return (b0 * b0 + b1 * b1 + b2 * b2 + 2 * (b0 * b1 + b1 * b2) * freqs.cos() + 2 * b0 * b2 * (2 * freqs).cos()) /
-               (1.f + a1 * a1 + a2 * a2 + 2 * (a1 + a1 * a2) * freqs.cos() + 2 * a2 * (2 * freqs).cos()).max(1e-20f);
-    }
-
-    Eigen::ArrayXf getFilter() const
+    Eigen::ArrayXf getSosFilter() const
     {
         Eigen::ArrayXf sos(6);
         sos << b0, b1, b2, 1.f, a1, a2;
@@ -112,23 +103,12 @@ class IIRFilterCascaded : public AlgorithmImplementation<IIRFilterConfiguration,
         }
     }
 
-    // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyResponse(int nBands) const
-    {
-        Eigen::ArrayXf response = Eigen::ArrayXf::Constant(nBands, gain);
-        for (auto i = 0; i < C.nSos; i++)
-        {
-            response *= filters[i].getPowerFrequencyResponse(nBands);
-        }
-        return response;
-    }
-
-    Eigen::ArrayXXf getFilter() const
+    Eigen::ArrayXXf getSosFilter() const
     {
         Eigen::ArrayXXf sos(6, C.nSos);
         for (auto i = 0; i < C.nSos; i++)
         {
-            sos.col(i) = filters[i].getFilter();
+            sos.col(i) = filters[i].getSosFilter();
         }
         return sos;
     }

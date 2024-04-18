@@ -46,9 +46,6 @@ class IIRFilter : public Algorithm<IIRFilterConfiguration>
     // [a2 aa2 ... ]
     void setFilter(I::Real2D sos, float gain);
 
-    Eigen::ArrayXXf getFilter() const;
+    Eigen::ArrayXXf getSosFilter() const;
     float getGain() const;
-
-    // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyResponse(int nBands);
 };

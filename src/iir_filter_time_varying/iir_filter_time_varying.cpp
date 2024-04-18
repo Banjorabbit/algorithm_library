@@ -9,14 +9,9 @@ Eigen::ArrayXf IIRFilterTimeVarying::getSosFilter(float cutoff, float gain, floa
     return static_cast<Implementation<StateVariableFilter, IIRFilterTimeVaryingConfiguration> *>(pimpl.get())->algo.getSosFilter(cutoff, gain, resonance);
 }
 
-Eigen::ArrayXf IIRFilterTimeVarying::getPowerFrequencyResponse(int nBands, float cutoff, float gain, float resonance) const
+Eigen::Array3f IIRFilterTimeVarying::setUserDefinedSosFilter(I::Real sos)
 {
-    return static_cast<Implementation<StateVariableFilter, IIRFilterTimeVaryingConfiguration> *>(pimpl.get())->algo.getPowerFrequencyResponse(nBands, cutoff, gain, resonance);
-}
-
-Eigen::Array3f IIRFilterTimeVarying::setUserDefinedFilter(I::Real sos)
-{
-    return static_cast<Implementation<StateVariableFilter, IIRFilterTimeVaryingConfiguration> *>(pimpl.get())->algo.setUserDefinedFilter(sos);
+    return static_cast<Implementation<StateVariableFilter, IIRFilterTimeVaryingConfiguration> *>(pimpl.get())->algo.setUserDefinedSosFilter(sos);
 }
 
 // ------------------------------------------ IIRFilterCascadeTimeVarying and StateVariableFilterCascade glue layer
@@ -46,13 +41,6 @@ IIRFilterTimeVaryingConfiguration::Parameters::FilterTypes IIRFilterCascadeTimeV
     return static_cast<Implementation<StateVariableFilterCascade, IIRFilterCascadeTimeVaryingConfiguration> *>(pimpl.get())->algo.getFilterType(index);
 }
 
-// get overall power frequency response  given filter characteristics (uses internal filter types and sample rate)
-Eigen::ArrayXf IIRFilterCascadeTimeVarying::getPowerFrequencyResponse(int nBands, I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const
-{
-    return static_cast<Implementation<StateVariableFilterCascade, IIRFilterCascadeTimeVaryingConfiguration> *>(pimpl.get())
-        ->algo.getPowerFrequencyResponse(nBands, cutoffSos, gainSos, resonanceSos);
-}
-
 // get all sos filter coefficients given filter characteristics (uses internal filter types and sample rate)
 Eigen::ArrayXXf IIRFilterCascadeTimeVarying::getSosFilter(I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const
 {
@@ -67,7 +55,7 @@ float IIRFilterCascadeTimeVarying::getGain() const
 }
 
 // set P.filterType to USER_DEFINED, return cutoff, resonance and gain, and set cLP, cBP and cHP for each second order section
-Eigen::Array3Xf IIRFilterCascadeTimeVarying::setUserDefinedFilter(I::Real2D sos)
+Eigen::Array3Xf IIRFilterCascadeTimeVarying::setUserDefinedSosFilter(I::Real2D sos)
 {
-    return static_cast<Implementation<StateVariableFilterCascade, IIRFilterCascadeTimeVaryingConfiguration> *>(pimpl.get())->algo.setUserDefinedFilter(sos);
+    return static_cast<Implementation<StateVariableFilterCascade, IIRFilterCascadeTimeVaryingConfiguration> *>(pimpl.get())->algo.setUserDefinedSosFilter(sos);
 }

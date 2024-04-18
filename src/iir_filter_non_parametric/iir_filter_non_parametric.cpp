@@ -21,24 +21,14 @@ void IIRFilterNonParametric::setFilter(I::Real frequencies, I::Real gains)
     else { static_cast<IIRFilterSVFNonParametricSingleBufferImpl *>(pimpl.get())->algo.setFilter(frequencies, gains); }
 }
 
-Eigen::ArrayXXf IIRFilterNonParametric::getFilter() const
+Eigen::ArrayXXf IIRFilterNonParametric::getSosFilter() const
 {
-    if (getCoefficients().filterImplementation == Coefficients::TDF) { return static_cast<IIRFilterTDFNonParametricSingleBufferImpl *>(pimpl.get())->algo.getFilter(); }
-    else { return static_cast<IIRFilterSVFNonParametricSingleBufferImpl *>(pimpl.get())->algo.getFilter(); }
+    if (getCoefficients().filterImplementation == Coefficients::TDF) { return static_cast<IIRFilterTDFNonParametricSingleBufferImpl *>(pimpl.get())->algo.getSosFilter(); }
+    else { return static_cast<IIRFilterSVFNonParametricSingleBufferImpl *>(pimpl.get())->algo.getSosFilter(); }
 }
 
 float IIRFilterNonParametric::getGain() const
 {
     if (getCoefficients().filterImplementation == Coefficients::TDF) { return static_cast<IIRFilterTDFNonParametricSingleBufferImpl *>(pimpl.get())->algo.getGain(); }
     else { return static_cast<IIRFilterSVFNonParametricSingleBufferImpl *>(pimpl.get())->algo.getGain(); }
-}
-
-// get power frequency response evaluated uniformly from 0 to pi in nBands points
-Eigen::ArrayXf IIRFilterNonParametric::getPowerFrequencyResponse(int nBands) const
-{
-    if (getCoefficients().filterImplementation == Coefficients::TDF)
-    {
-        return static_cast<IIRFilterTDFNonParametricSingleBufferImpl *>(pimpl.get())->algo.getPowerFrequencyResponse(nBands);
-    }
-    else { return static_cast<IIRFilterSVFNonParametricSingleBufferImpl *>(pimpl.get())->algo.getPowerFrequencyResponse(nBands); }
 }

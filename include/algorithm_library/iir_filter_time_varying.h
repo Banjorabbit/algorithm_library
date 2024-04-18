@@ -72,12 +72,11 @@ class IIRFilterTimeVarying : public Algorithm<IIRFilterTimeVaryingConfiguration>
 
     // return filter as second-order section
     Eigen::ArrayXf getSosFilter(float cutoff, float gain, float resonance) const;
-    Eigen::ArrayXf getPowerFrequencyResponse(int nBands, float cutoff, float gain, float resonance) const;
 
     // Given a second order section of the type:
     // sos = [b0 b1, b2, 1.f, a1, a2]
     // set P.filterType to USER_DEFINED and convert sos to internal representation. Return cutoff, gain and resonance in an array.
-    Eigen::Array3f setUserDefinedFilter(I::Real sos);
+    Eigen::Array3f setUserDefinedSosFilter(I::Real sos);
 };
 
 // Configuration of cascade of time-varying IIR filters that can be modified at each new time sample.
@@ -145,9 +144,6 @@ class IIRFilterCascadeTimeVarying : public Algorithm<IIRFilterCascadeTimeVarying
     void setFilterType(int index, IIRFilterTimeVaryingConfiguration::Parameters::FilterTypes type);
     IIRFilterTimeVaryingConfiguration::Parameters::FilterTypes getFilterType(int index) const;
 
-    // get overall power frequency response  given filter characteristics (uses internal filter types)
-    Eigen::ArrayXf getPowerFrequencyResponse(int nBands, I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const;
-
     // get all sos filter coefficients given filter characteristics (uses internal filter types)
     Eigen::ArrayXXf getSosFilter(I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const;
 
@@ -162,5 +158,5 @@ class IIRFilterCascadeTimeVarying : public Algorithm<IIRFilterCascadeTimeVarying
     // [a1 aa1 ... ]
     // [a2 aa2 ... ]
     // set P.filterType to USER_DEFINED, return cutoff, resonance and gain, and set cLP, cBP and cHP for each second order section
-    Eigen::Array3Xf setUserDefinedFilter(I::Real2D sos);
+    Eigen::Array3Xf setUserDefinedSosFilter(I::Real2D sos);
 };

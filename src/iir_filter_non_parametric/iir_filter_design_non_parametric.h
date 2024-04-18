@@ -31,10 +31,7 @@ class IIRFilterTDFNonParametric : public AlgorithmImplementation<IIRFilterNonPar
         filter.setFilter(sos, gain);
     }
 
-    // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    auto getPowerFrequencyResponse(int nBands) const { return filter.getPowerFrequencyResponse(nBands); }
-
-    auto getFilter() const { return filter.getFilter(); }
+    auto getSosFilter() const { return filter.getSosFilter(); }
 
     float getGain() const { return filter.getGain(); }
 
@@ -68,17 +65,14 @@ class IIRFilterSVFNonParametric : public AlgorithmImplementation<IIRFilterNonPar
         Eigen::ArrayXXf sos(6, C.nSos);
         float g;
         filterDesignerNonParametric.process({frequencies, gains}, {sos, g});
-        Eigen::Array3Xf cgr = filter.setUserDefinedFilter(sos);
+        Eigen::Array3Xf cgr = filter.setUserDefinedSosFilter(sos);
         cutoff = cgr.row(0).transpose();
         gain = cgr.row(1).transpose();
         resonance = cgr.row(2).transpose();
         filter.setGain(g);
     }
 
-    // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    auto getPowerFrequencyResponse(int nBands) const { return filter.getPowerFrequencyResponse(nBands, cutoff, gain, resonance); }
-
-    auto getFilter() const { return filter.getSosFilter(cutoff, gain, resonance); }
+    auto getSosFilter() const { return filter.getSosFilter(cutoff, gain, resonance); }
 
     float getGain() const { return filter.getGain(); }
 

@@ -82,32 +82,16 @@ class StateVariableFilter : public AlgorithmImplementation<IIRFilterTimeVaryingC
         return c;
     }
 
-    // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyResponse(int nBands, float cutoff, float gain, float resonance) const
-    {
-        Eigen::ArrayXf c = getSosFilter(cutoff, gain, resonance);
-        const float b0 = c(0);
-        const float b1 = c(1);
-        const float b2 = c(2);
-        const float a1 = c(4);
-        const float a2 = c(5);
-        Eigen::ArrayXf freqs = Eigen::ArrayXf::LinSpaced(nBands, 0, 3.14159f);
-        Eigen::ArrayXf freqsCos = freqs.cos();
-        Eigen::ArrayXf freqs2Cos = (2 * freqs).cos();
-        return (b0 * b0 + b1 * b1 + b2 * b2 + 2 * (b0 * b1 + b1 * b2) * freqsCos + 2 * b0 * b2 * freqs2Cos) /
-               (1.f + a1 * a1 + a2 * a2 + 2 * (a1 + a1 * a2) * freqsCos + 2 * a2 * freqs2Cos).max(1e-20f);
-    }
-
     // Given a second order section of the type:
     // sos = [b0, b1, b2, 1.f, a1, a2]
     // set P.filterType to USER_DEFINED, return cutoff, gain and resonance, and set cLP, cBP and cHP
-    Eigen::Array3f setUserDefinedFilter(I::Real sos)
+    Eigen::Array3f setUserDefinedSosFilter(I::Real sos)
     {
-        const float c45m = sos(4) - sos(5) - 1;
+        const float c45m = -sos(4) + sos(5) + 1;
         const float c45p = sos(4) + sos(5) + 1;
-        const float cutoff = std::sqrt(-sos(4) * sos(4) + sos(5) * sos(5) + 2 * sos(5) + 1) / c45m;
-        const float resonance = std::sqrt(-c45m * c45p) / (2 * (sos(5) - 1));
-        cHP = -(sos(0) - sos(1) + sos(2)) / c45m;
+        const float cutoff = std::sqrt(-sos(4) * sos(4) + sos(5) * sos(5) + 2 * sos(5) + 1) / std::fabs(c45m);
+        const float resonance = std::sqrt(c45m * c45p) / std::fabs(2 * (sos(5) - 1));
+        cHP = (sos(0) - sos(1) + sos(2)) / c45m;
         cBP = (-sos(0) + sos(2)) / (sos(5) - 1);
         cLP = (sos(0) + sos(1) + sos(2)) / c45p;
         const float gain = (cHP + cBP + cLP) / 3.f;
@@ -214,17 +198,6 @@ class StateVariableFilterCascade : public AlgorithmImplementation<IIRFilterCasca
 
     StateVariableFilter::Parameters::FilterTypes getFilterType(int index) const { return filters[index].getParameters().filterType; }
 
-    // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    Eigen::ArrayXf getPowerFrequencyResponse(int nBands, I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const
-    {
-        Eigen::ArrayXf response = Eigen::ArrayXf::Constant(nBands, gain);
-        for (auto i = 0; i < C.nSos; i++)
-        {
-            response *= filters[i].getPowerFrequencyResponse(nBands, cutoffSos(i), gainSos(i), resonanceSos(i));
-        }
-        return response;
-    }
-
     Eigen::ArrayXXf getSosFilter(I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) const
     {
         Eigen::ArrayXXf sos(6, C.nSos);
@@ -246,12 +219,12 @@ class StateVariableFilterCascade : public AlgorithmImplementation<IIRFilterCasca
     // [a1 aa1 ... ]
     // [a2 aa2 ... ]
     // set P.filterType to USER_DEFINED, return cutoff, resonance and gain, and set cLP, cBP and cHP for each second order section
-    Eigen::Array3Xf setUserDefinedFilter(I::Real2D sos)
+    Eigen::Array3Xf setUserDefinedSosFilter(I::Real2D sos)
     {
         Eigen::Array3Xf cgr(3, C.nSos);
         for (auto i = 0; i < C.nSos; i++)
         {
-            cgr.col(i) = filters[i].setUserDefinedFilter(sos.col(i));
+            cgr.col(i) = filters[i].setUserDefinedSosFilter(sos.col(i));
         }
         return cgr;
     }
