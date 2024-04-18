@@ -210,32 +210,25 @@ PYBIND11_MODULE(PythonAlgorithmLibrary, m)
     DEFINE_PYTHON_INTERFACE(MinPhaseSpectrum);
     DEFINE_PYTHON_INTERFACE(Normal3d);
     DEFINE_PYTHON_INTERFACE(SolverToeplitz);
-    DEFINE_PYTHON_INTERFACE(Spectrogram)
-        .def("getValidFFTSize", [](Spectrogram &algo, int fftSize) { return Spectrogram::getValidFFTSize(fftSize); })
+    DEFINE_PYTHON_INTERFACE(Spectrogram) //
         .def("getNFrames", [](Spectrogram &algo, int inputSize, int bufferSize) { return Spectrogram::Configuration::getNFrames(inputSize, bufferSize); });
     DEFINE_PYTHON_INTERFACE(Spline);
     DEFINE_PYTHON_INTERFACE(DCRemover);
     DEFINE_PYTHON_INTERFACE(ActivityDetection);
     DEFINE_PYTHON_INTERFACE(NoiseEstimation);
-    DEFINE_PYTHON_INTERFACE(IIRFilter)
+    DEFINE_PYTHON_INTERFACE(IIRFilter) //
         .def("setFilter", [](IIRFilter &algo, Eigen::ArrayXXf sos) { algo.setFilter(sos, 1); })
-        .def("getFilter", [](IIRFilter &algo) { return algo.getFilter(); })
-        .def("getPowerFrequencyResponse", [](IIRFilter &algo, int nBands) { return algo.getPowerFrequencyResponse(nBands); });
-    DEFINE_PYTHON_INTERFACE(IIRFilterTimeVarying)
-        .def("getSosFilter", [](IIRFilterTimeVarying &algo, float cutoff, float gain, float resonance) { return algo.getSosFilter(cutoff, gain, resonance); })
-        .def("getPowerFrequencyResponse", [](IIRFilterTimeVarying &algo, int nBands, float cutoff, float gain, float resonance) {
-            return algo.getPowerFrequencyResponse(nBands, cutoff, gain, resonance);
-        });
+        .def("getSosFilter", [](IIRFilter &algo) { return algo.getSosFilter(); });
+    DEFINE_PYTHON_INTERFACE(IIRFilterTimeVarying) //
+        .def("getSosFilter", [](IIRFilterTimeVarying &algo, float cutoff, float gain, float resonance) { return algo.getSosFilter(cutoff, gain, resonance); });
     DEFINE_PYTHON_INTERFACE(IIRFilterCascadeTimeVarying)
         .def("getSosFilter",
              [](IIRFilterCascadeTimeVarying &algo, I::Real cutoffSos, I::Real gainSos, I::Real resonanceSos) { return algo.getSosFilter(cutoffSos, gainSos, resonanceSos); })
-        .def("getPowerFrequencyResponse", [](IIRFilterCascadeTimeVarying &algo, int nBands, I::Real cutoff, I::Real gain,
-                                             I::Real resonance) { return algo.getPowerFrequencyResponse(nBands, cutoff, gain, resonance); })
         .def("setFilterTypes", [](IIRFilterCascadeTimeVarying &algo, const nlohmann::json &vec) { algo.setFilterTypes(vec); })
         .def("getFilterTypes",
              [](IIRFilterCascadeTimeVarying &algo) {
                  nlohmann::json temp = algo.getFilterTypes();
                  return temp;
              })
-        .def("setUserDefinedFilter", [](IIRFilterCascadeTimeVarying &algo, I::Real2D sos) { return algo.setUserDefinedFilter(sos); });
+        .def("setUserDefinedSosFilter", [](IIRFilterCascadeTimeVarying &algo, I::Real2D sos) { return algo.setUserDefinedSosFilter(sos); });
 }
