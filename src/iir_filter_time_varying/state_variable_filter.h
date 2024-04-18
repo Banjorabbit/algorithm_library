@@ -161,7 +161,6 @@ class StateVariableFilter : public AlgorithmImplementation<IIRFilterTimeVaryingC
 };
 
 // Cascade of StateVariableFilter
-// TODO: This algorithm is not finished!
 class StateVariableFilterCascade : public AlgorithmImplementation<IIRFilterCascadeTimeVaryingConfiguration, StateVariableFilterCascade>
 {
   public:
