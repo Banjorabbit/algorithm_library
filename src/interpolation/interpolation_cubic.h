@@ -18,7 +18,7 @@ class InterpolationCubicSample : public AlgorithmImplementation<InterpolationSam
     InterpolationCubicSample(Coefficients c = Coefficients()) : BaseAlgorithm{c} {}
 
   private:
-    inline void processOn(Input input, Output output)
+    inline void processAlgorithm(Input input, Output output)
     {
         const auto c0 = input.samples(1);
         const auto c1 = .5f * (input.samples(2) - input.samples(0));
@@ -43,7 +43,7 @@ class InterpolationCubic : public AlgorithmImplementation<InterpolationConfigura
     DEFINE_MEMBER_ALGORITHMS(interpolation)
 
   private:
-    inline void processOn(Input x, Output y)
+    inline void processAlgorithm(Input x, Output y)
     {
         for (auto i = 0; i < x.fractionalIndices.size(); i++)
         {
@@ -78,7 +78,7 @@ class InterpolationCubicConstant : public AlgorithmImplementation<InterpolationC
     }
 
   private:
-    inline void processOn(Input x, Output y)
+    inline void processAlgorithm(Input x, Output y)
     {
         const int N = static_cast<int>(x.size()) - 3; // number of output samples
         assert(N > 0);                                // ASSERT: must be at least 4 input samples to give 1 output sample

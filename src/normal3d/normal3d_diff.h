@@ -30,7 +30,7 @@ class Normal3dDiff : public AlgorithmImplementation<Normal3dConfiguration, Norma
     }
 
   private:
-    inline void processOn(Input input, Output output)
+    inline void processAlgorithm(Input input, Output output)
     {
         for (auto frame = 0; frame < input.cols(); frame++)
         {

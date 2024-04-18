@@ -38,7 +38,7 @@ class BeamformerMVDR : public AlgorithmImplementation<BeamformerConfiguration, B
     SpeechUpdateDecisions getSpeechDecision() const { return speechDecision; }
 
   private:
-    void processOn(Input input, Output yFreq)
+    void processAlgorithm(Input input, Output yFreq)
     {
         bool activityFlag = input.speechActivity;
 

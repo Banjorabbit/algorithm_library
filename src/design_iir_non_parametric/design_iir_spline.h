@@ -26,7 +26,7 @@ class DesignIIRSpline : public AlgorithmImplementation<DesignIIRNonParametricCon
     DEFINE_MEMBER_ALGORITHMS(splineCalculation, filterDesigner)
 
   private:
-    void processOn(Input input, Output output)
+    void processAlgorithm(Input input, Output output)
     {
         frequencies.head(2) = -input.frequencies.head(2).reverse();
         frequencies.segment(2, input.frequencies.rows()) = input.frequencies;

@@ -37,7 +37,7 @@ class FFTReal : public AlgorithmImplementation<FFTConfiguration, FFTReal>
     }
 
   private:
-    inline void processOn(Input xTime, Output yFreq)
+    inline void processAlgorithm(Input xTime, Output yFreq)
     {
         // After the first channel, yFreq is not 16 byte alligned due to FFTSize/2+1 size so we can't write output to it from FFT transform
         for (auto channel = 0; channel < xTime.cols(); channel++)

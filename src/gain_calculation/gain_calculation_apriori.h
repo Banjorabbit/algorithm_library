@@ -18,7 +18,7 @@ class GainCalculationApriori : public AlgorithmImplementation<GainCalculationCon
     }
 
   private:
-    inline void processOn(Input snrAposteriori, Output gain)
+    inline void processAlgorithm(Input snrAposteriori, Output gain)
     {
         snr = snrAposteriori.max(1.00001f);                                                         // limit aposteriori snr slightly above 1.f
         snr = .98f * snr * gainSmoothed.abs2() + 0.02f * snr - 0.02f;                               // snr = 0.98 * Phat_s / Phat_n + 0.02 * (P_{s+n} / Phat_n - 1)

@@ -24,7 +24,7 @@ class DCRemoverFirstOrder : public AlgorithmImplementation<DCRemoverConfiguratio
     }
 
   private:
-    void processOn(Input input, Output output)
+    void processAlgorithm(Input input, Output output)
     {
         for (auto channel = 0; channel < C.nChannels; channel++)
         {

@@ -43,7 +43,7 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
     DEFINE_MEMBER_ALGORITHMS(filterbank0, filterbank1, filterbank2)
 
   private:
-    void inline processOn(Input input, Output output)
+    void inline processAlgorithm(Input input, Output output)
     {
         for (auto nFrame = 0; nFrame < Configuration::getNFrames(input.size(), C.bufferSize); nFrame++)
         {

@@ -54,7 +54,7 @@ class StreamingMinMaxLemire : public AlgorithmImplementation<StreamingMinMaxConf
     }
 
   private:
-    void processOn(Input input, Output output)
+    void processAlgorithm(Input input, Output output)
     {
         for (auto channel = 0; channel < C.nChannels; channel++)
         {
@@ -186,7 +186,7 @@ class FilterMinMaxLemire : public AlgorithmImplementation<FilterMinMaxConfigurat
     void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
 
   private:
-    void processOn(Input input, Output output)
+    void processAlgorithm(Input input, Output output)
     {
         streaming.resetInitialValue(input.row(0).transpose());
         // this output is discarded and is only used to update internal values
@@ -240,7 +240,7 @@ class StreamingMaxLemire : public AlgorithmImplementation<StreamingMaxConfigurat
     }
 
   private:
-    void processOn(Input input, Output output)
+    void processAlgorithm(Input input, Output output)
     {
         for (auto channel = 0; channel < C.nChannels; channel++)
         {
@@ -346,7 +346,7 @@ class StreamingMinLemire : public AlgorithmImplementation<StreamingMinConfigurat
     }
 
   private:
-    void processOn(Input input, Output output)
+    void processAlgorithm(Input input, Output output)
     {
         for (auto channel = 0; channel < C.nChannels; channel++)
         {
@@ -438,7 +438,7 @@ class FilterMaxLemire : public AlgorithmImplementation<FilterMaxConfiguration, F
     void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
 
   private:
-    void processOn(Input input, Output output)
+    void processAlgorithm(Input input, Output output)
     {
         streaming.resetInitialValue(input.row(0));
         // this output is discarded and is only used to update internal values
@@ -478,7 +478,7 @@ class FilterMinLemire : public AlgorithmImplementation<FilterMinConfiguration, F
     void resetInitialValue(I::Real iOld) { streaming.resetInitialValue(iOld); }
 
   private:
-    void processOn(Input input, Output output)
+    void processAlgorithm(Input input, Output output)
     {
         streaming.resetInitialValue(input.row(0));
         // this output is discarded and is only used to update internal values

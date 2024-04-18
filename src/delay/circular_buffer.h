@@ -57,7 +57,7 @@ class CircularBufferSingleChannel : public AlgorithmImplementation<DelayConfigur
 
   private:
     // push input values into buffer and write output values from buffer
-    inline void processOn(Input input, Output output)
+    inline void processAlgorithm(Input input, Output output)
     {
         for (auto sample = 0; sample < input.rows(); sample++)
         {
@@ -161,7 +161,7 @@ class CircularBuffer : public AlgorithmImplementation<DelayConfiguration, Circul
 
   private:
     // push input values into buffer and write output values from buffer
-    inline void processOn(Input input, Output output)
+    inline void processAlgorithm(Input input, Output output)
     {
         for (auto sample = 0; sample < input.rows(); sample++)
         {

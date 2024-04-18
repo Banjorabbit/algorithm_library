@@ -18,7 +18,7 @@ class NoiseEstimationActivityDetection : public AlgorithmImplementation<NoiseEst
     DEFINE_MEMBER_ALGORITHMS(activityDetection)
 
   private:
-    inline void processOn(Input powerNoisy, Output output)
+    inline void processAlgorithm(Input powerNoisy, Output output)
     {
         activityDetection.process(powerNoisy, activity);
         output = activityDetection.getPowerNoise();
@@ -51,7 +51,7 @@ class NoiseEstimationOutputActivityDetection : public AlgorithmImplementation<No
     DEFINE_MEMBER_ALGORITHMS(activityDetection)
 
   private:
-    inline void processOn(Input powerNoisy, Output output)
+    inline void processAlgorithm(Input powerNoisy, Output output)
     {
         activityDetection.process(powerNoisy, output.activity);
         output.powerNoise = activityDetection.getPowerNoise();
@@ -82,7 +82,7 @@ class NoiseEstimationOutputFusedActivityDetection : public AlgorithmImplementati
     DEFINE_MEMBER_ALGORITHMS(activityDetection)
 
   private:
-    inline void processOn(Input powerNoisy, Output output)
+    inline void processAlgorithm(Input powerNoisy, Output output)
     {
         activityDetection.process(powerNoisy, output.activity);
         output.powerNoise = activityDetection.getPowerNoise();

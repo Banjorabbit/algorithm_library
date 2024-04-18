@@ -36,7 +36,7 @@ class IIRFilterTDFNonParametric : public AlgorithmImplementation<IIRFilterNonPar
     float getGain() const { return filter.getGain(); }
 
   private:
-    inline void processOn(Input input, Output output) { filter.process(input, output); }
+    inline void processAlgorithm(Input input, Output output) { filter.process(input, output); }
 
     friend BaseAlgorithm;
 };
@@ -77,7 +77,7 @@ class IIRFilterSVFNonParametric : public AlgorithmImplementation<IIRFilterNonPar
     float getGain() const { return filter.getGain(); }
 
   private:
-    inline void processOn(Input input, Output output) { filter.process({input, cutoff, gain, resonance}, output); }
+    inline void processAlgorithm(Input input, Output output) { filter.process({input, cutoff, gain, resonance}, output); }
 
     size_t getDynamicSizeVariables() const final
     {

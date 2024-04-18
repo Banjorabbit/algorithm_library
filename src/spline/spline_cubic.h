@@ -17,7 +17,7 @@ class SplineCubic : public AlgorithmImplementation<SplineConfiguration, SplineCu
     }
 
   private:
-    inline void processOn(Input x, Output y)
+    inline void processAlgorithm(Input x, Output y)
     {
         using namespace Eigen;
         // for each spline

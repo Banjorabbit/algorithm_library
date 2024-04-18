@@ -18,29 +18,28 @@ class CalculateFilterPowerSpectrum : public AlgorithmImplementation<FilterPowerS
     }
 
   private:
-
     // get power frequency response evaluated uniformly from 0 to pi in nBands points
-    inline void processOn(Input input, Output output)
+    inline void processAlgorithm(Input input, Output output)
     {
         // first 2nd order filter
-        const float b0 = input(0,0);
-        const float b1 = input(1,0);
-        const float b2 = input(2,0);
-        const float a1 = input(4,0);
-        const float a2 = input(5,0);
+        const float b0 = input(0, 0);
+        const float b1 = input(1, 0);
+        const float b2 = input(2, 0);
+        const float a1 = input(4, 0);
+        const float a2 = input(5, 0);
         output = (b0 * b0 + b1 * b1 + b2 * b2 + 2 * (b0 * b1 + b1 * b2) * freqsCos + 2 * b0 * b2 * freqs2Cos) /
-               (1.f + a1 * a1 + a2 * a2 + 2 * (a1 + a1 * a2) * freqsCos + 2 * a2 * freqs2Cos).max(1e-20f);
-        
+                 (1.f + a1 * a1 + a2 * a2 + 2 * (a1 + a1 * a2) * freqsCos + 2 * a2 * freqs2Cos).max(1e-20f);
+
         // additional 2nd order filters (code has to be duplicated to avoid heap allocation when doing output *= ...)
         for (auto i = 1; i < input.cols(); i++)
         {
-            const float b0 = input(0,i);
-            const float b1 = input(1,i);
-            const float b2 = input(2,i);
-            const float a1 = input(4,i);
-            const float a2 = input(5,i);
+            const float b0 = input(0, i);
+            const float b1 = input(1, i);
+            const float b2 = input(2, i);
+            const float a1 = input(4, i);
+            const float a2 = input(5, i);
             output *= (b0 * b0 + b1 * b1 + b2 * b2 + 2 * (b0 * b1 + b1 * b2) * freqsCos + 2 * b0 * b2 * freqs2Cos) /
-               (1.f + a1 * a1 + a2 * a2 + 2 * (a1 + a1 * a2) * freqsCos + 2 * a2 * freqs2Cos).max(1e-20f);
+                      (1.f + a1 * a1 + a2 * a2 + 2 * (a1 + a1 * a2) * freqsCos + 2 * a2 * freqs2Cos).max(1e-20f);
         }
     }
 

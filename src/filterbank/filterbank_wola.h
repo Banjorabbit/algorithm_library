@@ -54,7 +54,7 @@ class FilterbankAnalysisWOLA : public AlgorithmImplementation<FilterbankAnalysis
     }
 
   private:
-    inline void processOn(Input xTime, Output yFreq)
+    inline void processAlgorithm(Input xTime, Output yFreq)
     {
         timeBuffer.topRows(overlap) = timeBuffer.bottomRows(overlap);
         timeBuffer.bottomRows(C.bufferSize) = xTime;
@@ -120,7 +120,7 @@ class FilterbankSynthesisWOLA : public AlgorithmImplementation<FilterbankSynthes
     float getDelaySamples() const { return FilterbankWOLA::getDelaySamples(window); }
 
   private:
-    inline void processOn(Input xFreq, Output yTime)
+    inline void processAlgorithm(Input xFreq, Output yTime)
     {
         for (auto channel = 0; channel < C.nChannels; channel++)
         {

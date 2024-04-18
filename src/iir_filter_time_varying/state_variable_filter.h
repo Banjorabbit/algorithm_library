@@ -106,7 +106,7 @@ class StateVariableFilter : public AlgorithmImplementation<IIRFilterTimeVaryingC
     }
 
   private:
-    inline void processOn(Input input, Output output)
+    inline void processAlgorithm(Input input, Output output)
     {
         for (auto sample = 0; sample < input.xTime.rows(); sample++)
         {
@@ -230,7 +230,7 @@ class StateVariableFilterCascade : public AlgorithmImplementation<IIRFilterCasca
     }
 
   private:
-    inline void processOn(Input input, Output output)
+    inline void processAlgorithm(Input input, Output output)
     {
         output = input.xTime * gain;
         for (auto i = 0; i < C.nSos; i++)

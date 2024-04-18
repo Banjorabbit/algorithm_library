@@ -57,7 +57,7 @@ class CriticalBandsBarkSum : public CriticalBandsBark, public AlgorithmImplement
     inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
 
   private:
-    inline void processOn(Input xPower, Output yPower)
+    inline void processAlgorithm(Input xPower, Output yPower)
     {
         for (auto channel = 0; channel < xPower.cols(); channel++)
         {
@@ -83,7 +83,7 @@ class CriticalBandsBarkMax : public CriticalBandsBark, public AlgorithmImplement
     inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
 
   private:
-    inline void processOn(Input xPower, Output yPower)
+    inline void processAlgorithm(Input xPower, Output yPower)
     {
         for (auto channel = 0; channel < xPower.cols(); channel++)
         {
@@ -109,7 +109,7 @@ class CriticalBandsBarkMean : public CriticalBandsBark, public AlgorithmImplemen
     inline void inverse(I::Real2D xPower, O::Real2D yPower) { CriticalBandsBark::inverse(xPower, yPower, C.nBands); }
 
   private:
-    inline void processOn(Input xPower, Output yPower)
+    inline void processAlgorithm(Input xPower, Output yPower)
     {
         for (auto channel = 0; channel < xPower.cols(); channel++)
         {

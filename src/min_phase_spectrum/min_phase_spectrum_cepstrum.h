@@ -21,7 +21,7 @@ class MinPhaseSpectrumCepstrum : public AlgorithmImplementation<MinPhaseSpectrum
     DEFINE_MEMBER_ALGORITHMS(fft)
 
   private:
-    inline void processOn(Input magnitude, Output spectrum)
+    inline void processAlgorithm(Input magnitude, Output spectrum)
     {
         using namespace std::complex_literals;
 

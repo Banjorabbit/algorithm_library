@@ -82,14 +82,14 @@ struct hasPublicProcessOn : std::false_type
 {};
 
 template <typename T>
-struct hasPublicProcessOn<T, decltype(void(&T::processOn))> : std::true_type
+struct hasPublicProcessOn<T, decltype(void(&T::processAlgorithm))> : std::true_type
 {};
 
 template <typename Talgo>
 bool assertInterfaceTest()
 {
     // The following tests are compile-time tests.
-    static_assert(!hasPublicProcessOn<Talgo>(), "processOn is declared as public method.");
+    static_assert(!hasPublicProcessOn<Talgo>(), "processAlgorithm is declared as public method.");
 
     constexpr bool flagReset = std::is_same<decltype(&Talgo::reset), decltype(&Talgo::BaseAlgorithm::reset)>::value;
     static_assert(flagReset, "reset() is declared in derived algorithm and hiding reset() in base class.");
@@ -219,7 +219,7 @@ bool processTest()
         durationAvg += time / 100;
         durationMax = std::max(durationMax, time);
     }
-    fmt::print("Execution time of processOn is (min - avg. - max): {:.3f} us - {:.3f} us - {:.3f} us.\n", durationMin, durationAvg, durationMax);
+    fmt::print("Execution time of processAlgorithm is (min - avg. - max): {:.3f} us - {:.3f} us - {:.3f} us.\n", durationMin, durationAvg, durationMax);
     if (!algo.validOutput(output))
     {
         fmt::print("processTest failed: output is not valid.\n");

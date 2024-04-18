@@ -12,8 +12,8 @@ class BeamformerPath : public AlgorithmImplementation<PreprocessingPathConfigura
 
   public:
     BeamformerPath(const Coefficients &c = Coefficients())
-        : BaseAlgorithm{c}, nBands{FFTConfiguration::convertFFTSizeToNBands(
-                                4 * c.bufferSize)}, // important to define this before member algorithms, since nBands is passed to constructors!
+        : BaseAlgorithm{c},
+          nBands{FFTConfiguration::convertFFTSizeToNBands(4 * c.bufferSize)}, // important to define this before member algorithms, since nBands is passed to constructors!
           filterbank({.nChannels = c.nChannels, .bufferSize = c.bufferSize, .nBands = nBands, .filterbankType = FilterbankAnalysisConfiguration::Coefficients::HANN}),
           filterbankInverse(
               {.nChannels = 1, .bufferSize = c.bufferSize, .nBands = nBands, .filterbankType = FilterbankSynthesisConfiguration::Coefficients::HANN}), // only 1 channel
@@ -46,7 +46,7 @@ class BeamformerPath : public AlgorithmImplementation<PreprocessingPathConfigura
         return size;
     }
 
-    void processOn(Input input, Output output)
+    void processAlgorithm(Input input, Output output)
     {
         dcRemover.process(input, xTime);
         filterbank.process(xTime, xFreq);

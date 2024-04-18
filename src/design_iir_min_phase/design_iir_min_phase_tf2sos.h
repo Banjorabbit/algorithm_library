@@ -97,7 +97,7 @@ class DesignIIRMinPhaseTF2SOS : public AlgorithmImplementation<DesignIIRMinPhase
     }
 
   private:
-    void processOn(Input magnitudeSpectrum, Output output)
+    void processAlgorithm(Input magnitudeSpectrum, Output output)
     {
         assert(magnitudeSpectrum.rows() == C.nBands);
         minPhaseCalculator.process(magnitudeSpectrum, xFreq);

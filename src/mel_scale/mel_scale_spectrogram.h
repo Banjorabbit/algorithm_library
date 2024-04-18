@@ -47,7 +47,7 @@ class MelScaleSpectrogram : public AlgorithmImplementation<MelScaleConfiguration
     }
 
   private:
-    inline void processOn(Input input, Output output)
+    inline void processAlgorithm(Input input, Output output)
     {
         for (auto channel = 0; channel < input.cols(); channel++)
         {

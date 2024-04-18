@@ -51,7 +51,7 @@ class IIRFilter2ndOrder : public AlgorithmImplementation<IIRFilterConfiguration,
     }
 
   private:
-    inline void processOn(Input input, Output output)
+    inline void processAlgorithm(Input input, Output output)
     {
         for (auto sample = 0; sample < input.rows(); sample++)
         {
@@ -116,7 +116,7 @@ class IIRFilterCascaded : public AlgorithmImplementation<IIRFilterConfiguration,
     float getGain() const { return gain; }
 
   private:
-    inline void processOn(Input input, Output output)
+    inline void processAlgorithm(Input input, Output output)
     {
         output = input * gain;
         for (auto i = 0; i < C.nSos; i++)

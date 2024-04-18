@@ -159,7 +159,7 @@ class AlgorithmImplementation
     // Processing method. This is where the core of the algorithm is calculated.
     // When profiling using MSVC compiler it was found that CRTP is faster than virtual methods.
     // However, using GCC it was found that virtual methods are as fast as CRTP (maybe because the virtual methods in header files can be inlined?).
-    inline void process(Input input, Output output) { static_cast<Talgo &>(*this).processOn(input, output); }
+    inline void process(Input input, Output output) { static_cast<Talgo &>(*this).processAlgorithm(input, output); }
 
     // templated process functions that allows to call process with tuples
     template <typename... TupleTypes>

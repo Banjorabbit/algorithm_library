@@ -20,7 +20,7 @@ class SolverToeplitzSystem : public AlgorithmImplementation<SolverToeplitzConfig
     }
 
   private:
-    inline void processOn(Input x, Output y)
+    inline void processAlgorithm(Input x, Output y)
     {
         const auto nFilt = x.BRighthand.rows();
         const auto nChan = x.BRighthand.cols();

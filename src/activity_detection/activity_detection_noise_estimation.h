@@ -19,7 +19,7 @@ class ActivityDetectionNoiseEstimation : public AlgorithmImplementation<Activity
     inline const Eigen::ArrayXXf &getPowerNoise() const { return powerNoise; }
 
   private:
-    void processOn(Input powerNoisy, Output activity)
+    void processAlgorithm(Input powerNoisy, Output activity)
     {
         // activity detection
         activity = (powerNoisy / (powerNoise + 1e-20f) - 3.5f).cwiseMin(25.f);
@@ -79,7 +79,7 @@ class ActivityDetectionFusedNoiseEstimation : public AlgorithmImplementation<Act
     inline const Eigen::ArrayXXf &getPowerNoise() const { return activityDetection.getPowerNoise(); }
 
   private:
-    inline void processOn(Input powerNoisy, Output activityFlag)
+    inline void processAlgorithm(Input powerNoisy, Output activityFlag)
     {
         activityDetection.process(powerNoisy, activity);
         activityFlag = (powerNoisy.colwise().mean() > (getPowerNoise().colwise().mean() * 1.5 * P.activityThreshold))
