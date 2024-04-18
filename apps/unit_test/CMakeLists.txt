@@ -54,6 +54,7 @@ file(GLOB_RECURSE SOURCE_LIST_TEST_CPP CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/
 add_executable(${PROJECT_NAME} ${SOURCE_LIST_TEST_CPP})
 
 # We need to include this path in our search path
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/../../include ${PROJECT_SOURCE_DIR}/../../src)
 
 # The project depends on the following libraries

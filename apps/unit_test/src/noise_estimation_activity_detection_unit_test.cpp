@@ -1,5 +1,5 @@
-#include "framework/unit_test.h"
 #include "noise_estimation/noise_estimation_activity_detection.h"
+#include "unit_test.h"
 #include "gtest/gtest.h"
 
 using namespace Eigen;

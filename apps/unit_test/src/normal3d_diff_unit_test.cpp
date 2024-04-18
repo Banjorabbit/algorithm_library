@@ -1,5 +1,5 @@
-#include "framework/unit_test.h"
 #include "normal3d/normal3d_diff.h"
+#include "unit_test.h"
 #include "gtest/gtest.h"
 
 using namespace Eigen;

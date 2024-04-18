@@ -1,6 +1,6 @@
-#include "framework/unit_test.h"
 #include "iir_filter/iir_filter_2nd_order.h"
 #include "iir_filter_time_varying/state_variable_filter.h"
+#include "unit_test.h"
 #include "gtest/gtest.h"
 #include <fmt/ranges.h>
 using namespace Eigen;
@@ -33,7 +33,14 @@ TEST(StateVariableFilter, CheckConversion)
     Eigen::ArrayXXf input = Eigen::ArrayXXf::Zero(nSamples, c.nChannels);
     input.row(0).setOnes();
     Eigen::ArrayXXf output(nSamples, c.nChannels);
-    filter.process({input, cutoff.transpose().replicate(nSamples,1), gain.transpose().replicate(nSamples,1), resonance.transpose().replicate(nSamples,1),}, output);
+    filter.process(
+        {
+            input,
+            cutoff.transpose().replicate(nSamples, 1),
+            gain.transpose().replicate(nSamples, 1),
+            resonance.transpose().replicate(nSamples, 1),
+        },
+        output);
 
     // convert to sos
     Eigen::ArrayXXf sos = filter.getSosFilter(cutoff, gain, resonance);
@@ -43,7 +50,14 @@ TEST(StateVariableFilter, CheckConversion)
     // process filter with new filter
     Eigen::ArrayXXf output2(nSamples, c.nChannels);
     filter.reset();
-    filter.process({input, cgr.row(0).replicate(nSamples,1), cgr.row(1).replicate(nSamples,1), cgr.row(2).replicate(nSamples,1),}, output2);
+    filter.process(
+        {
+            input,
+            cgr.row(0).replicate(nSamples, 1),
+            cgr.row(1).replicate(nSamples, 1),
+            cgr.row(2).replicate(nSamples, 1),
+        },
+        output2);
 
     // check filter output is the same
     float error = (output - output2).abs2().sum() / output.abs2().sum();
@@ -51,16 +65,15 @@ TEST(StateVariableFilter, CheckConversion)
     EXPECT_LT(error, 1e-10f);
 
     // compare cutoff, gain and resonance error for USER_DEFINED filter type
-    float errorCutoff = std::fabs(cutoff(0) - cgr(0,0)) / cutoff(0);
-    float errorGain = std::fabs(gain(0) - cgr(1,0)) / gain(0);
-    float errorResonance = std::fabs(resonance(0) - cgr(2,0)) / resonance(0); 
+    float errorCutoff = std::fabs(cutoff(0) - cgr(0, 0)) / cutoff(0);
+    float errorGain = std::fabs(gain(0) - cgr(1, 0)) / gain(0);
+    float errorResonance = std::fabs(resonance(0) - cgr(2, 0)) / resonance(0);
     fmt::print("Cutoff error: {}\n", errorCutoff);
     fmt::print("Gain error: {}\n", errorGain);
     fmt::print("Resonance error: {}\n", errorResonance);
     EXPECT_LT(errorCutoff, 1e-6f);
     EXPECT_LT(errorGain, 1e-6f);
     EXPECT_LT(errorResonance, 1e-6f);
-
 }
 
 // check that the State Variable filter and IIRFilter2ndOrder filter has the same filter response given the same second-order-sections
@@ -96,7 +109,14 @@ TEST(StateVariableFilter, ComparetoIIRFilter2ndOrder)
 
     Eigen::ArrayXXf output(nSamples, c.nChannels);
     Eigen::ArrayXXf output2(nSamples, c.nChannels);
-    filter.process({input, cutoff.transpose().replicate(nSamples,1), gain.transpose().replicate(nSamples,1), resonance.transpose().replicate(nSamples,1),}, output);
+    filter.process(
+        {
+            input,
+            cutoff.transpose().replicate(nSamples, 1),
+            gain.transpose().replicate(nSamples, 1),
+            resonance.transpose().replicate(nSamples, 1),
+        },
+        output);
     filter2nd.process(input, output2);
 
     float error = (output - output2).abs2().sum() / output.abs2().sum();

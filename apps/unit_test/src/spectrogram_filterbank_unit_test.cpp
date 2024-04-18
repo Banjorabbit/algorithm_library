@@ -1,17 +1,17 @@
-#include "framework/unit_test.h"
-#include "spectrogram/spectrogram_nonlinear.h"
+#include "spectrogram/spectrogram_filterbank.h"
+#include "unit_test.h"
 #include "gtest/gtest.h"
 
 using namespace Eigen;
 
 // --------------------------------------------- TEST CASES ---------------------------------------------
 
-TEST(SpectrogramNonlinear, Interface) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<SpectrogramNonlinear>()); }
+TEST(SpectrogramFilterbank, Interface) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<SpectrogramFilterbank>()); }
 
 // description: test nFrames is a static function and that it returns correct number of frames.
-TEST(SpectrogramNonlinear, getNFrames)
+TEST(SpectrogramFilterbank, getNFrames)
 {
-    SpectrogramNonlinear spec;
+    Spectrogram spec;
     auto c = spec.getCoefficients();
     const int bufferSize = c.bufferSize;
     const int nSamples = 1e4;
