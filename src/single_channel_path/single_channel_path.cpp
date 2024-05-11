@@ -1,0 +1,3 @@
+#include "single_channel_path/noise_reduction_path.h"
+
+DEFINE_ALGORITHM_CONSTRUCTOR(SingleChannelPath, NoiseReductionPath, SingleChannelPathConfiguration)

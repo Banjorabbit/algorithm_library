@@ -8,6 +8,7 @@
 #include "design_iir_non_parametric/design_iir_spline.h"
 #include "fft/fft_real.h"
 #include "filter_min_max/filter_min_max_lemire.h"
+#include "filter_power_spectrum/calculate_filter_power_spectrum.h"
 #include "filterbank/filterbank_wola.h"
 #include "gain_calculation/gain_calculation_apriori.h"
 #include "iir_filter/iir_filter_2nd_order.h"
@@ -19,11 +20,11 @@
 #include "noise_estimation/noise_estimation_activity_detection.h"
 #include "normal3d/normal3d_diff.h"
 #include "preprocessing_path/beamformer_path.h"
+#include "single_channel_path/noise_reduction_path.h"
 #include "solver_toeplitz/solver_toeplitz_system.h"
 #include "spectrogram/spectrogram_filterbank.h"
 #include "spectrogram/spectrogram_nonlinear.h"
 #include "spline/spline_cubic.h"
-#include "filter_power_spectrum/calculate_filter_power_spectrum.h"
 
 // Macro for defining timing test using google benchmark framework
 #define DEFINE_BENCHMARK_ALGORITHM(algorithm)                                                                                                                                 \
@@ -79,6 +80,7 @@ DEFINE_BENCHMARK_ALGORITHM(ActivityDetectionNoiseEstimation)
 DEFINE_BENCHMARK_ALGORITHM(ActivityDetectionFusedNoiseEstimation)
 DEFINE_BENCHMARK_ALGORITHM(GainCalculationApriori)
 DEFINE_BENCHMARK_ALGORITHM(CalculateFilterPowerSpectrum)
+DEFINE_BENCHMARK_ALGORITHM(NoiseReductionPath)
 
 // benchmark inverse FFT
 static void FFTInverse_process(benchmark::State &state)
