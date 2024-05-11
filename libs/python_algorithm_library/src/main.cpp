@@ -14,6 +14,7 @@
 #include "algorithm_library/min_phase_spectrum.h"
 #include "algorithm_library/noise_estimation.h"
 #include "algorithm_library/normal3d.h"
+#include "algorithm_library/single_channel_path.h"
 #include "algorithm_library/solver_toeplitz.h"
 #include "algorithm_library/spectrogram.h"
 #include "algorithm_library/spline.h"
@@ -231,4 +232,5 @@ PYBIND11_MODULE(PythonAlgorithmLibrary, m)
                  return temp;
              })
         .def("setUserDefinedSosFilter", [](IIRFilterCascadeTimeVarying &algo, I::Real2D sos) { return algo.setUserDefinedSosFilter(sos); });
+    DEFINE_PYTHON_INTERFACE(SingleChannelPath);
 }
