@@ -19,8 +19,7 @@ struct NoiseEstimationConfiguration
 
     struct Parameters
     {
-        float smoothingTConstant = .072f;
-        DEFINE_TUNABLE_PARAMETERS(smoothingTConstant)
+        DEFINE_NO_TUNABLE_PARAMETERS
     };
 
     static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // power spectrum
