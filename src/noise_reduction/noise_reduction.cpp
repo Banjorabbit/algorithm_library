@@ -1,0 +1,3 @@
+#include "noise_reduction/noise_reduction_apriori.h"
+
+DEFINE_ALGORITHM_CONSTRUCTOR(NoiseReduction, NoiseReductionAPriori, NoiseReductionConfiguration)

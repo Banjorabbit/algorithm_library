@@ -18,6 +18,7 @@
 #include "mel_scale/mel_scale_spectrogram.h"
 #include "min_phase_spectrum/min_phase_spectrum_cepstrum.h"
 #include "noise_estimation/noise_estimation_activity_detection.h"
+#include "noise_reduction/noise_reduction_apriori.h"
 #include "normal3d/normal3d_diff.h"
 #include "preprocessing_path/beamformer_path.h"
 #include "single_channel_path/noise_reduction_path.h"
@@ -81,6 +82,7 @@ DEFINE_BENCHMARK_ALGORITHM(ActivityDetectionFusedNoiseEstimation)
 DEFINE_BENCHMARK_ALGORITHM(GainCalculationApriori)
 DEFINE_BENCHMARK_ALGORITHM(CalculateFilterPowerSpectrum)
 DEFINE_BENCHMARK_ALGORITHM(NoiseReductionPath)
+DEFINE_BENCHMARK_ALGORITHM(NoiseReductionAPriori)
 
 // benchmark inverse FFT
 static void FFTInverse_process(benchmark::State &state)
