@@ -20,9 +20,9 @@ struct GainCalculationConfiguration
 
     struct Parameters
     {
-        float minimumGaindB = -15.f;
+        float minimumGaindB = -12.f;
         float exponential = 3.f;
-        float upTConstant = 0.003f;
+        float upTConstant = 0.01f;
         float downTConstant = 0.01f;
         DEFINE_TUNABLE_PARAMETERS(minimumGaindB, exponential, upTConstant, downTConstant)
     };
