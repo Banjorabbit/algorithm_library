@@ -44,6 +44,8 @@ class Algorithm
     void setSetup(const Setup &s) { pimpl->setSetup(s); }
 
     nlohmann::json getDebugJson() const { return pimpl->getDebugJson(); }
+    void setDebugJson(const nlohmann::json &s) { pimpl->setDebugJson(s); }
+
     auto validInput(Input input) const { return Configuration::validInput(input, getCoefficients()); }
     auto initOutput(Input input) const { return Configuration::initOutput(input, getCoefficients()); }
 
@@ -62,6 +64,7 @@ class Algorithm
         virtual void setSetup(const Setup &s) = 0;
         virtual void reset() = 0;
         virtual nlohmann::json getDebugJson() const = 0;
+        virtual void setDebugJson(const nlohmann::json &s) = 0;
     };
 
   protected:

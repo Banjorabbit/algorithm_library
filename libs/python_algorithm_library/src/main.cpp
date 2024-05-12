@@ -174,6 +174,8 @@ inline auto process(Talgo &algo, std::tuple<ArgsIn...> &input, std::tuple<ArgsOu
         .def("setParameters", [](AlgorithmName &algo, const nlohmann::json &c) { algo.setParameters(c); })                                                                    \
         .def("getSetup", [](const AlgorithmName &algo) { return static_cast<nlohmann::json>(algo.getSetup()); })                                                              \
         .def("setSetup", [](AlgorithmName &algo, const nlohmann::json &s) { algo.setSetup(s); })                                                                              \
+        .def("getDebugJson", [](const AlgorithmName &algo) { return static_cast<nlohmann::json>(algo.getDebugJson()); })                                                      \
+        .def("setDebugJson", [](AlgorithmName &algo, const nlohmann::json &s) { algo.setDebugJson(s); })                                                                      \
         .def("validInput",                                                                                                                                                    \
              [](const AlgorithmName &algo, py::args args) {                                                                                                                   \
                  auto input = make_tuple_from_python<AlgorithmName::Input>(std::move(args));                                                                                  \
