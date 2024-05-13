@@ -21,10 +21,9 @@ struct GainCalculationConfiguration
     struct Parameters
     {
         float minimumGaindB = -12.f;
-        float exponential = 3.f;
         float upTConstant = 0.01f;
         float downTConstant = 0.01f;
-        DEFINE_TUNABLE_PARAMETERS(minimumGaindB, exponential, upTConstant, downTConstant)
+        DEFINE_TUNABLE_PARAMETERS(minimumGaindB, upTConstant, downTConstant)
     };
 
     static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // a posteriori SNR

@@ -20,11 +20,10 @@ class GainCalculationApriori : public AlgorithmImplementation<GainCalculationCon
   private:
     inline void processAlgorithm(Input snrAposteriori, Output gain)
     {
-        snr = snrAposteriori.max(1.00001f);                                                         // limit aposteriori snr slightly above 1.f
-        snr = .98f * snr * gainSmoothed.abs2() + 0.02f * snr - 0.02f;                               // snr = 0.98 * Phat_s / Phat_n + 0.02 * (P_{s+n} / Phat_n - 1)
-        snr = snr / (snr + 1.f);                                                                    // Wiener gain = snr_apriori / (snr_apriori + 1)
-        snr = snr.unaryExpr([&](float x) { return fasterpow(x, P.exponential); }).max(minimumGain); // gain = max(pow(Wiener gain, exponential), minimumGain)
-
+        snr = snrAposteriori.max(1.00001f);                           // limit aposteriori snr slightly above 1.f
+        snr = .98f * snr * gainSmoothed.abs2() + 0.02f * snr - 0.02f; // snr = 0.98 * Phat_s / Phat_n + 0.02 * (P_{s+n} / Phat_n - 1)
+        snr = snr / (snr + 1.f);                                      // Wiener gain = snr_apriori / (snr_apriori + 1)
+        snr = (snr * snr * snr).max(minimumGain);                     // gain = max(pow(Wiener gain, 3), minimumGain). The exponent has been hardcoded to 3 for efficiency
         // smooth over time
         snr -= gainSmoothed;                                                  // gain difference
         gainSmoothed += (snr > 0.f).select(upLambda * snr, downLambda * snr); // smooth gain in time
