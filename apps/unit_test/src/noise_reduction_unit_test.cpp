@@ -7,3 +7,10 @@ using namespace Eigen;
 // --------------------------------------------- TEST CASES ---------------------------------------------
 
 TEST(NoiseReduction, Interface) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<NoiseReductionAPriori>()); }
+
+TEST(NoiseReduction, ML)
+{
+    auto c = NoiseReductionConfiguration::Coefficients();
+    c.algorithmType = NoiseReductionConfiguration::Coefficients::ML;
+    NoiseReduction noiseReduction(c);
+}
