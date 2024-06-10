@@ -110,6 +110,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 # The project depends on the following libraries. They are PUBLIC since they are used in the headers so anyone using this library needs them as well
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen nlohmann_json::nlohmann_json onnxruntime)
+target_link_libraries(${PROJECT_NAME} PRIVATE onnxruntime)
 
 # All users of this library will need at least C++14
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
