@@ -79,7 +79,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/../../include)
 
 # The project depends on the following libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE gtest gtest_main fmt::fmt Eigen nlohmann_json::nlohmann_json ${CMAKE_DL_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE gtest gtest_main fmt::fmt Eigen nlohmann_json::nlohmann_json)
 
 # All users of this library will need at least C++14
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_14)
