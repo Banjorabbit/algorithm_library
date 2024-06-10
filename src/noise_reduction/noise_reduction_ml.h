@@ -29,15 +29,20 @@ class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfigurat
     void setGlobalSessionOptions()
     {
         // inspired from: https://github.com/microsoft/onnxruntime/issues/14018
-        std::unique_ptr<Ort::Env> env;
-        const OrtApi *g_ort = OrtGetApiBase()->GetApi(ORT_API_VERSION);
-        std::unique_ptr<OrtStatus, decltype(OrtApi::ReleaseStatus)> st_ptr(nullptr, g_ort->ReleaseStatus);
-        OrtThreadingOptions *tp_options;
+        Ort::ThreadingOptions threadOptions;
+        threadOptions.SetGlobalInterOpNumThreads(2);
+        Ort::Env env(threadOptions);
 
-        st_ptr.reset(g_ort->CreateThreadingOptions(&tp_options));
-        st_ptr.reset(g_ort->SetGlobalIntraOpNumThreads(tp_options, 2));
-        env.reset(new Ort::Env(tp_options, ORT_LOGGING_LEVEL_FATAL, "Default"));
-        g_ort->ReleaseThreadingOptions(tp_options);
+        // shared memory allocator inspired from: https://github.com/microsoft/onnxruntime/blob/main/onnxruntime/test/shared_lib/test_inference.cc
+        Ort::MemoryInfo memInfo = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
+
+        size_t maxMemory = 0;           // 0 = default
+        int arenaExtendStrategy = -1;   // -1 = default
+        int initialChunkSizeBytes = -1; // -1 = default
+        int maxDeadBytesPerChunk = -1;  // -1 = default
+        Ort::ArenaCfg arenaCfg = Ort::ArenaCfg(maxMemory, arenaExtendStrategy, initialChunkSizeBytes, maxDeadBytesPerChunk);
+
+        env.CreateAndRegisterAllocator(memInfo, arenaCfg);
 
         Ort::SessionOptions sessionOptions;
         sessionOptions.DisablePerSessionThreads();
@@ -48,13 +53,13 @@ class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfigurat
         sessionOptions.AddConfigEntry(
             kOrtSessionOptionsConfigUseEnvAllocators,
             "1"); // inspired from: https://github.com/microsoft/onnxruntime/blob/821baa5b839b04581ab9b7a8b8cd44bb5b002c5a/onnxruntime/test/shared_lib/test_inference.cc#L2035
-        session = new Ort::Session(*env.get(), "model.onnx", sessionOptions);
+        session = new Ort::Session(env, "model.onnx", sessionOptions);
 
         // inspired from: https://github.com/microsoft/onnxruntime/issues/11627
-        runOption.AddConfigEntry(kOrtRunOptionsConfigEnableMemoryArenaShrinkage, "cpu:0;gpu:0");
+        // runOption.AddConfigEntry(kOrtRunOptionsConfigEnableMemoryArenaShrinkage, "cpu:0;gpu:0");
 
         // session->Run(runOption, nullptr, nullptr);
     }
     Ort::Session *session;
-    Ort::RunOptions runOption;
+    // Ort::RunOptions runOption;
 };
