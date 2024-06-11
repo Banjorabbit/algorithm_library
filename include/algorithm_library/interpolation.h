@@ -125,7 +125,7 @@ struct InterpolationConstantConfiguration
 
     static Eigen::ArrayXf initInput(const Coefficients &c) { return Eigen::ArrayXf::Random(100); } // interpolation samples. Number of samples can be arbitrary
 
-    static Eigen::ArrayXf initOutput(Input input, const Coefficients &c) { return Eigen::ArrayXf(input.size() - 3); } // interpolated samples
+    static Eigen::ArrayXf initOutput(Input input, const Coefficients &c) { return Eigen::ArrayXf::Zero(input.size() - 3); } // interpolated samples
 
     static bool validInput(Input input, const Coefficients &c) { return (input.size() > 3) && input.allFinite(); }
 
