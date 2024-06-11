@@ -79,3 +79,9 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE EIGEN_RUNTIME_NO_MALLOC)
 
 include(GoogleTest)
 gtest_discover_tests(${PROJECT_NAME})
+
+add_custom_command(
+  TARGET ${PROJECT_NAME}
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/../../libs/onnx/*.onnx" $<TARGET_FILE_DIR:${PROJECT_NAME}> 
+)
