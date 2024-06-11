@@ -62,8 +62,6 @@ int calculateProduct(const std::vector<std::int64_t> &v)
 
 TEST(ONNXRUNTIME, RunONNXModel)
 {
-    Ort::ThreadingOptions threadOptions;
-    threadOptions.SetGlobalInterOpNumThreads(2);
     Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test");
     Ort::Session session(env, "model.onnx", Ort::SessionOptions());
 
