@@ -28,10 +28,9 @@ class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfigurat
 
     void setGlobalSessionOptions()
     {
-        // inspired from: https://github.com/microsoft/onnxruntime/issues/14018
         Ort::ThreadingOptions threadOptions;
         threadOptions.SetGlobalInterOpNumThreads(2);
-        Ort::Env env(threadOptions);
+        Ort::Env env(threadOptions, ORT_LOGGING_LEVEL_WARNING, "global_environment");
 
         // shared memory allocator inspired from: https://github.com/microsoft/onnxruntime/blob/main/onnxruntime/test/shared_lib/test_inference.cc
         Ort::MemoryInfo memInfo = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
@@ -43,16 +42,15 @@ class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfigurat
         Ort::ArenaCfg arenaCfg = Ort::ArenaCfg(maxMemory, arenaExtendStrategy, initialChunkSizeBytes, maxDeadBytesPerChunk);
 
         env.CreateAndRegisterAllocator(memInfo, arenaCfg);
+        env.DisableTelemetryEvents();
 
         Ort::SessionOptions sessionOptions;
-        sessionOptions.DisablePerSessionThreads();
         sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
-        // sessionOptions.DisableCpuMemArena();
-        // sessionOptions.DisableMemPattern();
+        sessionOptions.DisablePerSessionThreads();
         sessionOptions.DisableProfiling();
-        sessionOptions.AddConfigEntry(
-            kOrtSessionOptionsConfigUseEnvAllocators,
-            "1"); // inspired from: https://github.com/microsoft/onnxruntime/blob/821baa5b839b04581ab9b7a8b8cd44bb5b002c5a/onnxruntime/test/shared_lib/test_inference.cc#L2035
+        sessionOptions.AddConfigEntry(kOrtSessionOptionsConfigUseEnvAllocators, "1");
+        // Ort::Session session(env, "model.onnx", sessionOptions);
+
         session = new Ort::Session(env, "model.onnx", sessionOptions);
 
         // inspired from: https://github.com/microsoft/onnxruntime/issues/11627
