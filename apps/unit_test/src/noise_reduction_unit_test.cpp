@@ -8,7 +8,8 @@ using namespace Eigen;
 
 TEST(NoiseReduction, Interface) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<NoiseReductionAPriori>()); }
 
-TEST(NoiseReduction, ML)
+// test that ML version of NoiseReduction can be instantiated
+TEST(NoiseReduction, instantiateML)
 {
     auto c = NoiseReductionConfiguration::Coefficients();
     c.algorithmType = NoiseReductionConfiguration::Coefficients::ML;
