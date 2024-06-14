@@ -274,10 +274,10 @@ template <typename Talgo>
 bool algorithmInterfaceTest(bool testMallocFlag = true)
 {
     fmt::print("----------------------------------------------------------------------------------------------------------------------------------\n");
-    auto successFlag = isConfigurationValidTest<Talgo>();
-    successFlag &= coefficientsTest<Talgo>();
+    auto successFlag = coefficientsTest<Talgo>();
     successFlag &= parametersTest<Talgo>();
     successFlag &= versionAlgorithmTest<Talgo>();
+    successFlag &= isConfigurationValidTest<Talgo>();
     successFlag &= processTest<Talgo>();
     if (testMallocFlag) { successFlag &= mallocDEBUGTest<Talgo>(); }
     successFlag &= resetTest<Talgo>();
