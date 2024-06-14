@@ -47,6 +47,8 @@ class Algorithm
     void setDebugJson(const nlohmann::json &s) { pimpl->setDebugJson(s); }
 
     auto validInput(Input input) const { return Configuration::validInput(input, getCoefficients()); }
+    auto validOutput(Output output) const { return Configuration::validOutput(output, getCoefficients()); }
+    auto initInput() const { return Configuration::initInput(getCoefficients()); }
     auto initOutput(Input input) const { return Configuration::initOutput(input, getCoefficients()); }
 
     static constexpr size_t ALGORITHM_VERSION_MAJOR = 1; // version changes in ABI
