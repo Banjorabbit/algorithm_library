@@ -25,6 +25,7 @@ struct Implementation : public Algorithm<Tconfiguration>::BaseImplementation
         return j;
     }
     void setDebugJson(const nlohmann::json &s) final { algo.setSetupTree(s); }
+    bool isConfigurationValid() const final { return algo.isConfigurationValid(); }
 };
 
 template <typename Talgo, typename Tconfiguration>
@@ -54,6 +55,8 @@ struct BufferImplementation : public AlgorithmBuffer<Tconfiguration>::BufferBase
         return j;
     }
     void setDebugJson(const nlohmann::json &s) final { algo.setSetupTree(s); }
+    bool isConfigurationValid() const final { return algo.isConfigurationValid(); }
+
     BufferMode getBufferMode() const override { return BufferMode::SYNCHRONOUS_BUFFER; }
     int getBufferSize() const final { return algo.getCoefficients().bufferSize; }
     int getDelaySamples() const override { return algo.getDelaySamples(); }

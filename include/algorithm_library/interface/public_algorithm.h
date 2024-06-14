@@ -51,6 +51,8 @@ class Algorithm
     auto initInput() const { return Configuration::initInput(getCoefficients()); }
     auto initOutput(Input input) const { return Configuration::initOutput(input, getCoefficients()); }
 
+    bool isConfigurationValid() const { return pimpl->isConfigurationValid(); } // if this returns false, then behaviour of algorithm is undefined
+
     static constexpr size_t ALGORITHM_VERSION_MAJOR = 1; // version changes in ABI
 
     struct BaseImplementation // Base of implementation. Allows to derive different implementations from this struct.
@@ -67,6 +69,7 @@ class Algorithm
         virtual void reset() = 0;
         virtual nlohmann::json getDebugJson() const = 0;
         virtual void setDebugJson(const nlohmann::json &s) = 0;
+        virtual bool isConfigurationValid() const = 0;
     };
 
   protected:
