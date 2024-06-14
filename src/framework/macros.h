@@ -180,7 +180,8 @@
     DEFINE_MEMBER_SET_GET_FUNCTIONS(Coefficients, coefficients, __VA_ARGS__)                                                                                                  \
     DEFINE_MEMBER_SETUP_SET_GET_FUNCTIONS(__VA_ARGS__)                                                                                                                        \
     size_t getDynamicSizeAlgorithms() const final { return SELECT_APPLY_MEMBER_METHOD(EVAL(getDynamicSize() +), __VA_ARGS__) 0; }                                             \
-    void resetAlgorithms() final { SELECT_APPLY_MEMBER_METHOD(EVAL(reset();), __VA_ARGS__) }
+    void resetAlgorithms() final { SELECT_APPLY_MEMBER_METHOD(EVAL(reset();), __VA_ARGS__) }                                                                                  \
+    bool isAlgorithmsValid() const final { return SELECT_APPLY_MEMBER_METHOD(EVAL(isConfigurationValid() &&), __VA_ARGS__) true; }
 
 #define DEFINE_ALGORITHM_CONSTRUCTOR(PublicAlgorithm, InternalAlgorithm, ConfigurationName)                                                                                   \
     using InternalAlgorithm##SingleBufferImpl = Implementation<InternalAlgorithm, ConfigurationName>;                                                                         \

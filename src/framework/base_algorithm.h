@@ -254,7 +254,14 @@ class AlgorithmImplementation
     auto validInput(Input input) const { return Configuration::validInput(input, C); }
     auto validOutput(Output output) const { return Configuration::validOutput(output, C); }
 
-    virtual bool isConfigurationValid() const { return true; } // if this returns false, then behaviour of algorithm is undefined
+    // if this returns false, then behaviour of algorithm is undefined
+    virtual bool isConfigurationValid() const
+    {
+        bool flag = isCoefficientsValid();
+        flag &= isParametersValid();
+        flag &= isAlgorithmsValid();
+        return flag;
+    }
 
     // template functions to allow to call initOutput, validInput, validOutput with tuples
     template <typename... TupleTypes>
@@ -281,6 +288,9 @@ class AlgorithmImplementation
     virtual size_t getDynamicSizeAlgorithms() const { return 0; }
     virtual void resetVariables() {}
     virtual void resetAlgorithms() {}
+    virtual bool isCoefficientsValid() const { return true; }
+    virtual bool isParametersValid() const { return true; }
+    virtual bool isAlgorithmsValid() const { return true; }
     void onParametersChanged() {} // If more advanced functionality is needed, then write your own setters but remember to call the setters from this function.
 
     // these functions will be hidden if macro DEFINE_STATIC_MEMBER_ALGORITHMS(...) or DEFINE_SIMPLE_MEMBER_ALGORITHMS(...) is declared in derived Talgo

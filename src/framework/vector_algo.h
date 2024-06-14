@@ -44,6 +44,16 @@ class VectorAlgo
         }
     }
 
+    bool isConfigurationValid() const
+    {
+        bool flag = true;
+        for (auto &element : vec)
+        {
+            flag &= element.isConfigurationValid();
+        }
+        return flag;
+    }
+
     // get
     std::vector<Coefficients> getCoefficients() const
     {
