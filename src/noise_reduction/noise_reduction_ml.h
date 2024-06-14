@@ -21,16 +21,16 @@ class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfigurat
     // session = Ort::Session(env(), "model.onnx", session_options);
     // }
 
-    bool isConfigurationValid() const final
-    {
-        if (C.algorithmType == C.APRIORI) { return false; }
-        return true;
-    }
-
   private:
     void processAlgorithm(Input xFreq, Output yFreq) { yFreq = xFreq; }
 
     friend BaseAlgorithm;
+
+    bool isCoefficientsValid() const final
+    {
+        if (C.algorithmType == C.APRIORI) { return false; }
+        return true;
+    }
 
     void setGlobalSessionOptions()
     {
