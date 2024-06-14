@@ -8,7 +8,7 @@
 class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfiguration, NoiseReductionML>
 {
   public:
-    NoiseReductionML(const Coefficients &c = Coefficients()) : BaseAlgorithm{c} { setGlobalSessionOptions(); }
+    NoiseReductionML(const Coefficients &c = {.algorithmType = Coefficients::ML}) : BaseAlgorithm{c} { setGlobalSessionOptions(); }
     // {
     //     // Load the model
     //     Ort::SessionOptions session_options;
@@ -20,6 +20,12 @@ class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfigurat
     //     session_options.SetOptimizedModelFilePath("model.onnx");
     // session = Ort::Session(env(), "model.onnx", session_options);
     // }
+
+    bool isConfigurationValid() const final
+    {
+        if (C.algorithmType == C.APRIORI) { return false; }
+        return true;
+    }
 
   private:
     void processAlgorithm(Input xFreq, Output yFreq) { yFreq = xFreq; }
