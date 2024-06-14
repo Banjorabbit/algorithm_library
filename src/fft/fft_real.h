@@ -49,6 +49,12 @@ class FFTReal : public AlgorithmImplementation<FFTConfiguration, FFTReal>
         }
     }
 
+    bool isCoefficientsValid() const final
+    {
+        bool flag = Configuration::isFFTSizeValid(C.fftSize);
+        return flag;
+    }
+
     size_t getDynamicSizeVariables() const final
     {
         size_t size = out.getDynamicMemorySize();
