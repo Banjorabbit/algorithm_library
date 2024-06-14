@@ -10,7 +10,7 @@ struct NoiseReductionConfiguration
     {
         int nBands = 128;
         int nChannels = 2;
-        float filterbankRate = 16000.f;
+        float filterbankRate = 125.f;
         enum NoiseReductionType { APRIORI, ML };
         NoiseReductionType algorithmType = APRIORI; // choose algorithm to use for calculating Noise reduction
         DEFINE_TUNABLE_ENUM(NoiseReductionType, {{APRIORI, "Apriori SNR"}, {ML, "Machine Learning"}})

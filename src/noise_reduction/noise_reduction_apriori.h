@@ -9,7 +9,7 @@ class NoiseReductionAPriori : public AlgorithmImplementation<NoiseReductionConfi
   public:
     NoiseReductionAPriori(const Coefficients &c = Coefficients())
         : BaseAlgorithm{c}, //
-          noiseEstimation({.filterbankRate = 125, .nBands = c.nBands, .nChannels = c.nChannels}),
+          noiseEstimation({.filterbankRate = c.filterbankRate, .nBands = c.nBands, .nChannels = c.nChannels}),
           gainCalculation({.nChannels = c.nChannels, .filterbankRate = c.filterbankRate, .nBands = c.nBands})
     {
         xFreq2.resize(c.nBands, c.nChannels);
