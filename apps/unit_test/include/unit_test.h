@@ -10,6 +10,18 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 {
 
 template <typename Talgo>
+bool isConfigurationValidTest()
+{
+    Talgo algo;
+    if (!algo.isConfigurationValid())
+    {
+        fmt::print("isConfigurationValidTest failed.\n");
+        return false;
+    }
+    return true;
+}
+
+template <typename Talgo>
 bool resetTest()
 {
     Talgo algo;
@@ -262,7 +274,8 @@ template <typename Talgo>
 bool algorithmInterfaceTest(bool testMallocFlag = true)
 {
     fmt::print("----------------------------------------------------------------------------------------------------------------------------------\n");
-    auto successFlag = coefficientsTest<Talgo>();
+    auto successFlag = isConfigurationValidTest<Talgo>();
+    successFlag &= coefficientsTest<Talgo>();
     successFlag &= parametersTest<Talgo>();
     successFlag &= versionAlgorithmTest<Talgo>();
     successFlag &= processTest<Talgo>();

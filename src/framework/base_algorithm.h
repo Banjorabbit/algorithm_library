@@ -251,6 +251,8 @@ class AlgorithmImplementation
     auto validInput(Input input) const { return Configuration::validInput(input, C); }
     auto validOutput(Output output) const { return Configuration::validOutput(output, C); }
 
+    virtual bool isConfigurationValid() const { return true; } // if this returns false, then behaviour of algorithm is undefined
+
     // template functions to allow to call initOutput, validInput, validOutput with tuples
     template <typename... TupleTypes>
     auto initOutput(const std::tuple<TupleTypes...> &input) const
