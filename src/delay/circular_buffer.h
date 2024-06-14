@@ -10,11 +10,16 @@
 class CircularBufferSingleChannel : public AlgorithmImplementation<DelayConfiguration, CircularBufferSingleChannel>
 {
   public:
-    CircularBufferSingleChannel(Coefficients c = Coefficients()) : BaseAlgorithm{c}
+    CircularBufferSingleChannel(Coefficients c = {.nChannels = 1}) : BaseAlgorithm{c}
     {
-        C.nChannels = 1; // force number of channels to 1 since this is the single channel version
         buffer.resize(c.delayLength);
         resetVariables();
+    }
+
+    bool isConfigurationValid() const final
+    {
+        if (C.nChannels != 1) { return false; }
+        return true;
     }
 
     inline void push(Input input)
