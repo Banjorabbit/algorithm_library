@@ -16,12 +16,6 @@ class CircularBufferSingleChannel : public AlgorithmImplementation<DelayConfigur
         resetVariables();
     }
 
-    bool isConfigurationValid() const final
-    {
-        if (C.nChannels != 1) { return false; }
-        return true;
-    }
-
     inline void push(Input input)
     {
         for (auto sample = 0; sample < input.rows(); sample++)
@@ -97,6 +91,12 @@ class CircularBufferSingleChannel : public AlgorithmImplementation<DelayConfigur
         {
             index += C.delayLength;
         }
+    }
+
+    bool isCoefficientsValid() const final
+    {
+        if (C.nChannels != 1) { return false; }
+        return true;
     }
 
     void resetVariables() final
