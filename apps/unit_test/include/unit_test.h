@@ -136,6 +136,9 @@ bool assertInterfaceTest()
     constexpr bool flagSetSetup = std::is_same<decltype(&Talgo::setSetup), decltype(&Talgo::BaseAlgorithm::setSetup)>::value;
     static_assert(flagSetSetup, "setSetup() is declared in derived algorithm and hiding setSetup() in base class.");
 
+    constexpr bool flagIsConfigurationValid = std::is_same<decltype(&Talgo::isConfigurationValid), decltype(&Talgo::BaseAlgorithm::isConfigurationValid)>::value;
+    static_assert(flagIsConfigurationValid, "isConfigurationValid() is declared in derived algorithm and hiding isConfigurationValid() in base class.");
+
     // The following tests require an algo object, either because the tested methods are overloaded or return type is auto deducted.
     // They are therefore run-time tests.
     Talgo algo;
@@ -179,8 +182,8 @@ bool assertInterfaceTest()
     if (!flagSetSetupTree) { fmt::print("assertInterfaceTest failed: setSetupTree(...) is declared in derived algorithm and hiding setSetupTree(...) in base class.\n"); }
 
     return flagReset && flagGetDynamicSize && flagGetStaticSize && flagGetCoefficients && flagGetParameters && flagGetSetup && flagGetCoefficientsTree &&
-           flagGetParametersTree && flagGetSetupTree && flagSetParameters && flagSetSetup && flagProcess && flagGetCoefficientsTree && flagGetParametersTree &&
-           flagGetSetupTree && flagSetCoefficients && flagSetCoefficientsTree && flagSetParametersTree && flagSetSetupTree;
+           flagGetParametersTree && flagGetSetupTree && flagSetParameters && flagSetSetup && flagIsConfigurationValid && flagProcess && flagGetCoefficientsTree &&
+           flagGetParametersTree && flagGetSetupTree && flagSetCoefficients && flagSetCoefficientsTree && flagSetParametersTree && flagSetSetupTree;
 }
 
 // test that process algorithm doesn't allocate memory in DEBUG mode
