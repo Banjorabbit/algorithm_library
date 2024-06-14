@@ -49,15 +49,15 @@ class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfigurat
         sessionOptions.DisablePerSessionThreads();
         sessionOptions.DisableProfiling();
         sessionOptions.AddConfigEntry(kOrtSessionOptionsConfigUseEnvAllocators, "1");
-        // Ort::Session session(env, "model.onnx", sessionOptions);
 
-        session = new Ort::Session(env, "model.onnx", sessionOptions);
+        session = std::make_unique<Ort::Session>(env, "model.onnx", sessionOptions);
 
         // inspired from: https://github.com/microsoft/onnxruntime/issues/11627
         // runOption.AddConfigEntry(kOrtRunOptionsConfigEnableMemoryArenaShrinkage, "cpu:0;gpu:0");
 
         // session->Run(runOption, nullptr, nullptr);
     }
-    Ort::Session *session;
+
+    std::unique_ptr<Ort::Session> session;
     // Ort::RunOptions runOption;
 };
