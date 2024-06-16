@@ -10,3 +10,14 @@ using namespace Eigen;
 TEST(NoiseReduction, InterfaceApriori) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<NoiseReductionAPriori>()); }
 
 TEST(NoiseReduction, InterfaceML) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<NoiseReductionML>()); }
+
+// test the ML noise reduction can be run
+TEST(NoiseReduction, MLRun)
+{
+    NoiseReductionML noiseReduction;
+
+    auto input = noiseReduction.initInput();
+    auto output = noiseReduction.initOutput(input);
+
+    noiseReduction.process(input, output);
+}
