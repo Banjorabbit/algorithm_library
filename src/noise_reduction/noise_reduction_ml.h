@@ -4,17 +4,14 @@
 #include "onnxruntime_cxx_api.h"
 #include "onnxruntime_run_options_config_keys.h"
 #include "onnxruntime_session_options_config_keys.h"
-#include <iostream>
 
 class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfiguration, NoiseReductionML>
 {
   public:
     NoiseReductionML(const Coefficients &c = {.nBands = 257, .nChannels = 1, .algorithmType = Coefficients::ML})
-        : BaseAlgorithm{c}, mem_info{Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault)},
-          inputNames{"magnitude", "phase", "time state", "gru1 state", "gru2 state"}, outputNames{"gain", "time state out", "gru1 state out", "gru2 state out"},
-          session{Ort::Env(ORT_LOGGING_LEVEL_WARNING, "global_environment"), "ImageClassifier.onnx", Ort::SessionOptions()}
+        : BaseAlgorithm{c}, mem_info{Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault)}
     {
-        // setGlobalSessionOptions();
+        setGlobalSessionOptions();
 
         inputNamesChar.resize(inputNames.size());
         std::transform(std::begin(inputNames), std::end(inputNames), std::begin(inputNamesChar), [&](const std::string &str) { return str.c_str(); });
@@ -40,10 +37,10 @@ class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfigurat
     }
 
   private:
-    Ort::MemoryInfo mem_info;            //= Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault);
-    std::vector<std::string> inputNames; // = {"magnitude", "phase", "time state", "gru1 state", "gru2 state"};
+    Ort::MemoryInfo mem_info; //= Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault);
+    std::vector<std::string> inputNames = {"magnitude", "phase", "time state", "gru1 state", "gru2 state"};
     std::vector<const char *> inputNamesChar;
-    std::vector<std::string> outputNames; // = {"gain", "time state out", "gru1 state out", "gru2 state out"};
+    std::vector<std::string> outputNames = {"gain", "time state out", "gru1 state out", "gru2 state out"};
     std::vector<const char *> outputNamesChar;
 
     std::vector<std::int64_t> magnitudeShape;
@@ -60,13 +57,10 @@ class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfigurat
 
     void processAlgorithm(Input xFreq, Output yFreq)
     {
-
         magnitude = xFreq.abs2();
         phase = xFreq.arg();
-        // std::cout << "processing\n" << std::endl;
-        // auto outputTensors =
-        //     session.Run(Ort::RunOptions{nullptr}, inputNamesChar.data(), inputTensors.data(), inputNamesChar.size(), outputNamesChar.data(), outputNamesChar.size());
-        // std::cout << "processing done!\n" << std::endl;
+        auto outputTensors =
+            session.get()->Run(Ort::RunOptions{nullptr}, inputNamesChar.data(), inputTensors.data(), inputNamesChar.size(), outputNamesChar.data(), outputNamesChar.size());
         // yFreq = xFreq;
     }
 
@@ -74,21 +68,19 @@ class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfigurat
 
     void setGlobalSessionOptions()
     {
-        Ort::ThreadingOptions threadOptions;
-        threadOptions.SetGlobalInterOpNumThreads(2);
-        Ort::Env env(threadOptions, ORT_LOGGING_LEVEL_WARNING, "global_environment");
-
-        // shared memory allocator inspired from: https://github.com/microsoft/onnxruntime/blob/main/onnxruntime/test/shared_lib/test_inference.cc
-        Ort::MemoryInfo memInfo = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
-
         size_t maxMemory = 0;           // 0 = default
         int arenaExtendStrategy = -1;   // -1 = default
         int initialChunkSizeBytes = -1; // -1 = default
         int maxDeadBytesPerChunk = -1;  // -1 = default
         Ort::ArenaCfg arenaCfg = Ort::ArenaCfg(maxMemory, arenaExtendStrategy, initialChunkSizeBytes, maxDeadBytesPerChunk);
 
-        env.CreateAndRegisterAllocator(memInfo, arenaCfg);
-        env.DisableTelemetryEvents();
+        Ort::ThreadingOptions threadOptions;
+        threadOptions.SetGlobalInterOpNumThreads(2);
+        env = std::make_unique<Ort::Env>(threadOptions, ORT_LOGGING_LEVEL_WARNING, "global_environment");
+
+        // env.get()->CreateAndRegisterAllocator(mem_info, arenaCfg); // TODO: enable this again. It fails because you can not register the same allocator several times (in
+        // different algorithms)
+        env.get()->DisableTelemetryEvents();
 
         Ort::SessionOptions sessionOptions;
         sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
@@ -96,7 +88,7 @@ class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfigurat
         sessionOptions.DisableProfiling();
         sessionOptions.AddConfigEntry(kOrtSessionOptionsConfigUseEnvAllocators, "1");
 
-        // session = std::make_unique<Ort::Session>(env, "model.onnx", sessionOptions);
+        session = std::make_unique<Ort::Session>(*env.get(), "ImageClassifier.onnx", sessionOptions);
 
         // inspired from: https://github.com/microsoft/onnxruntime/issues/11627
         // runOption.AddConfigEntry(kOrtRunOptionsConfigEnableMemoryArenaShrinkage, "cpu:0;gpu:0");
@@ -104,8 +96,9 @@ class NoiseReductionML : public AlgorithmImplementation<NoiseReductionConfigurat
         // session->Run(runOption, nullptr, nullptr);
     }
 
-    // std::unique_ptr<Ort::Session> session;
-    Ort::Session session;
+    std::unique_ptr<Ort::Session> session;
+    std::unique_ptr<Ort::Env> env;
+    // Ort::Session session;
 
     bool isCoefficientsValid() const final
     {
