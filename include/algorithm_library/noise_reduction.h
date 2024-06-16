@@ -8,7 +8,7 @@ struct NoiseReductionConfiguration
 
     struct Coefficients
     {
-        int nBands = 128;
+        int nBands = 257;
         int nChannels = 2;
         float filterbankRate = 125.f;
         enum NoiseReductionType { APRIORI, ML };
