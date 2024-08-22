@@ -14,8 +14,8 @@ class BeamformerMVDR : public AlgorithmImplementation<BeamformerConfiguration, B
         covarianceUpdateLambda = 1.f - expf(-1.f / (c.filterbankRate * covarianceUpdateTConstant));
 
         filter.resize(c.nBands, c.nChannels);
+        filterNoise.resize(c.nBands, c.nChannels);
         eigenVectors.resize(c.nChannels, c.nChannels);
-        filter.resize(c.nBands, c.nChannels);
         Rx.resize(c.nBands);
         for (auto &rx : Rx)
         {
@@ -38,7 +38,7 @@ class BeamformerMVDR : public AlgorithmImplementation<BeamformerConfiguration, B
     SpeechUpdateDecisions getSpeechDecision() const { return speechDecision; }
 
   private:
-    void processAlgorithm(Input input, Output yFreq)
+    void processAlgorithm(Input input, Output output)
     {
         bool activityFlag = input.signalOfInterestFlag;
 
@@ -58,7 +58,8 @@ class BeamformerMVDR : public AlgorithmImplementation<BeamformerConfiguration, B
             if (currentBand >= C.nBands) { currentBand = 0; }
         }
 
-        yFreq = (input.xFreq * filter).rowwise().sum(); // this has been profiled to be just as fast as multiplying with ones or summing in a for-loop
+        output.yFreq = (input.xFreq * filter).rowwise().sum(); // this has been profiled to be just as fast as multiplying with ones or summing in a for-loop
+        output.noiseFreq = (input.xFreq * filterNoise).rowwise().sum();
     }
 
     void covarianceUpdate(Input input)
@@ -85,8 +86,18 @@ class BeamformerMVDR : public AlgorithmImplementation<BeamformerConfiguration, B
         eigenVectors = eigenSolver.eigenvectors();
         Eigen::MatrixXcf invEigen = eigenVectors.inverse();
 
-        // calculate max_snr beamformer with mic 0 as reference and put resulting conjugated beamformer for current band into filter
-        filter.row(currentBand) = (eigenVectors.col(C.nChannels - 1) * invEigen(C.nChannels - 1, 0)).adjoint();
+        // calculate max/min_snr beamformer with mic 0 as reference
+        Eigen::VectorXcf filterMax = eigenVectors.col(C.nChannels - 1) * invEigen(C.nChannels - 1, 0);
+        Eigen::VectorXcf filterMin = eigenVectors.col(0) * invEigen(C.nChannels - 1, C.nChannels - 1);
+
+        // calculate noise power in max/min filter
+        const float noisePowMaxSNR = (filterMax.adjoint() * Rn[currentBand] * filterMax)(0).real();
+        const float noisePowMinSNR = (filterMin.adjoint() * Rn[currentBand] * filterMin)(0).real();
+
+        // put resulting conjugated beamformer for current band into Filter
+        filter.row(currentBand) = filterMax.adjoint();
+        // scale to power in max filter
+        filterNoise.row(currentBand) = filterMin.adjoint() * std::min(std::max(std::sqrt(noisePowMaxSNR / std::max(noisePowMinSNR, 1e-20f)), 1e-4f), 1e4f);
     }
 
     void resetVariables() final
@@ -101,6 +112,7 @@ class BeamformerMVDR : public AlgorithmImplementation<BeamformerConfiguration, B
         eigenVectors.setZero();
         filter.setZero();
         filter.col(0) = 1;
+        filterNoise.setZero();
 
         Rxn.setZero();
     }
@@ -108,6 +120,7 @@ class BeamformerMVDR : public AlgorithmImplementation<BeamformerConfiguration, B
     size_t getDynamicSizeVariables() const final
     {
         size_t size = filter.getDynamicMemorySize();
+        size += filterNoise.getDynamicMemorySize();
         for (auto &rx : Rx)
         {
             size += rx.getDynamicMemorySize();
@@ -128,6 +141,7 @@ class BeamformerMVDR : public AlgorithmImplementation<BeamformerConfiguration, B
     float covarianceUpdateLambda;
     int currentBand;
     Eigen::ArrayXXcf filter;
+    Eigen::ArrayXXcf filterNoise;
     std::vector<Eigen::MatrixXcf> Rx, Rn;
     Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXcf> eigenSolver;
     Eigen::MatrixXcf eigenVectors, Rxn;

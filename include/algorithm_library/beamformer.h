@@ -9,7 +9,11 @@ struct BeamformerConfiguration
         I::Boolean signalOfInterestFlag;
     };
 
-    using Output = O::Complex;
+    struct Output
+    {
+        O::Complex yFreq;
+        O::Complex noiseFreq;
+    };
 
     struct Coefficients
     {
@@ -29,11 +33,14 @@ struct BeamformerConfiguration
         return std::make_tuple(Eigen::ArrayXXcf::Random(c.nBands, c.nChannels), true);
     } // complex frequency spectrum and activity flag
 
-    static Eigen::ArrayXcf initOutput(Input input, const Coefficients &c) { return Eigen::ArrayXcf::Zero(c.nBands); } // complex frequency spectrum
+    static std::tuple<Eigen::ArrayXcf, Eigen::ArrayXcf> initOutput(Input input, const Coefficients &c)
+    {
+        return {Eigen::ArrayXcf::Zero(c.nBands), Eigen::ArrayXcf::Zero(c.nBands)};
+    } // complex frequency spectrum
 
     static bool validInput(Input input, const Coefficients &c) { return (input.xFreq.rows() == c.nBands) && (input.xFreq.cols() == c.nChannels) && input.xFreq.allFinite(); }
 
-    static bool validOutput(Output output, const Coefficients &c) { return (output.rows() == c.nBands) && output.allFinite(); }
+    static bool validOutput(Output output, const Coefficients &c) { return (output.yFreq.rows() == c.nBands) && output.yFreq.allFinite(); }
 };
 
 class Beamformer : public Algorithm<BeamformerConfiguration>

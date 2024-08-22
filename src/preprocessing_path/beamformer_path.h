@@ -25,6 +25,7 @@ class BeamformerPath : public AlgorithmImplementation<PreprocessingPathConfigura
         xFreq.resize(nBands, C.nChannels);
         xFreq2.resize(nBands, C.nChannels);
         xBeamformed.resize(nBands);
+        xBeamformedNoise.resize(nBands);
     }
 
     FilterbankAnalysisWOLA filterbank;
@@ -43,6 +44,7 @@ class BeamformerPath : public AlgorithmImplementation<PreprocessingPathConfigura
         size += xFreq.getDynamicMemorySize();
         size += xFreq2.getDynamicMemorySize();
         size += xBeamformed.getDynamicMemorySize();
+        size += xBeamformedNoise.getDynamicMemorySize();
         return size;
     }
 
@@ -52,7 +54,7 @@ class BeamformerPath : public AlgorithmImplementation<PreprocessingPathConfigura
         filterbank.process(xTime, xFreq);
         xFreq2 = xFreq.abs2();
         activityDetector.process(xFreq2, activity);
-        beamformer.process({xFreq, activity}, xBeamformed);
+        beamformer.process({xFreq, activity}, {xBeamformed, xBeamformedNoise});
         filterbankInverse.process(xBeamformed, output);
     }
 
@@ -60,6 +62,7 @@ class BeamformerPath : public AlgorithmImplementation<PreprocessingPathConfigura
     Eigen::ArrayXXcf xFreq;
     Eigen::ArrayXXf xFreq2;
     Eigen::ArrayXcf xBeamformed;
+    Eigen::ArrayXcf xBeamformedNoise;
     bool activity;
 
     friend BaseAlgorithm;
