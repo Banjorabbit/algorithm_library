@@ -6,7 +6,7 @@ struct BeamformerConfiguration
     struct Input
     {
         I::Complex2D xFreq;
-        I::Boolean speechActivity;
+        I::Boolean signalOfInterestFlag;
     };
 
     using Output = O::Complex;

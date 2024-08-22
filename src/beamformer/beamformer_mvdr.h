@@ -40,7 +40,7 @@ class BeamformerMVDR : public AlgorithmImplementation<BeamformerConfiguration, B
   private:
     void processAlgorithm(Input input, Output yFreq)
     {
-        bool activityFlag = input.speechActivity;
+        bool activityFlag = input.signalOfInterestFlag;
 
         switch (speechDecision)
         {
@@ -73,7 +73,7 @@ class BeamformerMVDR : public AlgorithmImplementation<BeamformerConfiguration, B
                     input.xFreq.block(band, channel, 1, C.nChannels - channel).transpose().matrix() * std::conj(input.xFreq(band, channel));
             }
             Rx[band] += covarianceUpdateLambda * (Rxn - Rx[band]);
-            if (!input.speechActivity) { Rn[band] += covarianceUpdateLambda * (Rxn - Rn[band]); }
+            if (!input.signalOfInterestFlag) { Rn[band] += covarianceUpdateLambda * (Rxn - Rn[band]); }
         }
     }
 
