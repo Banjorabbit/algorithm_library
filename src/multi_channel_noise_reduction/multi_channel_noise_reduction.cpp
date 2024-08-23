@@ -1,0 +1,3 @@
+#include "multi_channel_noise_reduction/beamformer_gain_reduction.h"
+
+DEFINE_ALGORITHM_CONSTRUCTOR(MultiChannelNoiseReduction, BeamformerGainReduction, MultiChannelNoiseReductionConfiguration)
