@@ -40,7 +40,10 @@ struct BeamformerConfiguration
 
     static bool validInput(Input input, const Coefficients &c) { return (input.xFreq.rows() == c.nBands) && (input.xFreq.cols() == c.nChannels) && input.xFreq.allFinite(); }
 
-    static bool validOutput(Output output, const Coefficients &c) { return (output.yFreq.rows() == c.nBands) && output.yFreq.allFinite(); }
+    static bool validOutput(Output output, const Coefficients &c)
+    {
+        return (output.yFreq.rows() == c.nBands) && output.yFreq.allFinite() && (output.noiseFreq.rows() == c.nBands) && output.noiseFreq.allFinite();
+    }
 };
 
 class Beamformer : public Algorithm<BeamformerConfiguration>
