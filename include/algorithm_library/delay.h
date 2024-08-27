@@ -9,7 +9,7 @@ struct DelayConfiguration
     struct Coefficients
     {
         int nChannels = 2;
-        int delayLength = 100;
+        int delayLength = 10;
         DEFINE_TUNABLE_COEFFICIENTS(nChannels, delayLength)
     };
 

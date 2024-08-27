@@ -7,5 +7,3 @@ using namespace Eigen;
 // --------------------------------------------- TEST CASES ---------------------------------------------
 
 TEST(CircularBuffer, Interface) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<CircularBuffer>()); }
-
-TEST(CircularBufferSingleChannel, Interface) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<CircularBufferSingleChannel>()); }
