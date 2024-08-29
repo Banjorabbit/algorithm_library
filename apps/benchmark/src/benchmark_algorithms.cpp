@@ -1,4 +1,5 @@
 #include "activity_detection/activity_detection_noise_estimation.h"
+#include "bandsplit_downsample/bandsplit_downsample_chebyshev.h"
 #include "beamformer/beamformer_mvdr.h"
 #include "benchmark/benchmark.h"
 #include "critical_bands/critical_bands_bark.h"
@@ -84,6 +85,8 @@ DEFINE_BENCHMARK_ALGORITHM(CalculateFilterPowerSpectrum)
 DEFINE_BENCHMARK_ALGORITHM(NoiseReductionPath)
 DEFINE_BENCHMARK_ALGORITHM(NoiseReductionAPriori)
 DEFINE_BENCHMARK_ALGORITHM(NoiseReductionML)
+DEFINE_BENCHMARK_ALGORITHM(BandsplitDownsampleChebyshev)
+DEFINE_BENCHMARK_ALGORITHM(CombineBandsplitDownsampleChebyshev)
 
 // benchmark inverse FFT
 static void FFTInverse_process(benchmark::State &state)
