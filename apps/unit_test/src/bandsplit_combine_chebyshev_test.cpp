@@ -11,17 +11,18 @@ TEST(BandsplitDownsampleChebyshev, Interface) { EXPECT_TRUE(InterfaceTests::algo
 
 TEST(CombineBandsplitDownsampleChebyshev, Interface) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<CombineBandsplitDownsampleChebyshev>()); }
 
+// bandsplit, downsample and combine a random signal. Check reconstruction error is below limit
 TEST(CombineBandsplitDownsampleChebyshev, reconstruction)
 {
     BandsplitDownsampleChebyshev::Coefficients cBandsplit;
     cBandsplit.nChannels = 2;
-    cBandsplit.nSamples = 999;
+    cBandsplit.nSamples = 9999;
     cBandsplit.resamplingType = cBandsplit.K48HZ_TO_K16HZ;
     BandsplitDownsampleChebyshev bandsplit(cBandsplit);
 
     CombineBandsplitDownsampleChebyshev::Coefficients cCombine;
     cCombine.nChannels = cBandsplit.nChannels;
-    cCombine.nSamples = 333;
+    cCombine.nSamples = cBandsplit.nSamples / 3;
     cCombine.resamplingType = cCombine.K16HZ_TO_K48HZ;
     CombineBandsplitDownsampleChebyshev combineBandsplit(cCombine);
 
@@ -57,5 +58,5 @@ TEST(CombineBandsplitDownsampleChebyshev, reconstruction)
 
     float error = (X.abs() - Y.abs()).abs2().sum() / X.abs2().sum();
     fmt::print("Output error: {}\n", error);
-    ASSERT_TRUE(error < 0.005);
+    ASSERT_TRUE(error < 0.0005);
 }
