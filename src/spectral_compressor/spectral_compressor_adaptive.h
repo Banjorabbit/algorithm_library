@@ -10,8 +10,9 @@ class SpectralCompressorAdaptive : public AlgorithmImplementation<SpectralCompre
 {
   public:
     SpectralCompressorAdaptive(Coefficients c = Coefficients())
-        : BaseAlgorithm{c}, spectralCompressorShort(convertToSpectralCompressorShortCoefficients(c)),
-          spectralCompressorMedium(convertToSpectralCompressorMediumCoefficients(c)), spectralCompressorLong(convertToSpectralCompressorLongCoefficients(c))
+        : BaseAlgorithm{c}, spectralCompressorShort({.nChannels = c.nChannels, .sampleRate = c.sampleRate, .bufferSize = c.bufferSize / 4}),
+          spectralCompressorMedium({.nChannels = c.nChannels, .sampleRate = c.sampleRate, .bufferSize = c.bufferSize}),
+          spectralCompressorLong({.nChannels = c.nChannels, .sampleRate = c.sampleRate, .bufferSize = c.bufferSize * 4})
     {
         spectralBufferShort.resize(c.bufferSize / 4, c.nChannels);
         spectralBufferMedium.resize(c.bufferSize, c.nChannels);
@@ -46,33 +47,6 @@ class SpectralCompressorAdaptive : public AlgorithmImplementation<SpectralCompre
         spectralBufferShort.setZero();
         spectralBufferMedium.setZero();
         spectralBufferLong.setZero();
-    }
-
-    SpectralCompressorWOLA::Coefficients convertToSpectralCompressorShortCoefficients(const Coefficients &c)
-    {
-        SpectralCompressorWOLA::Coefficients cSpectralCompressor;
-        cSpectralCompressor.nChannels = c.nChannels;
-        cSpectralCompressor.sampleRate = c.sampleRate;
-        cSpectralCompressor.bufferSize = c.bufferSize / 4;
-        return cSpectralCompressor;
-    }
-
-    SpectralCompressorWOLA::Coefficients convertToSpectralCompressorMediumCoefficients(const Coefficients &c)
-    {
-        SpectralCompressorWOLA::Coefficients cSpectralCompressor;
-        cSpectralCompressor.nChannels = c.nChannels;
-        cSpectralCompressor.sampleRate = c.sampleRate;
-        cSpectralCompressor.bufferSize = c.bufferSize;
-        return cSpectralCompressor;
-    }
-
-    SpectralCompressorWOLA::Coefficients convertToSpectralCompressorLongCoefficients(const Coefficients &c)
-    {
-        SpectralCompressorWOLA::Coefficients cSpectralCompressor;
-        cSpectralCompressor.nChannels = c.nChannels;
-        cSpectralCompressor.sampleRate = c.sampleRate;
-        cSpectralCompressor.bufferSize = c.bufferSize * 4;
-        return cSpectralCompressor;
     }
 
     Eigen::ArrayXXf spectralBufferShort;
