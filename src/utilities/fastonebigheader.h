@@ -123,6 +123,12 @@ static inline float fasterpow2(float p)
 
 static inline float fasterexp(float p) { return fasterpow2(1.442695040f * p); }
 
+// 10^(x/20) = 2^(log2(10)*x/20) = 2^(0.166096404744368*x)
+static inline float dB2lin(float x) { return fasterpow2(0.166096404744368f * x); }
+
+// 10^(x/10) = 2^(log2(10)*x/10) = 2^(0.332192809488736*x)
+static inline float dB2energy(float x) { return fasterpow2(0.332192809488736f * x); }
+
 #endif // __FAST_EXP_H_
 /*=====================================================================*
  *                   Copyright (C) 2011 Paul Mineiro                   *
@@ -210,6 +216,12 @@ static inline float fasterlog(float x)
     y *= 8.2629582881927490e-8f;
     return y - 87.989971088f;
 }
+
+// 20*log10(x) = 20/log2(10)*log2(x) = 6.020599913279624*log2(x)
+static inline float lin2dB(float x) { return 6.020599913279624f * fasterlog2(x); }
+
+// 10*log10(x) = 10/log2(10)*log2(x) = 3.010299956639812*log2(x)
+static inline float energy2dB(float x) { return 3.010299956639812f * fasterlog2(x); }
 
 #endif // __FAST_LOG_H_
 /*=====================================================================*
