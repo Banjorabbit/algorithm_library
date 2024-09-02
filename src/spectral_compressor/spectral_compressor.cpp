@@ -1,0 +1,3 @@
+#include "spectral_compressor/spectral_compressor_wola.h"
+
+DEFINE_ALGORITHM_CONSTRUCTOR(SpectralCompressor, SpectralCompressorWOLA, SpectralCompressorConfiguration)
