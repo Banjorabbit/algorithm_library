@@ -44,4 +44,6 @@ class SpectralCompressor : public Algorithm<SpectralCompressorConfiguration>
   public:
     SpectralCompressor() = default;
     SpectralCompressor(const Coefficients &c);
+
+    float getDelaySamples() const;
 };
