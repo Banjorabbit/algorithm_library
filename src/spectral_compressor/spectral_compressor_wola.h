@@ -13,8 +13,8 @@ class SpectralCompressorWOLA : public AlgorithmImplementation<SpectralCompressor
         : BaseAlgorithm{c}, filterbank(convertToFilterbankCoefficients(c)), filterbankInverse(convertToFilterbankInverseCoefficients(c))
     {
         Eigen::ArrayXf window = FilterbankWOLA::getAnalysisWindow(convertToFilterbankCoefficients(c));
-        sumWindow = 20.f * std::log10(window.sum() / 2.f);                       // scaled so sine wave with amplitude 1 gives threshold level
-        energyWindow = 20.f * std::log10(std::sqrt(window.abs2().sum()) * 16.f); // energyWindow scaled to give approximately similar threshold level to sumWindow
+        sumWindow = lin2dB(window.sum() / 2.f);                       // scaled so sine wave with amplitude 1 gives threshold level
+        energyWindow = lin2dB(std::sqrt(window.abs2().sum()) * 16.f); // energyWindow scaled to give approximately similar threshold level to sumWindow
 
         nBands = FFTReal::Configuration::convertFFTSizeToNBands(c.bufferSize * 4);
 
@@ -40,9 +40,9 @@ class SpectralCompressorWOLA : public AlgorithmImplementation<SpectralCompressor
             energy = filterbankOut.col(channel).abs2();
             for (auto band = 0; band < nBands; band++)
             {
-                float energydB = 3.010299956639812f * fasterlog2(energy(band) + 1e-20f); // 10*log10(x) = 10/log2(10)*log2(x) = 3.010299956639812*log2(x)
+                float energydB = energy2dB(energy(band) + 1e-20f); // 10*log10(x)
                 float gainBanddB = energydB > threshold ? ratioOffset - ratioScale * energydB : 0.f;
-                float gainBand = fasterpow2(1.660964047443681f * gainBanddB); // 10^(x/20) = 2^(log2(10)*x/20) = 2^(1.660964047443681*x)
+                float gainBand = dB2lin(gainBanddB); // 10^(x/20)
                 gain(band, channel) += gainBand > gain(band, channel) ? gainUpLambda * (gainBand - gain(band, channel)) : gainDownLambda * (gainBand - gain(band, channel));
             }
         }
