@@ -14,7 +14,7 @@ struct SpectralCompressorConfiguration
     {
         int nChannels = 2;
         float sampleRate = 48000.f;
-        int bufferSize = 256;
+        int bufferSize = 1024;
         DEFINE_TUNABLE_COEFFICIENTS(nChannels, sampleRate, bufferSize)
     };
 

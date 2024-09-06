@@ -3,7 +3,7 @@
 #include "filterbank/filterbank_wola.h"
 #include "framework/framework.h"
 
-// Spectral selector between 3 inputs signals by choosing the one with minimum power.
+// Spectral selector between a number of inputs streams by choosing the one with minimum power.
 //
 // author: Kristian Timm Andersen
 
@@ -46,7 +46,7 @@ class SpectralSelector : public AlgorithmImplementation<SpectralSelectorConfigur
           filterbankInverse({.nChannels = c.nChannels,
                              .bufferSize = c.bufferSize,
                              .nBands = FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * 4),
-                             .filterbankType = FilterbankAnalysisWOLA::Coefficients::HANN})
+                             .filterbankType = FilterbankSynthesisWOLA::Coefficients::HANN})
     {
         nBands = FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * 4);
         filterbankOut.resize(nBands, c.nChannels * c.nStreams);
