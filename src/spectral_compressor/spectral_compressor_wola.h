@@ -1,3 +1,4 @@
+#pragma once
 #include "algorithm_library/spectral_compressor.h"
 #include "filterbank/filterbank_wola.h"
 #include "framework/framework.h"
