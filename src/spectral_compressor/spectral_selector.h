@@ -15,8 +15,8 @@ struct SpectralSelectorConfiguration
 
     struct Coefficients
     {
-        int nChannels = 2; // number of columns in output is nChannels
-        int nStreams = 3;  // number of columns in input is nChannels * nStreams where nChannels is interleaved
+        int nChannels = 6; // number of columns in input is nChannels
+        int nStreams = 3;  // number of columns in output is nChannels / nStreams
         int bufferSize = 256;
         DEFINE_TUNABLE_COEFFICIENTS(nChannels, nStreams, bufferSize)
     };
@@ -26,32 +26,35 @@ struct SpectralSelectorConfiguration
         DEFINE_NO_TUNABLE_PARAMETERS
     };
 
-    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(c.bufferSize, c.nChannels * c.nStreams); }
+    static int getNOutputChannels(const Coefficients &c) { return c.nChannels / c.nStreams; }
 
-    static Eigen::ArrayXXf initOutput(Input input, const Coefficients &c) { return Eigen::ArrayXXf::Zero(c.bufferSize, c.nChannels); }
+    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(c.bufferSize, c.nChannels); }
 
-    static bool validInput(Input input, const Coefficients &c) { return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels * c.nStreams) && input.allFinite(); }
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients &c) { return Eigen::ArrayXXf::Zero(c.bufferSize, getNOutputChannels(c)); }
 
-    static bool validOutput(Output output, const Coefficients &c) { return (output.rows() == c.bufferSize) && (output.cols() == c.nChannels) && output.allFinite(); }
+    static bool validInput(Input input, const Coefficients &c) { return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels) && input.allFinite(); }
+
+    static bool validOutput(Output output, const Coefficients &c) { return (output.rows() == c.bufferSize) && (output.cols() == getNOutputChannels(c)) && output.allFinite(); }
 };
 
 class SpectralSelector : public AlgorithmImplementation<SpectralSelectorConfiguration, SpectralSelector>
 {
   public:
     SpectralSelector(Coefficients c = Coefficients())
-        : BaseAlgorithm{c}, filterbank({.nChannels = c.nChannels * c.nStreams,
+        : BaseAlgorithm{c}, filterbank({.nChannels = c.nChannels,
                                         .bufferSize = c.bufferSize,
                                         .nBands = FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * 4),
                                         .filterbankType = FilterbankAnalysisWOLA::Coefficients::HANN}),
-          filterbankInverse({.nChannels = c.nChannels,
+          filterbankInverse({.nChannels = Configuration::getNOutputChannels(c),
                              .bufferSize = c.bufferSize,
                              .nBands = FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * 4),
                              .filterbankType = FilterbankSynthesisWOLA::Coefficients::HANN})
     {
         nBands = FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * 4);
-        filterbankOut.resize(nBands, c.nChannels * c.nStreams);
-        powerMin.resize(nBands, c.nChannels);
-        outputFreq.resize(nBands, c.nChannels);
+        nOutputChannels = Configuration::getNOutputChannels(c);
+        filterbankOut.resize(nBands, c.nChannels);
+        powerMin.resize(nBands, nOutputChannels);
+        outputFreq.resize(nBands, nOutputChannels);
         resetVariables();
     }
 
@@ -63,19 +66,19 @@ class SpectralSelector : public AlgorithmImplementation<SpectralSelectorConfigur
     void inline processAlgorithm(Input input, Output output)
     {
         filterbank.process(input, filterbankOut);
-        outputFreq = filterbankOut.leftCols(C.nChannels);
+        outputFreq = filterbankOut.leftCols(nOutputChannels);
         powerMin = outputFreq.abs2();
         for (auto stream = 1; stream < C.nStreams; stream++)
         {
-            for (auto channel = 0; channel < C.nChannels; channel++)
+            for (auto channel = 0; channel < nOutputChannels; channel++)
             {
                 for (auto band = 0; band < nBands; band++)
                 {
-                    float power = std::norm(filterbankOut(band, channel + C.nChannels * stream));
+                    float power = std::norm(filterbankOut(band, channel + nOutputChannels * stream));
                     if (power < powerMin(band, channel))
                     {
                         powerMin(band, channel) = power;
-                        outputFreq(band, channel) = filterbankOut(band, channel + C.nChannels * stream);
+                        outputFreq(band, channel) = filterbankOut(band, channel + nOutputChannels * stream);
                     }
                 }
             }
@@ -99,6 +102,7 @@ class SpectralSelector : public AlgorithmImplementation<SpectralSelectorConfigur
     }
 
     int nBands;
+    int nOutputChannels;
     Eigen::ArrayXXcf filterbankOut;
     Eigen::ArrayXXcf outputFreq;
     Eigen::ArrayXXf powerMin;
