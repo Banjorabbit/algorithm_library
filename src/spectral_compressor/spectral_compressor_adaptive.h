@@ -1,6 +1,8 @@
+#pragma once
 #include "algorithm_library/spectral_compressor.h"
 #include "delay/circular_buffer.h"
 #include "framework/framework.h"
+#include "framework/vector_algo.h"
 #include "spectral_compressor/spectral_compressor_wola.h"
 #include "spectral_compressor/spectral_selector.h"
 
@@ -10,17 +12,14 @@
 class SpectralCompressorAdaptive : public AlgorithmImplementation<SpectralCompressorConfiguration, SpectralCompressorAdaptive>
 {
   public:
-    SpectralCompressorAdaptive(Coefficients c = Coefficients())
+    SpectralCompressorAdaptive(Coefficients c = {.nChannels = 2, .sampleRate = 48000.f, .bufferSize = 4096})
         : BaseAlgorithm{c}, spectralCompressorShort({.nChannels = c.nChannels, .sampleRate = c.sampleRate, .bufferSize = c.bufferSize / 16}),
           spectralCompressorMedium({.nChannels = c.nChannels, .sampleRate = c.sampleRate, .bufferSize = c.bufferSize / 4}),
           spectralCompressorLong({.nChannels = c.nChannels, .sampleRate = c.sampleRate, .bufferSize = c.bufferSize}),
-          spectralSelector({.nChannels = c.nChannels, .nStreams = 3, .bufferSize = c.bufferSize / 16})
+          spectralSelector({.nChannels = 3 * c.nChannels, .nStreams = 3, .bufferSize = c.bufferSize / 16})
     {
-        spectralBufferShort.resize(c.bufferSize / 16, c.nChannels);
-        spectralBufferMedium.resize(c.bufferSize / 4, c.nChannels);
-        spectralBufferLong.resize(c.bufferSize, c.nChannels);
+        spectralBuffer.resize(c.bufferSize, 3 * c.nChannels);
         resetVariables();
-        onParametersChanged();
     }
 
     SpectralCompressorWOLA spectralCompressorShort;
@@ -35,41 +34,32 @@ class SpectralCompressorAdaptive : public AlgorithmImplementation<SpectralCompre
   private:
     void inline processAlgorithm(Input input, Output output)
     {
-        spectralCompressorLong.process(input, spectralBufferLong);
+        spectralCompressorLong.process(input, spectralBuffer.leftCols(C.nChannels));
         for (auto iMedium = 0; iMedium < 4; iMedium++)
         {
-            spectralCompressorMedium.process(input.middleRows(iMedium * C.bufferSize / 4, C.bufferSize / 4), spectralBufferMedium);
+            spectralCompressorMedium.process(input.middleRows(iMedium * C.bufferSize / 4, C.bufferSize / 4),
+                                             spectralBuffer.block(iMedium * C.bufferSize / 4, C.nChannels, C.bufferSize / 4, C.nChannels));
             for (auto iShort = 0; iShort < 4; iShort++)
             {
+                spectralCompressorShort.process(
+                    input.middleRows(iMedium * C.bufferSize / 4 + iShort * C.bufferSize / 16, C.bufferSize / 16),
+                    spectralBuffer.block(iMedium * C.bufferSize / 4 + iShort * C.bufferSize / 16, 2 * C.nChannels, C.bufferSize / 16, C.nChannels));
 
-                spectralCompressorShort.process(input.middleRows(iMedium * C.bufferSize / 4 + iShort * C.bufferSize / 16, C.bufferSize / 16), spectralBufferShort);
-                spectralSelector.process(spectralBufferShort, spectralBufferMedium.middleRows(iShort * C.bufferSize / 16, C.bufferSize / 16),
-                                         spectralBufferLong.middleRows(iMedium * C.bufferSize / 4 + iShort * C.bufferSize / 16, C.bufferSize / 16),
+                spectralSelector.process(spectralBuffer.middleRows(iMedium * C.bufferSize / 4 + iShort * C.bufferSize / 16, C.bufferSize / 16),
                                          output.middleRows(iMedium * C.bufferSize / 4 + iShort * C.bufferSize / 16, C.bufferSize / 16));
             }
         }
     }
 
-    void onParametersChanged() {}
-
     size_t getDynamicSizeVariables() const final
     {
-        size_t size = spectralBufferShort.getDynamicMemorySize();
-        size += spectralBufferMedium.getDynamicMemorySize();
-        size += spectralBufferLong.getDynamicMemorySize();
+        size_t size = spectralBuffer.getDynamicMemorySize();
         return size;
     }
 
-    void resetVariables() final
-    {
-        spectralBufferShort.setZero();
-        spectralBufferMedium.setZero();
-        spectralBufferLong.setZero();
-    }
+    void resetVariables() final { spectralBuffer.setZero(); }
 
-    Eigen::ArrayXXf spectralBufferShort;
-    Eigen::ArrayXXf spectralBufferMedium;
-    Eigen::ArrayXXf spectralBufferLong;
+    Eigen::ArrayXXf spectralBuffer;
 
     friend BaseAlgorithm;
 };
