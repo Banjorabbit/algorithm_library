@@ -25,6 +25,7 @@
 #include "preprocessing_path/beamformer_path.h"
 #include "single_channel_path/noise_reduction_path.h"
 #include "solver_toeplitz/solver_toeplitz_system.h"
+#include "spectral_compressor/spectral_compressor_adaptive.h"
 #include "spectral_compressor/spectral_compressor_wola.h"
 #include "spectral_compressor/spectral_selector.h"
 #include "spectrogram/spectrogram_filterbank.h"
@@ -90,6 +91,7 @@ DEFINE_BENCHMARK_ALGORITHM(NoiseReductionML)
 DEFINE_BENCHMARK_ALGORITHM(BandsplitDownsampleChebyshev)
 DEFINE_BENCHMARK_ALGORITHM(CombineBandsplitDownsampleChebyshev)
 DEFINE_BENCHMARK_ALGORITHM(SpectralCompressorWOLA)
+DEFINE_BENCHMARK_ALGORITHM(SpectralCompressorAdaptive)
 DEFINE_BENCHMARK_ALGORITHM(SpectralSelector)
 
 // benchmark inverse FFT
