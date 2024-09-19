@@ -39,8 +39,8 @@ juce_add_gui_app(${PROJECT_NAME} PRODUCT_NAME "Hello World")
 
 target_sources(${PROJECT_NAME}
 PRIVATE
-    Main.cpp
-    MainComponent.cpp)
+    src/Main.cpp
+    src/MainComponent.cpp)
 
 #JUCE modules make use of compile definitions to switch certain features on/off, so if there's a particular feature you
 # need that's not on by default, check the module header for the correct flag to set here. These
