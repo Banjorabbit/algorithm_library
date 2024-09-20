@@ -42,6 +42,8 @@ PRIVATE
     src/Main.cpp
     src/MainComponent.cpp)
 
+juce_generate_juce_header(${PROJECT_NAME})
+
 #JUCE modules make use of compile definitions to switch certain features on/off, so if there's a particular feature you
 # need that's not on by default, check the module header for the correct flag to set here. These
 # definitions will be visible both to your code, and also the JUCE module code, so for new
@@ -60,7 +62,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/../../.
 # The project depends on the following libraries
 target_link_libraries(${PROJECT_NAME} 
     PRIVATE 
-        AlgorithmLibrary juce::juce_gui_extra
+        AlgorithmLibrary juce::juce_gui_extra juce::juce_audio_basics juce::juce_audio_devices juce::juce_audio_formats juce::juce_audio_processors juce::juce_audio_utils juce::juce_core juce::juce_data_structures juce::juce_dsp juce::juce_events juce::juce_graphics juce::juce_gui_basics juce::juce_gui_extra
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags

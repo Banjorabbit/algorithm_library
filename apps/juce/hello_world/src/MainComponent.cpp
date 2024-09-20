@@ -3,7 +3,9 @@
 //==============================================================================
 MainComponent::MainComponent()
 {
-    setSize (600, 400);
+    setSize (750, 500);
+    addAndMakeVisible (fileReaderComponent);
+    setSize (750, 500);
 }
 
 //==============================================================================
@@ -22,4 +24,5 @@ void MainComponent::resized()
     // This is called when the MainComponent is resized.
     // If you add any child components, this is where you should
     // update their positions.
+    fileReaderComponent.setBounds (getLocalBounds());
 }
