@@ -56,7 +56,7 @@ class GainApplySimple : public AlgorithmImplementation<GainApplyConfiguration, G
     {
         if (P.smoothingTConstant > 0.f)
         {
-            smoothingFactor = 1. - exp(-1. / (P.smoothingTConstant * C.sampleRate)); // calculation is double precision in case of large time constants
+            smoothingFactor = static_cast<float>(1. - exp(-1. / (P.smoothingTConstant * C.sampleRate))); // calculation is double precision in case of large time constants
         }
         else { smoothingFactor = 1.f; }
         targetGain = channelGain * P.gain;

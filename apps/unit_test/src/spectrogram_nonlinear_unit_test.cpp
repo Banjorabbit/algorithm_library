@@ -14,7 +14,7 @@ TEST(SpectrogramNonlinear, getNFrames)
     SpectrogramNonlinear spec;
     auto c = spec.getCoefficients();
     const int bufferSize = c.bufferSize;
-    const int nSamples = 1e4;
+    const int nSamples = 10000;
     const int nFrames = Spectrogram::Configuration::getNFrames(nSamples, bufferSize); // test getNFrames() is a static method
 
     ArrayXf signal(nSamples);

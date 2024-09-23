@@ -9,8 +9,8 @@
 TEST(ReadWriteType, RunTwoThreads)
 {
     // initialize data
-    int i = -1;
-    ReadWriteType<int> data(i);
+    int ii = -1;
+    ReadWriteType<int> data(ii);
 
     // run write loop in separate thread
     std::thread t1([&data]() {

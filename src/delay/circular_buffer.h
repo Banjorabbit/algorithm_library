@@ -33,16 +33,16 @@ class CircularBuffer : public AlgorithmImplementation<DelayConfiguration, Circul
         }
     }
 
-    inline Eigen::ArrayXf get(const int index) const
+    inline Eigen::ArrayXf get(const int indexGet) const
     {
-        auto newIndex = this->index - index - 1;
+        auto newIndex = index - indexGet - 1;
         if (newIndex < 0) { newIndex += C.delayLength; }
         return buffer.row(newIndex);
     }
 
-    inline Eigen::ArrayXf get(const float index) const
+    inline Eigen::ArrayXf get(const float indexGet) const
     {
-        auto newIndex = this->index - index - 1;
+        auto newIndex = index - indexGet - 1;
         if (newIndex < 0.f) { newIndex += C.delayLength; }
         auto intIndex = static_cast<int>(newIndex);
         const auto remainder = newIndex - intIndex;

@@ -108,7 +108,7 @@ TEST(FilterMinMaxLemire, CompareFilterMinMaxandStreamingMinMaxprocess)
 // Pass/Fail: All algorithms should agree on min/max values
 TEST(FilterMinMaxLemire, FilterStreamingMinMaxValuesTest)
 {
-    srand(time(NULL));           // random seed to ensure we test a random signal
+    srand(static_cast<unsigned int>(time(NULL)));           // random seed to ensure we test a random signal
     const int filterLength = 99; // this has to be odd to ensure symmetric filter.
     const int nChannels = 2;
 

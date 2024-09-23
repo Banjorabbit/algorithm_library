@@ -32,7 +32,7 @@ class SpectralCompressorWOLA : public AlgorithmImplementation<SpectralCompressor
 
     DEFINE_MEMBER_ALGORITHMS(filterbank, filterbankInverse)
 
-    float getDelaySamples() const { return C.bufferSize * 3; }
+    float getDelaySamples() const { return static_cast<float>(C.bufferSize * 3); }
 
   private:
     void inline processAlgorithm(Input input, Output output)

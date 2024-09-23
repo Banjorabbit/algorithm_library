@@ -20,7 +20,7 @@ class ONNXModel
         Ort::MemoryInfo memInfo{Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault)};
 
         // create vector of char pointers to input/output names and create vectors of input/output tensors
-        nInputs = std::min(inputNames.size(), inputShapes.size());
+        nInputs = static_cast<int>(std::min(inputNames.size(), inputShapes.size()));
         inputNamesChar.resize(nInputs);
         inputData.resize(nInputs);
         for (auto i = 0; i < nInputs; i++)
@@ -89,7 +89,7 @@ class ONNXModel
         size_t nElements = 1;
         for (const auto &e : shape)
         {
-            nElements *= e;
+            nElements *= static_cast<size_t>(e);
         }
         array = Eigen::ArrayXf::Zero(nElements);
         tensorVector.emplace_back(Ort::Value::CreateTensor<float>(memInfo, array.data(), nElements, shape.data(), nDims));

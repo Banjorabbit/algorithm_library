@@ -31,9 +31,9 @@ struct SplineConfiguration
 
     static std::tuple<Eigen::ArrayXXf, Eigen::ArrayXXf, Eigen::ArrayXXf> initInput(const Coefficients &c)
     {
-        Eigen::ArrayXXf xGiven = Eigen::ArrayXf::LinSpaced(c.nGiven, 0, c.nGiven - 1).replicate(1, 2); // number of channels is arbitrary
+        Eigen::ArrayXXf xGiven = Eigen::ArrayXf::LinSpaced(c.nGiven, 0, static_cast<float>(c.nGiven - 1)).replicate(1, 2); // number of channels is arbitrary
         Eigen::ArrayXXf yGiven = Eigen::ArrayXXf::Random(c.nGiven, xGiven.cols());
-        Eigen::ArrayXXf xDesired = Eigen::ArrayXf::LinSpaced(100, 0, c.nGiven - 1).replicate(1, xGiven.cols()); // number of desired outputs is arbitrary
+        Eigen::ArrayXXf xDesired = Eigen::ArrayXf::LinSpaced(100, 0, static_cast<float>(c.nGiven - 1)).replicate(1, xGiven.cols()); // number of desired outputs is arbitrary
         return std::make_tuple(xGiven, yGiven, xDesired);
     }
 

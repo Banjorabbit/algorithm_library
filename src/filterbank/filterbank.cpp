@@ -68,7 +68,7 @@ Eigen::ArrayXf getSynthesisWindow(const FilterbankConfiguration::Coefficients &c
 // calculate delay as the group delay at 0 Hz of the prototype window:  Group Delay(z) = Real{ FFT{window * ramp} / FFT{window} }
 float getDelaySamples(I::Real window)
 {
-    Eigen::ArrayXf ramp = Eigen::ArrayXf::LinSpaced(window.size(), 0, window.size() - 1);
+    Eigen::ArrayXf ramp = Eigen::ArrayXf::LinSpaced(window.size(), 0, static_cast<float>(window.size() - 1));
     return (window * ramp).sum() / (window.sum() + 1e-12f);
 }
 }; // namespace FilterbankWOLA

@@ -99,7 +99,7 @@ static inline float fastpow2(float p)
 {
     float offset = (p < 0) ? 1.0f : 0.0f;
     float clipp = (p < -126) ? -126.0f : p;
-    int w = clipp;
+    auto w = static_cast<int>(clipp);
     float z = clipp - w + offset;
     union {
         uint32_t i;
@@ -185,7 +185,7 @@ static inline float fastlog2(float x)
         uint32_t i;
         float f;
     } mx = {(vx.i & 0x007FFFFF) | 0x3f000000};
-    float y = vx.i;
+    auto y = static_cast<float>(vx.i);
     y *= 1.1920928955078125e-7f;
 
     return y - 124.22551499f - 1.498030302f * mx.f - 1.72587999f / (0.3520887068f + mx.f);
@@ -199,7 +199,7 @@ static inline float fasterlog2(float x)
         float f;
         uint32_t i;
     } vx = {x};
-    float y = vx.i;
+    auto y = static_cast<float>(vx.i);
     y *= 1.1920928955078125e-7f;
     return y - 126.94269504f;
 }
@@ -212,7 +212,7 @@ static inline float fasterlog(float x)
         float f;
         uint32_t i;
     } vx = {x};
-    float y = vx.i;
+    auto y = static_cast<float>(vx.i);
     y *= 8.2629582881927490e-8f;
     return y - 87.989971088f;
 }
@@ -803,7 +803,7 @@ static inline float fastsinfull(float x)
     static const float twopi = 6.2831853071795865f;
     static const float invtwopi = 0.15915494309189534f;
 
-    int k = x * invtwopi;
+    auto k = static_cast<int>(x * invtwopi);
     float half = (x < 0) ? -0.5f : 0.5f;
     return fastsin((half + k) * twopi - x);
 }
@@ -813,7 +813,7 @@ static inline float fastersinfull(float x)
     static const float twopi = 6.2831853071795865f;
     static const float invtwopi = 0.15915494309189534f;
 
-    int k = x * invtwopi;
+    auto k = static_cast<int>(x * invtwopi);
     float half = (x < 0) ? -0.5f : 0.5f;
     return fastersin((half + k) * twopi - x);
 }
@@ -867,7 +867,7 @@ static inline float fasttanfull(float x)
     static const float twopi = 6.2831853071795865f;
     static const float invtwopi = 0.15915494309189534f;
 
-    int k = x * invtwopi;
+    auto k = static_cast<int>(x * invtwopi);
     float half = (x < 0) ? -0.5f : 0.5f;
     float xnew = x - (half + k) * twopi;
 
@@ -879,7 +879,7 @@ static inline float fastertanfull(float x)
     static const float twopi = 6.2831853071795865f;
     static const float invtwopi = 0.15915494309189534f;
 
-    int k = x * invtwopi;
+    auto k = static_cast<int>(x * invtwopi);
     float half = (x < 0) ? -0.5f : 0.5f;
     float xnew = x - (half + k) * twopi;
 

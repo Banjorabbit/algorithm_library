@@ -33,7 +33,7 @@ class NoiseReductionPath : public AlgorithmImplementation<SingleChannelPathConfi
 
     DEFINE_MEMBER_ALGORITHMS(filterbank, filterbankInverse, noiseReduction, dcRemover)
 
-    int getDelaySamples() const { return filterbank.getDelaySamples() + filterbankInverse.getDelaySamples(); }
+    int getDelaySamples() const { return static_cast<int>(filterbank.getDelaySamples() + filterbankInverse.getDelaySamples()); }
 
   private:
     void processAlgorithm(Input input, Output output)

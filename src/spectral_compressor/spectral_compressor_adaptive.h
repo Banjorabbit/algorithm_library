@@ -29,7 +29,7 @@ class SpectralCompressorAdaptive : public AlgorithmImplementation<SpectralCompre
 
     DEFINE_MEMBER_ALGORITHMS(spectralCompressorShort, spectralCompressorMedium, spectralCompressorLong, spectralSelector)
 
-    float getDelaySamples() const { return C.bufferSize * 3; }
+    float getDelaySamples() const { return static_cast<float>(C.bufferSize * 3); }
 
   private:
     void inline processAlgorithm(Input input, Output output)

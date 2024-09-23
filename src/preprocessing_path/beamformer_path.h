@@ -35,7 +35,7 @@ class BeamformerPath : public AlgorithmImplementation<PreprocessingPathConfigura
     DCRemoverFirstOrder dcRemover;
     DEFINE_MEMBER_ALGORITHMS(filterbank, filterbankInverse, beamformer, activityDetector, dcRemover)
 
-    int getDelaySamples() const { return filterbank.getDelaySamples() + filterbankInverse.getDelaySamples(); }
+    int getDelaySamples() const { return static_cast<int>(filterbank.getDelaySamples() + filterbankInverse.getDelaySamples()); }
 
   private:
     size_t getDynamicSizeVariables() const final
