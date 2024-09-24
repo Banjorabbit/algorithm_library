@@ -67,7 +67,7 @@ TEST(ONNXRUNTIME, RunEmptyONNXModel)
 {
     Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test");
     std::string mPath({"model.onnx"});
-    std::wstring modelPath(mPath.begin(), mPath.end()); // ORTCHAR_T is defined in onnxruntime_c_api.h and is wchar_t on Windows, and char_t on Linux
+    std::basic_string<ORTCHAR_T> modelPath(mPath.begin(), mPath.end()); // ORTCHAR_T is defined in onnxruntime_c_api.h and is wchar_t on Windows, and char_t on Linux
     Ort::Session session(env, modelPath.c_str(), Ort::SessionOptions());
 
     Ort::AllocatorWithDefaultOptions allocator;
