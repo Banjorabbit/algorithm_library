@@ -16,7 +16,7 @@ class SpectrogramFilterbank : public AlgorithmImplementation<SpectrogramConfigur
   private:
     void inline processAlgorithm(Input input, Output output)
     {
-        for (auto nFrame = 0; nFrame < Configuration::getNFrames(input.size(), C.bufferSize); nFrame++)
+        for (auto nFrame = 0; nFrame < Configuration::getNFrames(static_cast<int>(input.size()), C.bufferSize); nFrame++)
         {
             filterbank.process(input.segment(nFrame * C.bufferSize, C.bufferSize), filterbankOut);
             output.col(nFrame) = filterbankOut.abs2();

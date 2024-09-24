@@ -24,7 +24,7 @@ class FilterbankAnalysisWOLA : public AlgorithmImplementation<FilterbankAnalysis
     {
         fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands);
         window = FilterbankWOLA::getAnalysisWindow(c);
-        frameSize = window.size();
+        frameSize = static_cast<int>(window.size());
         overlap = frameSize - C.bufferSize;
         nFolds = static_cast<int>(std::ceil(static_cast<float>(frameSize) / fftSize));
         maxSize = fftSize * nFolds;
@@ -100,7 +100,7 @@ class FilterbankSynthesisWOLA : public AlgorithmImplementation<FilterbankSynthes
     {
         fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands);
         window = FilterbankWOLA::getSynthesisWindow(c);
-        frameSize = window.size();
+        frameSize = static_cast<int>(window.size());
         overlap = frameSize - C.bufferSize;
         nFolds = static_cast<int>(std::ceil(static_cast<float>(frameSize) / fftSize));
         maxSize = fftSize * nFolds;

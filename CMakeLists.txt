@@ -51,15 +51,19 @@ cpmaddpackage(
   "CMAKE_FORMAT_EXTRA_ARGS -c .cmake-format"
 )
 
-# add onnx runtime
-cpmaddpackage( NAME ONNXRuntime URL https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-x64-1.18.0.tgz DOWNLOAD_ONLY YES )
+# add onnx runtime. On Windows, there is currently no automated solution so you have to install the ONNX nuget package manually before compiling this project: https://github.com/NuGet/Home/issues/12465
+#cpmaddpackage( NAME ONNXRuntime URL https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-x64-1.18.0.tgz DOWNLOAD_ONLY YES )
+cpmaddpackage( NAME ONNXRuntime URL https://github.com/microsoft/onnxruntime/releases/download/v1.19.2/Microsoft.ML.OnnxRuntime.DirectML.1.19.2.nupkg  DOWNLOAD_ONLY YES )
 add_library(onnxruntime SHARED IMPORTED)
-set_target_properties(onnxruntime PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ONNXRuntime_SOURCE_DIR}/include)
+set_target_properties(onnxruntime PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ONNXRuntime_SOURCE_DIR}/build/native/include)
+#set_target_properties(onnxruntime PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ONNXRuntime_SOURCE_DIR}/include)
 if (MSVC) # TODO: MSVC properties are not set correctly
   #set_target_properties(onnxruntime PROPERTIES IMPORTED_IMPLIB ${ONNXRuntime_SOURCE_DIR}/win32/libonnxruntime.lib)
   #set_target_properties(onnxruntime PROPERTIES IMPORTED_LOCATION ${ONNXRuntime_SOURCE_DIR}/win32/libonnxruntime.dll)
+  set_target_properties(onnxruntime PROPERTIES IMPORTED_IMPLIB ${ONNXRuntime_SOURCE_DIR}/runtimes/win-x64/native/onnxruntime.lib)
 else()
-  set_target_properties(onnxruntime PROPERTIES IMPORTED_LOCATION ${ONNXRuntime_SOURCE_DIR}/lib/libonnxruntime.so)
+  set_target_properties(onnxruntime PROPERTIES IMPORTED_LOCATION ${ONNXRuntime_SOURCE_DIR}/runtimes/linux-x64/native/libonnxruntime.so)
+  #set_target_properties(onnxruntime PROPERTIES IMPORTED_LOCATION ${ONNXRuntime_SOURCE_DIR}/lib/libonnxruntime.so)
 endif()
 
 # If we want the library to be SHARED, aka a DLL, then we have to tell cmake to export symbols for the applications that are using the DLL. Therefore, uncomment this line if
@@ -109,8 +113,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 # The project depends on the following libraries. They are PUBLIC since they are used in the headers so anyone using this library needs them as well
-target_link_libraries(${PROJECT_NAME} PUBLIC Eigen nlohmann_json::nlohmann_json)
-target_link_libraries(${PROJECT_NAME} PRIVATE onnxruntime)
+target_link_libraries(${PROJECT_NAME} PUBLIC Eigen nlohmann_json::nlohmann_json onnxruntime)
+#target_link_libraries(${PROJECT_NAME} PRIVATE onnxruntime)
 
 # All users of this library will need at least C++14
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)

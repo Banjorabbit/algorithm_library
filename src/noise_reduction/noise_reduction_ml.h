@@ -13,9 +13,10 @@
 class ONNXModel
 {
   public:
-    ONNXModel(const std::string &modelPath, const std::vector<std::string> &inNames, const std::vector<std::vector<int64_t>> &inShapes,
-              const std::vector<std::string> &outNames, const std::vector<std::vector<int64_t>> &outShapes)
-        : inputNames(inNames), inputShapes(inShapes), outputNames(outNames), outputShapes(outShapes)
+    ONNXModel(const std::string &mPath, const std::vector<std::string> &inNames, const std::vector<std::vector<int64_t>> &inShapes, const std::vector<std::string> &outNames,
+              const std::vector<std::vector<int64_t>> &outShapes)
+        : modelPath(mPath.begin(), mPath.end()), // .begin() and .end() is necessary since we don't know the type of mPath (see comment where modelPath is defined)
+          inputNames(inNames), inputShapes(inShapes), outputNames(outNames), outputShapes(outShapes)
     {
         Ort::MemoryInfo memInfo{Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault)};
 
@@ -29,7 +30,7 @@ class ONNXModel
             pushTensor(inputTensors, memInfo, inputData[i], inputShapes[i], i);
         }
 
-        nOutputs = std::min(outputNames.size(), outputShapes.size());
+        nOutputs = static_cast<int>(std::min(outputNames.size(), outputShapes.size()));
         outputNamesChar.resize(nInputs);
         outputData.resize(nOutputs);
         for (auto i = 0; i < nOutputs; i++)
@@ -97,6 +98,7 @@ class ONNXModel
 
     int nInputs;
     int nOutputs;
+    std::basic_string<ORTCHAR_T> modelPath; // ORTCHAR_T is defined in onnxruntime_c_api.h and is wchar_t on Windows, and char_t on Linux
     std::unique_ptr<Ort::Session> session;
     std::unique_ptr<Ort::Env> env;
     Ort::RunOptions runOption{nullptr};

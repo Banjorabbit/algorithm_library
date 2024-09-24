@@ -70,7 +70,7 @@ class CircularBuffer : public AlgorithmImplementation<DelayConfiguration, Circul
         else
         {
             const int bRows = C.delayLength - index;
-            const int tRows = input.rows() - C.delayLength;
+            const int tRows = static_cast<int>(input.rows()) - C.delayLength;
             output.topRows(bRows) = buffer.bottomRows(bRows);
             output.middleRows(bRows, index) = buffer.topRows(index);
             output.bottomRows(tRows) = input.topRows(tRows);

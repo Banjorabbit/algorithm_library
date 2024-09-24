@@ -37,7 +37,10 @@ TEST(ONNXRUNTIME, SessionWithGlobalThreadOptions)
     sessionOptions.DisablePerSessionThreads();
     sessionOptions.DisableProfiling();
     sessionOptions.AddConfigEntry(kOrtSessionOptionsConfigUseEnvAllocators, "1");
-    Ort::Session session(env, "model.onnx", sessionOptions);
+    
+    std::string mPath({"model.onnx"});
+    std::basic_string<ORTCHAR_T> modelPath(mPath.begin(), mPath.end()); // ORTCHAR_T is defined in onnxruntime_c_api.h and is wchar_t on Windows, and char_t on Linux
+    Ort::Session session(env, modelPath.c_str(), sessionOptions);
 
     EXPECT_TRUE(session != nullptr);
 }
@@ -56,14 +59,16 @@ int calculateProduct(const std::vector<std::int64_t> &v)
 {
     int total = 1;
     for (auto &i : v)
-        total *= i;
+        total *= static_cast<int>(i);
     return total;
 }
 
 TEST(ONNXRUNTIME, RunEmptyONNXModel)
 {
     Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test");
-    Ort::Session session(env, "model.onnx", Ort::SessionOptions());
+    std::string mPath({"model.onnx"});
+    std::wstring modelPath(mPath.begin(), mPath.end()); // ORTCHAR_T is defined in onnxruntime_c_api.h and is wchar_t on Windows, and char_t on Linux
+    Ort::Session session(env, modelPath.c_str(), Ort::SessionOptions());
 
     Ort::AllocatorWithDefaultOptions allocator;
     auto metaData = session.GetModelMetadata();
@@ -85,7 +90,7 @@ TEST(ONNXRUNTIME, RunEmptyONNXModel)
 
     // create random input values
     std::vector<float> inputValues(inputValueSize);
-    std::generate(inputValues.begin(), inputValues.end(), [&] { return rand() % 255; });
+    std::generate(inputValues.begin(), inputValues.end(), [&] { return static_cast<float>(rand() % 255); });
 
     // create input tensor and copy values into it
     Ort::MemoryInfo mem_info = Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault);
@@ -129,7 +134,9 @@ TEST(ONNXRUNTIME, RunMLModel)
     sessionOptions.DisableProfiling();
     sessionOptions.AddConfigEntry(kOrtSessionOptionsConfigUseEnvAllocators, "1");
 
-    Ort::Session session{env, "ImageClassifier.onnx", sessionOptions};
+    std::string mPath({"ImageClassifier.onnx"});
+    std::basic_string<ORTCHAR_T> modelPath(mPath.begin(), mPath.end()); // ORTCHAR_T is defined in onnxruntime_c_api.h and is wchar_t on Windows, and char_t on Linux
+    Ort::Session session(env, modelPath.c_str(), sessionOptions);    
 
     std::vector<std::string> inputNames = {"magnitude", "phase", "time state", "gru1 state", "gru2 state"};
     std::vector<const char *> inputNamesChar;

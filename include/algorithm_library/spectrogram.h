@@ -33,7 +33,7 @@ struct SpectrogramConfiguration
 
     static Eigen::ArrayXXf initOutput(Input input, const Coefficients &c) // power spectrogram
     {
-        return Eigen::ArrayXXf::Zero(c.nBands, getNFrames(input.rows(), c.bufferSize));
+        return Eigen::ArrayXXf::Zero(c.nBands, getNFrames(static_cast<int>(input.rows()), c.bufferSize));
     }
 
     static bool validInput(Input input, const Coefficients &c) { return (input.rows() > 0) && input.allFinite(); }
