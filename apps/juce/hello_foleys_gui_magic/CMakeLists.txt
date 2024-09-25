@@ -48,6 +48,7 @@ juce_add_plugin(${PROJECT_NAME} VERSION "${version}"
 FORMATS ${FORMATS}
 VST3_CATEGORIES "Fx" "Analyser" "EQ"
 PRODUCT_NAME "Hello World" 
+NEEDS_CURL TRUE
 )
 
 juce_add_binary_data(${PROJECT_NAME}_data
