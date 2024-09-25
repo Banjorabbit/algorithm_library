@@ -134,8 +134,10 @@ source_group(
   FILES ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${SOURCE_LIST_UTILITIES_HEADERS}
 )
 
+if (MSVC)
 add_custom_command(
   TARGET ${PROJECT_NAME} 
   POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy "${ONNXRuntime_SOURCE_DIR}/runtimes/win-x86/native/onnxruntime.dll" $<TARGET_FILE_DIR:${PROJECT_NAME}> 
 )
+endif()
