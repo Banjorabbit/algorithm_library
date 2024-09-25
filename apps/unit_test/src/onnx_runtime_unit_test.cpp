@@ -4,9 +4,10 @@
 #include "unit_test.h"
 #include "gtest/gtest.h"
 
+// startup environment with verbose logging level
 TEST(ONNXRUNTIME, EnvironmentStartup)
 {
-    Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test");
+    Ort::Env env(ORT_LOGGING_LEVEL_VERBOSE, "test");
 
     EXPECT_TRUE(env != nullptr);
     env.DisableTelemetryEvents();
@@ -37,7 +38,7 @@ TEST(ONNXRUNTIME, SessionWithGlobalThreadOptions)
     sessionOptions.DisablePerSessionThreads();
     sessionOptions.DisableProfiling();
     sessionOptions.AddConfigEntry(kOrtSessionOptionsConfigUseEnvAllocators, "1");
-    
+
     std::string mPath({"model.onnx"});
     std::basic_string<ORTCHAR_T> modelPath(mPath.begin(), mPath.end()); // ORTCHAR_T is defined in onnxruntime_c_api.h and is wchar_t on Windows, and char_t on Linux
     Ort::Session session(env, modelPath.c_str(), sessionOptions);
@@ -136,7 +137,7 @@ TEST(ONNXRUNTIME, RunMLModel)
 
     std::string mPath({"ImageClassifier.onnx"});
     std::basic_string<ORTCHAR_T> modelPath(mPath.begin(), mPath.end()); // ORTCHAR_T is defined in onnxruntime_c_api.h and is wchar_t on Windows, and char_t on Linux
-    Ort::Session session(env, modelPath.c_str(), sessionOptions);    
+    Ort::Session session(env, modelPath.c_str(), sessionOptions);
 
     std::vector<std::string> inputNames = {"magnitude", "phase", "time state", "gru1 state", "gru2 state"};
     std::vector<const char *> inputNamesChar;
