@@ -78,7 +78,7 @@ target_link_libraries(${PROJECT_NAME}
     juce::juce_cryptography
     juce::juce_gui_extra
     juce::juce_opengl
-    juce::juce_recommended_warning_flags 
+    #juce::juce_recommended_warning_flags 
     juce::juce_recommended_config_flags 
     juce::juce_recommended_lto_flags
 )
