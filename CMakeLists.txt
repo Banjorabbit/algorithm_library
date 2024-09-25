@@ -134,6 +134,7 @@ source_group(
   FILES ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${SOURCE_LIST_UTILITIES_HEADERS}
 )
 
+# copy onnxruntime to target directory
 if (MSVC)
 add_custom_command(
   TARGET ${PROJECT_NAME} 
