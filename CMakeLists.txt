@@ -51,19 +51,13 @@ cpmaddpackage(
   "CMAKE_FORMAT_EXTRA_ARGS -c .cmake-format"
 )
 
-# add onnx runtime. On Windows, there is currently no automated solution so you have to install the ONNX nuget package manually before compiling this project: https://github.com/NuGet/Home/issues/12465
-#cpmaddpackage( NAME ONNXRuntime URL https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-x64-1.18.0.tgz DOWNLOAD_ONLY YES )
-
+add_library(onnxruntime SHARED IMPORTED)
 if (MSVC) # TODO: MSVC properties are not set correctly
-  #set_target_properties(onnxruntime PROPERTIES IMPORTED_IMPLIB ${ONNXRuntime_SOURCE_DIR}/win32/libonnxruntime.lib)
-  #set_target_properties(onnxruntime PROPERTIES IMPORTED_LOCATION ${ONNXRuntime_SOURCE_DIR}/win32/libonnxruntime.dll)
   cpmaddpackage( NAME ONNXRuntime URL https://github.com/microsoft/onnxruntime/releases/download/v1.19.2/Microsoft.ML.OnnxRuntime.DirectML.1.19.2.nupkg  DOWNLOAD_ONLY YES )
-  add_library(onnxruntime SHARED IMPORTED)
   set_target_properties(onnxruntime PROPERTIES IMPORTED_IMPLIB ${ONNXRuntime_SOURCE_DIR}/runtimes/win-x86/native/onnxruntime.lib)
   set_target_properties(onnxruntime PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ONNXRuntime_SOURCE_DIR}/build/native/include)
 else()
   cpmaddpackage( NAME ONNXRuntime URL https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-x64-1.18.0.tgz DOWNLOAD_ONLY YES )
-  add_library(onnxruntime SHARED IMPORTED)
   set_target_properties(onnxruntime PROPERTIES IMPORTED_LOCATION ${ONNXRuntime_SOURCE_DIR}/lib/libonnxruntime.so)
   set_target_properties(onnxruntime PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ONNXRuntime_SOURCE_DIR}/include)
 endif()
@@ -138,4 +132,10 @@ source_group(
   TREE "${PROJECT_SOURCE_DIR}/src"
   PREFIX "Internal Files"
   FILES ${SOURCE_LIST_CPP} ${SOURCE_LIST_HEADERS} ${SOURCE_LIST_UTILITIES_C} ${SOURCE_LIST_UTILITIES_HEADERS}
+)
+
+add_custom_command(
+  TARGET ${PROJECT_NAME} 
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy "${ONNXRuntime_SOURCE_DIR}/runtimes/win-x86/native/onnxruntime.dll" $<TARGET_FILE_DIR:${PROJECT_NAME}> 
 )

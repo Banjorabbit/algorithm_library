@@ -69,8 +69,18 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE EIGEN_RUNTIME_NO_MALLOC)
 include(GoogleTest)
 gtest_discover_tests(${PROJECT_NAME})
 
+# copy model.onnx model to target dir
 add_custom_command(
-  TARGET ${PROJECT_NAME}
+  TARGET ${PROJECT_NAME} 
   POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/../../libs/onnx/*.onnx" $<TARGET_FILE_DIR:${PROJECT_NAME}> 
+  COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/../../libs/onnx/model.onnx" $<TARGET_FILE_DIR:${PROJECT_NAME}> 
 )
+
+if (MSVC)
+# copy onnxruntime.dll to target dir
+add_custom_command(
+  TARGET ${PROJECT_NAME} 
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy "${AlgorithmLibrary_BINARY_DIR}/$<CONFIG>/onnxruntime.dll" $<TARGET_FILE_DIR:${PROJECT_NAME}>  
+)
+endif()
