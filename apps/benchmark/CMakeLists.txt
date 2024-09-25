@@ -59,3 +59,20 @@ target_link_libraries(${PROJECT_NAME} PRIVATE AlgorithmLibrary benchmark::benchm
 
 # All users of this library will need at least C++14
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_14)
+
+# copy onnxruntime to target dir
+if (MSVC)
+add_custom_command(
+  TARGET ${PROJECT_NAME} 
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy "${AlgorithmLibrary_BINARY_DIR}/$<CONFIG>/onnxruntime.dll" $<TARGET_FILE_DIR:${PROJECT_NAME}>  
+)
+else()
+# get onnx file paths from AlgorithmLibrary target and copy files to target dir
+get_target_property(ONNXRUNTIME_FILES AlgorithmLibrary ONNXRUNTIME_FILES)
+add_custom_command(
+  TARGET ${PROJECT_NAME} 
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy ${ONNXRUNTIME_FILES} $<TARGET_FILE_DIR:${PROJECT_NAME}> 
+)
+endif()
