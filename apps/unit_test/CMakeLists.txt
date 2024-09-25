@@ -76,15 +76,16 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/../../libs/onnx/model.onnx" $<TARGET_FILE_DIR:${PROJECT_NAME}> 
 )
 
+# copy onnxruntime to target dir
 if (MSVC)
-# copy onnxruntime.dll to target dir
 add_custom_command(
   TARGET ${PROJECT_NAME} 
   POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy "${AlgorithmLibrary_BINARY_DIR}/$<CONFIG>/onnxruntime.dll" $<TARGET_FILE_DIR:${PROJECT_NAME}>  
 )
 else()
-file(GLOB ONNXRUNTIME_FILES CONFIGURE_DEPENDS "${AlgorithmLibrary_BINARY_DIR}/libonnxruntime*")
+# get onnx file paths from AlgorithmLibrary target and copy files to target dir
+get_target_property(ONNXRUNTIME_FILES AlgorithmLibrary ONNXRUNTIME_FILES)
 add_custom_command(
   TARGET ${PROJECT_NAME} 
   POST_BUILD

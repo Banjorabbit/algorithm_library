@@ -147,4 +147,6 @@ add_custom_command(
   POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy ${ONNXRUNTIME_FILES} $<TARGET_FILE_DIR:${PROJECT_NAME}> 
 )
+# save the paths of onnx files for the projects so it can be imported by other projects
+set_target_properties(${PROJECT_NAME} PROPERTIES ONNXRUNTIME_FILES "${ONNXRUNTIME_FILES}")
 endif()
