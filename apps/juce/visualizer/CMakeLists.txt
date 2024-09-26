@@ -88,5 +88,7 @@ target_compile_definitions(${PROJECT_NAME}
     JUCE_WEB_BROWSER=0
 )
 
-# foleys gui magic is full of deprecated warnings so suppress them to make the output readable
-target_compile_options(${PROJECT_NAME} PUBLIC "-Wno-deprecated-declarations")
+if (NOT MSVC)
+    # foleys gui magic is full of deprecated warnings so suppress them to make the output readable
+    target_compile_options(${PROJECT_NAME} PUBLIC "-Wno-deprecated-declarations")
+endif()
