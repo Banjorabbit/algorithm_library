@@ -1,0 +1,6 @@
+{
+    "cmake.buildDirectory": "${workspaceFolder}/../../../build/juce/visualizer_plugin/${buildType}",
+    "files.associations": {
+        "*.mm": "cpp"
+    }
+}
