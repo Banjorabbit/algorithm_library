@@ -54,7 +54,11 @@ cpmaddpackage(
 add_library(onnxruntime SHARED IMPORTED)
 if (MSVC) # TODO: MSVC properties are not set correctly
   cpmaddpackage( NAME ONNXRuntime URL https://github.com/microsoft/onnxruntime/releases/download/v1.19.2/Microsoft.ML.OnnxRuntime.DirectML.1.19.2.nupkg  DOWNLOAD_ONLY YES )
-  set_target_properties(onnxruntime PROPERTIES IMPORTED_IMPLIB ${ONNXRuntime_SOURCE_DIR}/runtimes/win-x86/native/onnxruntime.lib)
+  if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
+        set_target_properties(onnxruntime PROPERTIES IMPORTED_IMPLIB ${ONNXRuntime_SOURCE_DIR}/runtimes/win-x64/native/onnxruntime.lib)
+    else()
+        set_target_properties(onnxruntime PROPERTIES IMPORTED_IMPLIB ${ONNXRuntime_SOURCE_DIR}/runtimes/win-x86/native/onnxruntime.lib)
+    endif()
   set_target_properties(onnxruntime PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ONNXRuntime_SOURCE_DIR}/build/native/include)
 else()
   cpmaddpackage( NAME ONNXRuntime URL https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-x64-1.18.0.tgz DOWNLOAD_ONLY YES )
@@ -136,11 +140,20 @@ source_group(
 
 # copy onnxruntime to target directory
 if (MSVC)
-add_custom_command(
-  TARGET ${PROJECT_NAME} 
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy "${ONNXRuntime_SOURCE_DIR}/runtimes/win-x86/native/onnxruntime.dll" $<TARGET_FILE_DIR:${PROJECT_NAME}> 
-)
+    # if 32 bit: https://discourse.cmake.org/t/how-to-distinguish-windows-architecture/5104
+    if(NOT "${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
+        add_custom_command(
+            TARGET ${PROJECT_NAME} 
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy "${ONNXRuntime_SOURCE_DIR}/runtimes/win-x86/native/onnxruntime.dll" $<TARGET_FILE_DIR:${PROJECT_NAME}> 
+        )
+    else() # 64 bit
+        add_custom_command(
+            TARGET ${PROJECT_NAME} 
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy "${ONNXRuntime_SOURCE_DIR}/runtimes/win-x64/native/onnxruntime.dll" $<TARGET_FILE_DIR:${PROJECT_NAME}> 
+        )
+    endif()
 else()
 file(GLOB ONNXRUNTIME_FILES CONFIGURE_DEPENDS "${ONNXRuntime_SOURCE_DIR}/lib/libonnxruntime*")
 add_custom_command(
