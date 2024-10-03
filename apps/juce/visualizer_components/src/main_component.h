@@ -1,11 +1,12 @@
 #pragma once
 #include <juce_gui_basics/juce_gui_basics.h>
+#include "spectrogram_component.h"
 
 class MainComponent final : public juce::Component
 {
 public:
     //==============================================================================
-    MainComponent() 
+    MainComponent() : spectrogram(256)
     {
         setSize (750, 500);
         //addAndMakeVisible (fileReaderComponent);
@@ -25,6 +26,7 @@ public:
 
 private:
     //AudioFileReaderComponent<ConvolutionDSP> fileReaderComponent;
-
+    SpectrogramComponent spectrogram;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
