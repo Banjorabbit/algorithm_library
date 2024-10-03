@@ -14,19 +14,21 @@ Eigen::ArrayXf getAnalysisWindow(const FilterbankConfiguration::Coefficients &c)
 {
     Eigen::ArrayXf window;
     const int fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands);
+    float factor = static_cast<float>(fftSize) / c.bufferSize;
+    float factorFloor = std::floor(factor);
     switch (c.filterbankType)
     {
     default: // Hann window is default case
-    case FilterbankConfiguration::Coefficients::FilterbankTypes::HANN:
-        if (fftSize != 4 * c.bufferSize) { throw FilterbankConfiguration::ExceptionFilterbank(c); } // Configuration not currently supported
+    case FilterbankConfiguration::Coefficients::FilterbankTypes::HANN:    
+        if ((factor < 2.f) || (factor != factorFloor)) { throw FilterbankConfiguration::ExceptionFilterbank(c); } // Configuration not currently supported
         window = hann(fftSize);
         break;
     case FilterbankConfiguration::Coefficients::FilterbankTypes::SQRT_HANN:
-        if (fftSize != 2 * c.bufferSize) { throw FilterbankConfiguration::ExceptionFilterbank(c); } // Configuration not currently supported
+        if (factor != 2.f) { throw FilterbankConfiguration::ExceptionFilterbank(c); } // Configuration not currently supported
         window = hann(fftSize).sqrt();
         break;
     case FilterbankConfiguration::Coefficients::FilterbankTypes::WOLA:
-        if (fftSize != 4 * c.bufferSize) { throw FilterbankConfiguration::ExceptionFilterbank(c); } // Configuration not currently supported
+        if (factor != 4.f) { throw FilterbankConfiguration::ExceptionFilterbank(c); } // Configuration not currently supported
         window = sinc(2 * fftSize, 2) * kaiser(2 * fftSize, 10);
         break;
     }
@@ -37,19 +39,22 @@ Eigen::ArrayXf getSynthesisWindow(const FilterbankConfiguration::Coefficients &c
 {
     Eigen::ArrayXf window;
     const int fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands);
+    float factor = static_cast<float>(fftSize) / c.bufferSize;
+    float factorFloor = std::floor(factor);
     switch (c.filterbankType)
     {
     default: // Hann window is default case
-    case FilterbankConfiguration::Coefficients::FilterbankTypes::HANN:
-        if (fftSize != 4 * c.bufferSize) { throw FilterbankConfiguration::ExceptionFilterbank(c); } // Configuration not currently supported
-        window = hann(fftSize);
+    case FilterbankConfiguration::Coefficients::FilterbankTypes::HANN:    
+        if ((factor < 2.f) || (factor != factorFloor)) { throw FilterbankConfiguration::ExceptionFilterbank(c); } // Configuration not currently supported
+        if (factorFloor == 2.f) { window = Eigen::ArrayXf::Ones(fftSize); }
+        else { window = hann(fftSize); }
         break;
     case FilterbankConfiguration::Coefficients::FilterbankTypes::SQRT_HANN:
-        if (fftSize != 2 * c.bufferSize) { throw FilterbankConfiguration::ExceptionFilterbank(c); } // Configuration not currently supported
+        if (factor != 2.f) { throw FilterbankConfiguration::ExceptionFilterbank(c); } // Configuration not currently supported
         window = hann(fftSize).sqrt();
         break;
     case FilterbankConfiguration::Coefficients::FilterbankTypes::WOLA:
-        if (fftSize != 4 * c.bufferSize) { throw FilterbankConfiguration::ExceptionFilterbank(c); } // Configuration not currently supported
+        if (factor != 4.f) { throw FilterbankConfiguration::ExceptionFilterbank(c); } // Configuration not currently supported
         window = kaiser(2 * fftSize, 14);
         break;
     }
