@@ -8,6 +8,8 @@
 
 namespace FilterbankWOLA
 {
+bool isCoefficientsValid(const FilterbankConfiguration::Coefficients &c);
+
 Eigen::ArrayXf getAnalysisWindow(const FilterbankConfiguration::Coefficients &c);
 
 Eigen::ArrayXf getSynthesisWindow(const FilterbankConfiguration::Coefficients &c);
@@ -68,6 +70,8 @@ class FilterbankAnalysisWOLA : public AlgorithmImplementation<FilterbankAnalysis
             fft.process(fftBuffer.head(fftSize), yFreq.col(channel));
         }
     }
+
+    bool isCoefficientsValid() const final { return FilterbankWOLA::isCoefficientsValid(C); }
 
     size_t getDynamicSizeVariables() const final
     {
@@ -135,6 +139,8 @@ class FilterbankSynthesisWOLA : public AlgorithmImplementation<FilterbankSynthes
         timeBuffer.topRows(overlap) = timeBuffer.bottomRows(overlap);
         timeBuffer.bottomRows(C.bufferSize) = 0.f;
     }
+
+    bool isCoefficientsValid() const final { return FilterbankWOLA::isCoefficientsValid(C); }
 
     size_t getDynamicSizeVariables() const final
     {
