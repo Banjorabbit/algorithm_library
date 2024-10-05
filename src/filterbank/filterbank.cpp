@@ -53,7 +53,7 @@ Eigen::ArrayXf getSynthesisWindow(const FilterbankConfiguration::Coefficients &c
     {
     default: // Hann window is default case
     case FilterbankConfiguration::Coefficients::FilterbankTypes::HANN:
-        if ((fftSize / c.bufferSize) == 2.f) { window = Eigen::ArrayXf::Ones(fftSize); }
+        if ((fftSize / c.bufferSize) == 2) { window = Eigen::ArrayXf::Ones(fftSize); }
         else { window = hann(fftSize); }
         break;
     case FilterbankConfiguration::Coefficients::FilterbankTypes::SQRT_HANN: window = hann(fftSize).sqrt(); break;
