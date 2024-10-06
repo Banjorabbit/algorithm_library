@@ -76,6 +76,13 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/../../libs/onnx/model.onnx" $<TARGET_FILE_DIR:${PROJECT_NAME}> 
 )
 
+# copy pp2model.onnx model to target dir
+add_custom_command(
+  TARGET ${PROJECT_NAME} 
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/../../libs/onnx/pp2model.onnx" $<TARGET_FILE_DIR:${PROJECT_NAME}> 
+)
+
 # copy onnxruntime to target dir
 if (MSVC)
 add_custom_command(

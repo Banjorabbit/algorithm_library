@@ -109,7 +109,7 @@ TEST(ONNXRUNTIME, RunEmptyONNXModel)
     std::cout << "Inference done." << std::endl;
 }
 
-// test that the ImageClassifier.onnx model can be loaded and run
+// test that the pp2model.onnx model can be loaded and run
 TEST(ONNXRUNTIME, RunMLModel)
 {
     const int nBands = 257;
@@ -135,7 +135,7 @@ TEST(ONNXRUNTIME, RunMLModel)
     sessionOptions.DisableProfiling();
     sessionOptions.AddConfigEntry(kOrtSessionOptionsConfigUseEnvAllocators, "1");
 
-    std::string mPath({"ImageClassifier.onnx"});
+    std::string mPath({"pp2model.onnx"});
     std::basic_string<ORTCHAR_T> modelPath(mPath.begin(), mPath.end()); // ORTCHAR_T is defined in onnxruntime_c_api.h and is wchar_t on Windows, and char_t on Linux
     Ort::Session session(env, modelPath.c_str(), sessionOptions);
 
@@ -161,11 +161,11 @@ TEST(ONNXRUNTIME, RunMLModel)
     outputNamesChar.resize(outputNames.size());
     std::transform(std::begin(outputNames), std::end(outputNames), std::begin(outputNamesChar), [&](const std::string &str) { return str.c_str(); });
 
-    magnitudeShape = {1, nBands};
-    phaseShape = {1, nBands};
-    timeBufferShape = {10, nBands};
-    gru1BufferShape = {1, 32, 64};
-    gru2BufferShape = {1, 32, 64};
+    magnitudeShape = {1, 1, nBands};
+    phaseShape = {1, 1, nBands};
+    timeBufferShape = {1, 5, 2, nBands};
+    gru1BufferShape = {1, 64, 32};
+    gru2BufferShape = {1, 64, 32};
     magnitude = Eigen::ArrayXf::Zero(nBands);
     phase = Eigen::ArrayXf::Zero(nBands);
     timeBuffer = Eigen::ArrayXXf::Zero(nBands, 10);
