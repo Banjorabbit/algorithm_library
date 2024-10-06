@@ -26,6 +26,15 @@ struct Implementation : public Algorithm<Tconfiguration>::BaseImplementation
     }
     void setDebugJson(const nlohmann::json &s) final { algo.setSetupTree(s); }
     bool isConfigurationValid() const final { return algo.isConfigurationValid(); }
+
+    bool validInput(typename Tconfiguration::Input input) const final { return algo.validInput(input); }
+    bool validOutput(typename Tconfiguration::Output output) const final { return algo.validOutput(output); }
+    decltype(Tconfiguration::initInput(std::declval<typename Tconfiguration::Coefficients>())) initInput() const final { return algo.initInput(); }
+    decltype(Tconfiguration::initOutput(std::declval<typename Tconfiguration::Input>(), std::declval<typename Tconfiguration::Coefficients>())) initOutput(
+        typename Tconfiguration::Input input) const final
+    {
+        return algo.initOutput(input);
+    }
 };
 
 template <typename Talgo, typename Tconfiguration>
@@ -56,6 +65,15 @@ struct BufferImplementation : public AlgorithmBuffer<Tconfiguration>::BufferBase
     }
     void setDebugJson(const nlohmann::json &s) final { algo.setSetupTree(s); }
     bool isConfigurationValid() const final { return algo.isConfigurationValid(); }
+
+    bool validInput(typename Tconfiguration::Input input) const final { return algo.validInput(input); }
+    bool validOutput(typename Tconfiguration::Output output) const final { return algo.validOutput(output); }
+    decltype(Tconfiguration::initInput(std::declval<typename Tconfiguration::Coefficients>())) initInput() const final { return algo.initInput(); }
+    decltype(Tconfiguration::initOutput(std::declval<typename Tconfiguration::Input>(), std::declval<typename Tconfiguration::Coefficients>())) initOutput(
+        typename Tconfiguration::Input input) const final
+    {
+        return algo.initOutput(input);
+    }
 
     BufferMode getBufferMode() const override { return BufferMode::SYNCHRONOUS_BUFFER; }
     int getBufferSize() const final { return algo.getCoefficients().bufferSize; }

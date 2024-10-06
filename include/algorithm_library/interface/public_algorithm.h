@@ -20,6 +20,50 @@ struct TSetup
 };
 
 template <typename Tconfiguration>
+struct ConfigurationBuffer : public Tconfiguration
+{
+    using Input = I::Real2D;
+    using Output = O::Real2D;
+
+    static Eigen::ArrayXXf initInput(const typename Tconfiguration::Coefficients &c) { return Eigen::ArrayXXf::Random(c.bufferSize, c.nChannels); } // time samples
+
+    static Eigen::ArrayXXf initOutput(Input input, const typename Tconfiguration::Coefficients &c)
+    {
+        return Eigen::ArrayXXf::Zero(c.bufferSize, Tconfiguration::getNChannelsOut(c));
+    } // time samples
+
+    static bool validInput(Input input, const typename Tconfiguration::Coefficients &c)
+    {
+        return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels) && input.allFinite();
+    }
+
+    static bool validOutput(Output output, const typename Tconfiguration::Coefficients &c)
+    {
+        return (output.rows() == c.bufferSize) && (output.cols() == Tconfiguration::getNChannelsOut(c)) && output.allFinite();
+    }
+
+    static Eigen::ArrayXXf initInputAnySize(const typename Tconfiguration::Coefficients &c, int bufferAnySize)
+    {
+        return Eigen::ArrayXXf::Random(bufferAnySize, c.nChannels);
+    } // time samples
+
+    static Eigen::ArrayXXf initOutputAnySize(Input input, const typename Tconfiguration::Coefficients &c)
+    {
+        return Eigen::ArrayXXf::Zero(input.rows(), Tconfiguration::getNChannelsOut(c));
+    } // time samples
+
+    static bool validInputAnySize(Input input, const typename Tconfiguration::Coefficients &c)
+    {
+        return (input.rows() > 0) && (input.cols() == c.nChannels) && input.allFinite();
+    }
+
+    static bool validOutputAnySize(Output output, const typename Tconfiguration::Coefficients &c)
+    {
+        return (output.rows() > 0) && (output.cols() == Tconfiguration::getNChannelsOut(c)) && output.allFinite();
+    }
+};
+
+template <typename Tconfiguration>
 class Algorithm
 {
   public:
@@ -46,10 +90,10 @@ class Algorithm
     nlohmann::json getDebugJson() const { return pimpl->getDebugJson(); }
     void setDebugJson(const nlohmann::json &s) { pimpl->setDebugJson(s); }
 
-    auto validInput(Input input) const { return Configuration::validInput(input, getCoefficients()); }
-    auto validOutput(Output output) const { return Configuration::validOutput(output, getCoefficients()); }
-    auto initInput() const { return Configuration::initInput(getCoefficients()); }
-    auto initOutput(Input input) const { return Configuration::initOutput(input, getCoefficients()); }
+    auto validInput(Input input) const { return pimpl->validInput(input); }
+    auto validOutput(Output output) const { return pimpl->validOutput(output); }
+    auto initInput() const { return pimpl->initInput(); }
+    auto initOutput(Input input) const { return pimpl->initOutput(input); }
 
     bool isConfigurationValid() const { return pimpl->isConfigurationValid(); } // if this returns false, then behaviour of algorithm is undefined
 
@@ -70,6 +114,10 @@ class Algorithm
         virtual nlohmann::json getDebugJson() const = 0;
         virtual void setDebugJson(const nlohmann::json &s) = 0;
         virtual bool isConfigurationValid() const = 0;
+        virtual bool validInput(typename Configuration::Input input) const = 0;
+        virtual bool validOutput(typename Configuration::Output output) const = 0;
+        virtual decltype(Configuration::initInput(std::declval<Coefficients>())) initInput() const = 0;
+        virtual decltype(Configuration::initOutput(std::declval<Input>(), std::declval<Coefficients>())) initOutput(typename Configuration::Input input) const = 0;
     };
 
   protected:

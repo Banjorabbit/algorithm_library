@@ -1,11 +1,8 @@
 #pragma once
 #include "interface/interface.h"
 
-struct PreprocessingPathConfiguration
+struct PreprocessingPathCoefficientsParameters
 {
-    using Input = I::Real2D;
-    using Output = O::Real;
-
     struct Coefficients
     {
         int bufferSize = 128;
@@ -19,14 +16,10 @@ struct PreprocessingPathConfiguration
         DEFINE_NO_TUNABLE_PARAMETERS
     };
 
-    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(c.bufferSize, c.nChannels); } // time samples
-
-    static Eigen::ArrayXf initOutput(Input input, const Coefficients &c) { return Eigen::ArrayXf::Zero(c.bufferSize); } // time samples
-
-    static bool validInput(Input input, const Coefficients &c) { return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels) && input.allFinite(); }
-
-    static bool validOutput(Output output, const Coefficients &c) { return (output.rows() == c.bufferSize) && output.allFinite(); }
+    static int getNChannelsOut(const Coefficients &c) { return 1; }
 };
+
+using PreprocessingPathConfiguration = ConfigurationBuffer<PreprocessingPathCoefficientsParameters>;
 
 class PreprocessingPath : public AlgorithmBuffer<PreprocessingPathConfiguration>
 {
