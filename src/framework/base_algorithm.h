@@ -40,12 +40,22 @@ struct Implementation : public Algorithm<Tconfiguration>::BaseImplementation
 template <typename Talgo, typename Tconfiguration>
 struct BufferImplementation : public AlgorithmBuffer<Tconfiguration>::BufferBaseImplementation
 {
-    BufferImplementation() = default;
-    BufferImplementation(const typename Tconfiguration::Coefficients &c) : algo{c} {}
+    BufferImplementation() : BufferImplementation(Algorithm<Tconfiguration>::Coefficients()) {}
+    BufferImplementation(const typename Tconfiguration::Coefficients &c) : algo{c}
+    {
+        bufferIn = algo.initInput();
+        bufferOut = algo.initOutput(bufferIn);
+        bufferIn.setZero();
+        bufferOut.setZero();
+    }
     template <typename TcoefficientsTree>
     BufferImplementation(const TcoefficientsTree &cTree)
     {
         algo.setCoefficientsTree(cTree);
+        bufferIn = algo.initInput();
+        bufferOut = algo.initOutput(bufferIn);
+        bufferIn.setZero();
+        bufferOut.setZero();
     }
 
     Talgo algo;
@@ -57,7 +67,12 @@ struct BufferImplementation : public AlgorithmBuffer<Tconfiguration>::BufferBase
     void setCoefficients(const typename Talgo::Coefficients &c) final { algo.setCoefficients(c); }
     void setParameters(const typename Talgo::Parameters &p) final { algo.setParameters(p); }
     void setSetup(const typename Talgo::Setup &s) final { algo.setSetup(s); }
-    void reset() override { algo.reset(); }
+    void reset() override
+    {
+        bufferIn.setZero();
+        bufferOut.setZero();
+        algo.reset();
+    }
     nlohmann::json getDebugJson() const final
     {
         nlohmann::json j = algo.getSetupTree();
@@ -93,14 +108,15 @@ struct BufferImplementation : public AlgorithmBuffer<Tconfiguration>::BufferBase
         const int remainingSamples = static_cast<int>(input.rows()) - i;
         if (remainingSamples > 0)
         {
-            auto bufferIn = algo.initInput();
             bufferIn.topRows(remainingSamples) = input.middleRows(i, remainingSamples);
             bufferIn.bottomRows(bufferSize - remainingSamples).setZero();
-            auto bufferOut = algo.initOutput(bufferIn);
             algo.process(bufferIn, bufferOut);
             output.bottomRows(remainingSamples) = bufferOut.topRows(remainingSamples);
         }
     }
+
+    typename I::getType<typename Talgo::Input>::type bufferIn;
+    typename O::getType<typename Talgo::Output>::type bufferOut;
 };
 
 template <typename Talgo, typename Tconfiguration>
@@ -113,10 +129,6 @@ struct AsynchronousBufferImplementation : public BufferImplementation<Talgo, Tco
     AsynchronousBufferImplementation(const TcoefficientsTree &c) : Base{c} // this constructor is used both for the constructor with coefficients and coefficients tree
     {
         index = 0;
-        bufferIn = Base::algo.initInput();
-        bufferOut = Base::algo.initOutput(bufferIn);
-        bufferIn.setZero();
-        bufferOut.setZero();
     }
 
     // Create an internal buffer and fill it with input values in a for-loop. Every time the buffer is full, call process and output the result. This results in an additional
@@ -126,12 +138,12 @@ struct AsynchronousBufferImplementation : public BufferImplementation<Talgo, Tco
         int const bufferSize = Base::getBufferSize();
         for (auto i = 0; i < input.rows(); i++)
         {
-            bufferIn.row(index) = input.row(i);
-            output.row(i) = bufferOut.row(index);
+            Base::bufferIn.row(index) = input.row(i);
+            output.row(i) = Base::bufferOut.row(index);
             index++;
             if (index == bufferSize)
             {
-                Base::algo.process(bufferIn, bufferOut);
+                Base::algo.process(Base::bufferIn, Base::bufferOut);
                 index = 0;
             }
         }
@@ -140,8 +152,6 @@ struct AsynchronousBufferImplementation : public BufferImplementation<Talgo, Tco
     void reset() final
     {
         index = 0;
-        bufferIn.setZero();
-        bufferOut.setZero();
         Base::reset();
     }
 
@@ -151,8 +161,6 @@ struct AsynchronousBufferImplementation : public BufferImplementation<Talgo, Tco
     int getDelaySamples() const final { return Base::getDelaySamples() + Base::getBufferSize(); }
 
     int index;
-    typename I::getType<typename Talgo::Input>::type bufferIn;
-    typename O::getType<typename Talgo::Output>::type bufferOut;
 };
 
 template <typename Tconfiguration, typename Talgo>
