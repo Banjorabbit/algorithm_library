@@ -64,9 +64,17 @@ struct NoiseEstimationActivityConfiguration
         DEFINE_TUNABLE_PARAMETERS(smoothingTConstant)
     };
 
-    static auto validInput(Input input, const Coefficients &c) { return (input >= 0.f).all() && (input.rows() == c.nBands) && (input.cols() == c.nChannels); }
+    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // power spectrum
 
     static auto initOutput(Input input, const Coefficients &c) { return std::make_tuple(Eigen::ArrayXXf(c.nBands, c.nChannels), Eigen::ArrayXXf(c.nBands, c.nChannels)); }
+
+    static auto validInput(Input input, const Coefficients &c) { return (input >= 0.f).all() && (input.rows() == c.nBands) && (input.cols() == c.nChannels); }
+
+    static bool validOutput(Output output, const Coefficients &c)
+    {
+        return (output.powerNoise.rows() == c.nBands) && (output.powerNoise.cols() == c.nChannels) && (output.powerNoise >= 0.f).all() &&
+               (output.activity.rows() == c.nBands) && (output.activity.cols() == c.nChannels) && (output.activity >= 0.f).all();
+    }
 };
 
 class NoiseEstimationActivity : public Algorithm<NoiseEstimationActivityConfiguration>
@@ -102,9 +110,16 @@ struct NoiseEstimationActivityFusedConfiguration
         DEFINE_TUNABLE_PARAMETERS(smoothingTConstant)
     };
 
-    static auto validInput(Input input, const Coefficients &c) { return (input >= 0.f).all() && (input.rows() == c.nBands) && (input.cols() == c.nChannels); }
+    static Eigen::ArrayXXf initInput(const Coefficients &c) { return Eigen::ArrayXXf::Random(c.nBands, c.nChannels).abs2(); } // power spectrum
 
     static auto initOutput(Input input, const Coefficients &c) { return std::make_tuple(Eigen::ArrayXXf::Zero(c.nBands, c.nChannels), bool()); }
+
+    static auto validInput(Input input, const Coefficients &c) { return (input >= 0.f).all() && (input.rows() == c.nBands) && (input.cols() == c.nChannels); }
+
+    static bool validOutput(Output output, const Coefficients &c)
+    {
+        return (output.powerNoise.rows() == c.nBands) && (output.powerNoise.cols() == c.nChannels) && (output.powerNoise >= 0.f).all();
+    }
 };
 
 class NoiseEstimationActivityFused : public Algorithm<NoiseEstimationActivityFusedConfiguration>
