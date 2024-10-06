@@ -13,8 +13,8 @@ void AlgorithmBuffer<PreprocessingPathConfiguration>::setBufferMode(BufferMode b
     {
         if (static_cast<BufferBaseImplementation *>(Base::pimpl.get())->getBufferMode() != SYNCHRONOUS_BUFFER)
         {
-            auto cTree = static_cast<BufferImplementation<BeamformerPath, PreprocessingPathConfiguration> *>(pimpl.get())->algo.getCoefficientsTree();
-            auto pTree = static_cast<BufferImplementation<BeamformerPath, PreprocessingPathConfiguration> *>(pimpl.get())->algo.getParametersTree();
+            auto cTree = static_cast<AsynchronousBufferImplementation<BeamformerPath, PreprocessingPathConfiguration> *>(pimpl.get())->algo.getCoefficientsTree();
+            auto pTree = static_cast<AsynchronousBufferImplementation<BeamformerPath, PreprocessingPathConfiguration> *>(pimpl.get())->algo.getParametersTree();
             pimpl = std::make_unique<BufferImplementation<BeamformerPath, PreprocessingPathConfiguration>>(cTree);
             static_cast<BufferImplementation<BeamformerPath, PreprocessingPathConfiguration> *>(pimpl.get())->algo.setParametersTree(pTree);
         }
@@ -24,7 +24,7 @@ void AlgorithmBuffer<PreprocessingPathConfiguration>::setBufferMode(BufferMode b
         auto cTree = static_cast<BufferImplementation<BeamformerPath, PreprocessingPathConfiguration> *>(pimpl.get())->algo.getCoefficientsTree();
         auto pTree = static_cast<BufferImplementation<BeamformerPath, PreprocessingPathConfiguration> *>(pimpl.get())->algo.getParametersTree();
         pimpl = std::make_unique<AsynchronousBufferImplementation<BeamformerPath, PreprocessingPathConfiguration>>(cTree);
-        static_cast<BufferImplementation<BeamformerPath, PreprocessingPathConfiguration> *>(pimpl.get())->algo.setParametersTree(pTree);
+        static_cast<AsynchronousBufferImplementation<BeamformerPath, PreprocessingPathConfiguration> *>(pimpl.get())->algo.setParametersTree(pTree);
     }
 }
 
