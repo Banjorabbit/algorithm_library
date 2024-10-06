@@ -20,50 +20,6 @@ struct TSetup
 };
 
 template <typename Tconfiguration>
-struct ConfigurationBuffer : public Tconfiguration
-{
-    using Input = I::Real2D;
-    using Output = O::Real2D;
-
-    static Eigen::ArrayXXf initInput(const typename Tconfiguration::Coefficients &c) { return Eigen::ArrayXXf::Random(c.bufferSize, c.nChannels); } // time samples
-
-    static Eigen::ArrayXXf initOutput(Input input, const typename Tconfiguration::Coefficients &c)
-    {
-        return Eigen::ArrayXXf::Zero(c.bufferSize, Tconfiguration::getNChannelsOut(c));
-    } // time samples
-
-    static bool validInput(Input input, const typename Tconfiguration::Coefficients &c)
-    {
-        return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels) && input.allFinite();
-    }
-
-    static bool validOutput(Output output, const typename Tconfiguration::Coefficients &c)
-    {
-        return (output.rows() == c.bufferSize) && (output.cols() == Tconfiguration::getNChannelsOut(c)) && output.allFinite();
-    }
-
-    static Eigen::ArrayXXf initInputAnySize(const typename Tconfiguration::Coefficients &c, int bufferAnySize)
-    {
-        return Eigen::ArrayXXf::Random(bufferAnySize, c.nChannels);
-    } // time samples
-
-    static Eigen::ArrayXXf initOutputAnySize(Input input, const typename Tconfiguration::Coefficients &c)
-    {
-        return Eigen::ArrayXXf::Zero(input.rows(), Tconfiguration::getNChannelsOut(c));
-    } // time samples
-
-    static bool validInputAnySize(Input input, const typename Tconfiguration::Coefficients &c)
-    {
-        return (input.rows() > 0) && (input.cols() == c.nChannels) && input.allFinite();
-    }
-
-    static bool validOutputAnySize(Output output, const typename Tconfiguration::Coefficients &c)
-    {
-        return (output.rows() > 0) && (output.cols() == Tconfiguration::getNChannelsOut(c)) && output.allFinite();
-    }
-};
-
-template <typename Tconfiguration>
 class Algorithm
 {
   public:
@@ -128,6 +84,56 @@ class Algorithm
 
 enum BufferMode { SYNCHRONOUS_BUFFER, ASYNCHRONOUS_BUFFER };
 
+template <typename Tconfiguration>
+struct ConfigurationBuffer : public Tconfiguration
+{
+    using Input = I::Real2D;
+    using Output = O::Real2D;
+
+    static Eigen::ArrayXXf initInput(const typename Tconfiguration::Coefficients &c) { return Eigen::ArrayXXf::Random(c.bufferSize, c.nChannels); } // time samples
+
+    static Eigen::ArrayXXf initOutput(Input input, const typename Tconfiguration::Coefficients &c)
+    {
+        return Eigen::ArrayXXf::Zero(c.bufferSize, Tconfiguration::getNChannelsOut(c));
+    } // time samples
+
+    static bool validInput(Input input, const typename Tconfiguration::Coefficients &c)
+    {
+        return (input.rows() == c.bufferSize) && (input.cols() == c.nChannels) && input.allFinite();
+    }
+
+    static bool validOutput(Output output, const typename Tconfiguration::Coefficients &c)
+    {
+        return (output.rows() == c.bufferSize) && (output.cols() == Tconfiguration::getNChannelsOut(c)) && output.allFinite();
+    }
+
+    // return size of output buffer given the input bufferSize and bufferMode
+    static int getOutputAnySizeBufferSize(int bufferAnySize, const typename Tconfiguration::Coefficients &c, BufferMode bufferMode)
+    {
+        if (bufferMode == BufferMode::SYNCHRONOUS_BUFFER) { return static_cast<int>(std::ceil(static_cast<float>(bufferAnySize) / c.bufferSize) * c.bufferSize); }
+        return bufferAnySize;
+    }
+
+    static Eigen::ArrayXXf initInputAnySize(int bufferAnySize, const typename Tconfiguration::Coefficients &c)
+    {
+        return Eigen::ArrayXXf::Random(bufferAnySize, c.nChannels);
+    } // time samples
+
+    static Eigen::ArrayXXf initOutputAnySize(Input input, const typename Tconfiguration::Coefficients &c, BufferMode bufferMode)
+    {
+        return Eigen::ArrayXXf::Zero(getOutputAnySizeBufferSize(input.rows(), c, bufferMode), Tconfiguration::getNChannelsOut(c));
+    } // time samples
+
+    static bool validInputAnySize(Input input, const typename Tconfiguration::Coefficients &c)
+    {
+        return (input.rows() > 0) && (input.cols() == c.nChannels) && input.allFinite();
+    }
+
+    static bool validOutputAnySize(Output output, int bufferAnySize, const typename Tconfiguration::Coefficients &c, BufferMode bufferMode)
+    {
+        return (output.rows() == getOutputAnySizeBufferSize(bufferAnySize, c, bufferMode)) && (output.cols() == Tconfiguration::getNChannelsOut(c)) && output.allFinite();
+    }
+};
 // AlgorithmBuffer<Tconfiguration> is a class that derives from Algorithm<Tconfiguration>
 // It is for algorithms that have a dynamic size input/output array and allows to change
 // the mode that the algorithm is using to process the input using processAnySize:
@@ -172,6 +178,11 @@ class AlgorithmBuffer : public Algorithm<Tconfiguration>
     int getDelaySamples() const { return static_cast<BufferBaseImplementation *>(Base::pimpl.get())->getDelaySamples(); }
     void processAnySize(Input input, Output output) { static_cast<BufferBaseImplementation *>(Base::pimpl.get())->processAnySize(input, output); }
     void setBufferMode(BufferMode bufferMode); // define in source file
+
+    Eigen::ArrayXXf initInputAnySize(int bufferAnySize) { return Configuration::initInputAnySize(bufferAnySize, Base::getCoefficients()); }
+    Eigen::ArrayXXf initOutputAnySize(Input input) { return Configuration::initOutputAnySize(input, Base::getCoefficients(), getBufferMode()); }
+    bool validInputAnySize(Input input) { return Configuration::validInputAnySize(input, Base::getCoefficients()); }
+    bool validOutputAnySize(Output output, int bufferAnySize) { return Configuration::validOutputAnySize(output, bufferAnySize, Base::getCoefficients(), getBufferMode()); }
 
   protected:
     ~AlgorithmBuffer() = default;

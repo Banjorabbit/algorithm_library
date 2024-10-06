@@ -192,3 +192,33 @@
     }                                                                                                                                                                         \
     PublicAlgorithm::PublicAlgorithm(const Coefficients &c) : Algorithm<ConfigurationName>(c) {}                                                                              \
     extern "C" PublicAlgorithm *create##PublicAlgorithm##Instance() { return new PublicAlgorithm; }
+
+#define DEFINE_ALGORITHM_BUFFER_CONSTRUCTOR(PublicAlgorithm, InternalAlgorithm, ConfigurationName)                                                                            \
+    template <>                                                                                                                                                               \
+    Algorithm<ConfigurationName>::Algorithm(const Coefficients &c)                                                                                                            \
+    {                                                                                                                                                                         \
+        pimpl = std::make_unique<BufferImplementation<InternalAlgorithm, ConfigurationName>>(c);                                                                              \
+    }                                                                                                                                                                         \
+    PublicAlgorithm::PublicAlgorithm(const Coefficients &c) : AlgorithmBuffer<ConfigurationName>(c) {}                                                                        \
+    extern "C" PublicAlgorithm *create##PublicAlgorithm##Instance() { return new PublicAlgorithm; }                                                                           \
+    template <>                                                                                                                                                               \
+    void AlgorithmBuffer<ConfigurationName>::setBufferMode(BufferMode bufferMode)                                                                                             \
+    {                                                                                                                                                                         \
+        if (bufferMode == SYNCHRONOUS_BUFFER)                                                                                                                                 \
+        {                                                                                                                                                                     \
+            if (static_cast<BufferBaseImplementation *>(Base::pimpl.get())->getBufferMode() != SYNCHRONOUS_BUFFER)                                                            \
+            {                                                                                                                                                                 \
+                auto cTree = static_cast<AsynchronousBufferImplementation<InternalAlgorithm, ConfigurationName> *>(pimpl.get())->algo.getCoefficientsTree();                  \
+                auto pTree = static_cast<AsynchronousBufferImplementation<InternalAlgorithm, ConfigurationName> *>(pimpl.get())->algo.getParametersTree();                    \
+                pimpl = std::make_unique<BufferImplementation<InternalAlgorithm, ConfigurationName>>(cTree);                                                                  \
+                static_cast<BufferImplementation<InternalAlgorithm, ConfigurationName> *>(pimpl.get())->algo.setParametersTree(pTree);                                        \
+            }                                                                                                                                                                 \
+        }                                                                                                                                                                     \
+        else                                                                                                                                                                  \
+        {                                                                                                                                                                     \
+            auto cTree = static_cast<BufferImplementation<InternalAlgorithm, ConfigurationName> *>(pimpl.get())->algo.getCoefficientsTree();                                  \
+            auto pTree = static_cast<BufferImplementation<InternalAlgorithm, ConfigurationName> *>(pimpl.get())->algo.getParametersTree();                                    \
+            pimpl = std::make_unique<AsynchronousBufferImplementation<InternalAlgorithm, ConfigurationName>>(cTree);                                                          \
+            static_cast<AsynchronousBufferImplementation<InternalAlgorithm, ConfigurationName> *>(pimpl.get())->algo.setParametersTree(pTree);                                \
+        }                                                                                                                                                                     \
+    }
