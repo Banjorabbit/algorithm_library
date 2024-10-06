@@ -383,12 +383,12 @@ bool algorithmBufferInterfaceTest()
 
     BufferMode bufferMode = BufferMode::SYNCHRONOUS_BUFFER;
     successFlag &= processAnySizeTest<Talgo>(bufferMode, bufferSize);
-    successFlag &= processAnySizeTest<Talgo>(bufferMode, 0.75 * bufferSize);
-    successFlag &= processAnySizeTest<Talgo>(bufferMode, 1.25 * bufferSize);
+    successFlag &= processAnySizeTest<Talgo>(bufferMode, 0.25 * bufferSize);
+    successFlag &= processAnySizeTest<Talgo>(bufferMode, 10 * bufferSize);
     
     bufferMode = BufferMode::ASYNCHRONOUS_BUFFER;
-    successFlag &= processAnySizeTest<Talgo>(bufferMode, 0.75 * bufferSize);
-    successFlag &= processAnySizeTest<Talgo>(bufferMode, 1.25 * bufferSize);
+    successFlag &= processAnySizeTest<Talgo>(bufferMode, 0.25 * bufferSize);
+    successFlag &= processAnySizeTest<Talgo>(bufferMode, 10 * bufferSize);
     
     if (!successFlag) { fmt::print("algorithmBufferInterfaceTest failed.\n"); }
     fmt::print("----------------------------------------------------------------------------------------------------------------------------------\n");
