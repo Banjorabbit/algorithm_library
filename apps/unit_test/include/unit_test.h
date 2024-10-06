@@ -309,4 +309,90 @@ bool algorithmInterfaceTest(bool testMallocFlag = true)
     return successFlag;
 }
 
+template<typename Talgo>
+bool processAnySizeTest(BufferMode bufferMode, int bufferAnySize)
+{
+    Talgo algo;
+    algo.setBufferMode(bufferMode);
+
+    auto input = algo.initInputAnySize(bufferAnySize);
+    auto output = algo.initOutputAnySize(input);
+    if (!algo.validInputAnySize(input))
+    {
+        fmt::print("processAnySizeTest failed: initial input is not valid.\n");
+        return false;
+    }
+    if (!algo.validOutputAnySize(output, bufferAnySize))
+    {
+        fmt::print("processAnySizeTest failed: initial output is not valid.\n");
+        return false;
+    }
+    algo.processAnySize(input, output);
+    if (!algo.validOutputAnySize(output, bufferAnySize))
+    {
+        fmt::print("processAnySizeTest failed: first output is not valid.\n");
+        return false;
+    }
+    double durationMin = 1e10;
+    double durationAvg = 0;
+    double durationMax = 0;
+    for (auto i = 0; i < 100; i++)
+    {
+        auto start = std::chrono::steady_clock::now();
+        algo.processAnySize(input, output);
+        auto end = std::chrono::steady_clock::now();
+        auto time = std::chrono::duration<double, std::micro>(end - start).count();
+        durationMin = std::min(durationMin, time);
+        durationAvg += time / 100;
+        durationMax = std::max(durationMax, time);
+    }
+    fmt::print("Execution time of processAnySize with bufferMode = {} and bufferSize = {} is (min - avg. - max): {:.3f} us - {:.3f} us - {:.3f} us.\n", static_cast<int>(bufferMode), bufferAnySize, durationMin, durationAvg, durationMax);
+    if (!algo.validOutputAnySize(output, bufferAnySize))
+    {
+        fmt::print("processAnySizeTest failed: output is not valid.\n");
+        return false;
+    }
+    return true;
+}
+
+template <typename Talgo>
+bool versionAlgorithmBufferTest()
+{
+    constexpr int version = Talgo::ALGORITHM_VERSION_MAJOR;
+    fmt::print("Algorithm base major version: {}.\n", version);
+    return true;
+}
+
+template <typename Talgo>
+bool algorithmBufferInterfaceTest()
+{
+    fmt::print("----------------------------------------------------------------------------------------------------------------------------------\n");
+    Talgo algo;
+
+    auto c = algo.getCoefficients();
+    nlohmann::json jc(c); // convert c to json
+    fmt::print("coefficients: {}\n", jc.dump(4));
+
+    auto p = algo.getParameters();
+    nlohmann::json jp(p); // convert p to json
+    fmt::print("parameters: {}\n", jp.dump(4));
+
+    auto successFlag = versionAlgorithmBufferTest<Talgo>();
+    
+    int bufferSize = algo.getCoefficients().bufferSize;
+
+    BufferMode bufferMode = BufferMode::SYNCHRONOUS_BUFFER;
+    successFlag &= processAnySizeTest<Talgo>(bufferMode, bufferSize);
+    successFlag &= processAnySizeTest<Talgo>(bufferMode, 0.75 * bufferSize);
+    successFlag &= processAnySizeTest<Talgo>(bufferMode, 1.25 * bufferSize);
+    
+    bufferMode = BufferMode::ASYNCHRONOUS_BUFFER;
+    successFlag &= processAnySizeTest<Talgo>(bufferMode, 0.75 * bufferSize);
+    successFlag &= processAnySizeTest<Talgo>(bufferMode, 1.25 * bufferSize);
+    
+    if (!successFlag) { fmt::print("algorithmBufferInterfaceTest failed.\n"); }
+    fmt::print("----------------------------------------------------------------------------------------------------------------------------------\n");
+    return successFlag;
+}
+
 } // namespace InterfaceTests

@@ -12,6 +12,11 @@ TEST(PreprocessingPath, Interface)
     EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<BeamformerPath>(testMallocFlag));
 }
 
+TEST(PreprocessingPath, PublicInterface)
+{
+    EXPECT_TRUE(InterfaceTests::algorithmBufferInterfaceTest<PreprocessingPath>());
+}
+
 // test that bufferMode is correctly changed to asynchronous mode
 TEST(PreprocessingPath, SetAsynchronousMode)
 {
