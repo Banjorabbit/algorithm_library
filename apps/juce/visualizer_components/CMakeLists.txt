@@ -29,6 +29,8 @@ cpmaddpackage(
 # add algorithm_library
 cpmaddpackage(NAME AlgorithmLibrary SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../..)
 
+
+
 # create gui app
 juce_add_gui_app (${PROJECT_NAME}
 				  VERSION ${PROJECT_VERSION}
@@ -36,7 +38,7 @@ juce_add_gui_app (${PROJECT_NAME}
           PLUGIN_MANUFACTURER_CODE "KK"
           PRODUCT_NAME "Visualizer Components"
           BUNDLE_ID "kris_kode"
-          NEEDS_CURL TRUE
+          NEEDS_CURL FALSE
           NEEDS_WEB_BROWSER FALSE
 )
 
@@ -45,7 +47,14 @@ target_sources(${PROJECT_NAME} PRIVATE
 )
 
 # We need to include this path in our search path
-target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/../../../include ${PROJECT_SOURCE_DIR}/../../../src)
+set(INCLUDE_PATHS "${PROJECT_SOURCE_DIR}/../../../include")
+if (NOT MSVC) # GTK AND WEBGTK must be included on Linux
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(GTK REQUIRED gtk+-3.0)
+  pkg_check_modules(WEBGTK REQUIRED webkit2gtk-4.1)
+  string(APPEND INCLUDE_PATHS " ${GTK_INCLUDE_DIRS} ${WEBGTK_INCLUDE_DIRS}")
+endif()
+target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_PATHS})
 
 # The project depends on the following libraries
 target_link_libraries(${PROJECT_NAME} 
@@ -54,4 +63,6 @@ AlgorithmLibrary
 juce::juce_audio_basics
 juce::juce_gui_basics
 juce::juce_audio_utils
+juce::juce_recommended_config_flags 
+juce::juce_recommended_lto_flags
 )
