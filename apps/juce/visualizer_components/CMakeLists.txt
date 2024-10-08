@@ -53,4 +53,5 @@ PRIVATE
 AlgorithmLibrary
 juce::juce_audio_basics
 juce::juce_gui_basics
+juce::juce_audio_utils
 )
