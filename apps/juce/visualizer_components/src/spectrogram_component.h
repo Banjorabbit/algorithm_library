@@ -41,26 +41,26 @@ class SpectrogramComponent : public juce::Component, juce::Timer
         }
     }
 
-    // push buffer into circular buffer. This method is likely to be called from the main audio thread and should not do any heavy calculations or GUI work
+    // push data into circular buffer. This method is likely to be called from the main audio thread and should not do any heavy calculations or GUI work
     void pushSamples(I::Real buffer)
     {
         int index = writeBufferIndex.load();
         int size = static_cast<int>(buffer.size());
-        int sizeCircular = static_cast<int>(circularBuffer.size());
+        const int sizeCircular = static_cast<int>(circularBuffer.size());
         if (size > sizeCircular) // fallback if given more samples than we can handle
         {
             index = 0;
             size = sizeCircular;
         }
 
-        int size1 = std::min(sizeCircular - index, size);
-        int size2 = size - size1;
+        const int size1 = std::min(sizeCircular - index, size);
+        const int size2 = size - size1;
         circularBuffer.segment(index, size1) = buffer.head(size1);
         circularBuffer.head(size2) = buffer.tail(size2);
 
         int indexNew = index + size;
-        if (indexNew >= sizeCircular) { writeBufferIndex.store(indexNew - sizeCircular); }
-        else { writeBufferIndex.store(indexNew); }
+        if (indexNew >= sizeCircular) { indexNew -= sizeCircular; }
+        writeBufferIndex.store(indexNew);
     }
 
     void reset()
@@ -71,6 +71,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
         spectrogram.reset();
     }
 
+    // read from circular buffer and calculate spectrogram. This method is called from message thread and is not time critical
     void timerCallback() override
     {
         int startIndex = readBufferIndex.load();
@@ -78,13 +79,13 @@ class SpectrogramComponent : public juce::Component, juce::Timer
         const int sizeCircularBuffer = static_cast<int>(circularBuffer.size());
         int length = endIndex - startIndex;
         if (length < 0) { length += sizeCircularBuffer; }
-        int nFrames = length / bufferSize;
 
+        const int nFrames = length / bufferSize;
         for (auto i = 0; i < nFrames; i++)
         {
             endIndex = startIndex + bufferSize;
-            int size1 = bufferSize - std::max(0, endIndex - sizeCircularBuffer);
-            int size2 = bufferSize - size1;
+            const int size1 = bufferSize - std::max(0, endIndex - sizeCircularBuffer);
+            const int size2 = bufferSize - size1;
             bufferIn.head(size1) = circularBuffer.segment(startIndex, size1);
             bufferIn.tail(size2) = circularBuffer.head(size2);
 
