@@ -2,13 +2,14 @@
 #include "algorithm_library/spectrogram.h"
 #include <juce_audio_utils/juce_audio_utils.h>
 #include <juce_gui_basics/juce_gui_basics.h>
-
+#include <juce_core/juce_core.h>
 class SpectrogramComponent : public juce::Component, juce::Timer
 {
   public:
     SpectrogramComponent(float sampleRate)
         : bufferSize(getBufferSize(sampleRate)),
-          spectrogram({.bufferSize = bufferSize, .nBands = bufferSize + 1, .algorithmType = SpectrogramConfiguration::Coefficients::HANN})
+          spectrogram({.bufferSize = bufferSize, .nBands = bufferSize + 1, .algorithmType = SpectrogramConfiguration::Coefficients::HANN}),
+          spectrogramImage(juce::Image::RGB, nSpectrogramFrames, bufferSize + 1, true)
     {
         circularBuffer = Eigen::ArrayXf::Zero(getcircularBufferSize(static_cast<int>(.01 * sampleRate), sampleRate));
         writeBufferIndex.store(0);
@@ -92,10 +93,25 @@ class SpectrogramComponent : public juce::Component, juce::Timer
             spectrogram.process(bufferIn, spectrogramOut);
             startIndex = endIndex;
             if (startIndex >= circularBuffer.size()) { startIndex -= sizeCircularBuffer; }
+
+            for (auto y = 1; y < bufferSize+1; ++y)
+            {
+                auto level = juce::jmap(10*std::log10f(std::max(spectrogramOut(y)+1e-20f,-80.f)), -80.f, 0.f, 0.0f, 1.0f);
+                spectrogramImage.setPixelAt(framePlot, y, juce::Colour::fromHSV (level, 1.0f, level, 1.0f));
+            }
+            framePlot++;
+            if (framePlot >= nSpectrogramFrames) { framePlot = 0; }
         }
         readBufferIndex.store(startIndex);
     }
 
+    void paint(juce::Graphics& g) override
+    {
+        g.fillAll (juce::Colours::black);
+
+        g.setOpacity (1.0f);
+        g.drawImage (spectrogramImage, getLocalBounds().toFloat());
+    }
   private:
     // bufferSize is around 10ms and half the number of samples in the FFT with 50% overlap
     int getBufferSize(float sampleRate) const { return SpectrogramConfiguration::getValidFFTSize(static_cast<int>(2 * sampleRate * 0.01f)) / 2; }
@@ -110,6 +126,9 @@ class SpectrogramComponent : public juce::Component, juce::Timer
     Spectrogram spectrogram;
     Eigen::ArrayXf bufferIn;
     Eigen::ArrayXf spectrogramOut;
+    juce::Image spectrogramImage;
+    constexpr static int nSpectrogramFrames = 3000; // number of time frames in spectrogram image
+    int framePlot = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpectrogramComponent)
 };

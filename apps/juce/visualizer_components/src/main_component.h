@@ -40,7 +40,6 @@ public:
 private:
     //AudioFileReaderComponent<ConvolutionDSP> fileReaderComponent;
     SpectrogramComponent spectrogram;
-    juce::Image spectrogramImage;
-    
+        
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
