@@ -2,26 +2,25 @@
 #include "algorithm_library/spectrogram.h"
 #include "utilities/fastonebigheader.h"
 #include <juce_audio_utils/juce_audio_utils.h>
-#include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_core/juce_core.h>
-
-
+#include <juce_gui_basics/juce_gui_basics.h>
 
 class SpectrogramComponent : public juce::Component, juce::Timer
 {
   public:
     SpectrogramComponent(float sampleRate)
-        : bufferSize(getBufferSize(sampleRate)),
-          spectrogram({.bufferSize = bufferSize, .nBands = bufferSize + 1, .algorithmType = SpectrogramConfiguration::Coefficients::HANN}),
-          spectrogramImage(juce::Image::RGB, nSpectrogramFrames, bufferSize + 1, true)
+        : bufferSize(getBufferSize(sampleRate)), nBands(getNBands(bufferSize)),
+          spectrogram({.bufferSize = bufferSize, .nBands = nBands, .algorithmType = SpectrogramConfiguration::Coefficients::HANN}),
+          spectrogramImage(juce::Image::RGB, nSpectrogramFrames, nBands, true)
     {
         circularBuffer = Eigen::ArrayXf::Zero(getcircularBufferSize(static_cast<int>(.01 * sampleRate), sampleRate));
         writeBufferIndex.store(0);
         readBufferIndex.store(0);
         bufferIn = Eigen::ArrayXf::Zero(bufferSize);
-        spectrogramOut = Eigen::ArrayXf::Zero(bufferSize + 1);
+        spectrogramOut = Eigen::ArrayXf::Zero(nBands);
 
         startTimerHz(60);
+        setSize(750, 500);
     }
 
     void prepareToPlay(int expectedBufferSize, float sampleRate)
@@ -34,6 +33,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
             c.nBands = bufferSize + 1;
             spectrogram.setCoefficients(c);
             bufferSize = bufferSizeNew;
+            nBands = getNBands(bufferSize);
             bufferIn = Eigen::ArrayXf::Zero(bufferSize);
             spectrogramOut = Eigen::ArrayXf::Zero(bufferSize + 1);
         }
@@ -98,32 +98,37 @@ class SpectrogramComponent : public juce::Component, juce::Timer
             startIndex = endIndex;
             if (startIndex >= circularBuffer.size()) { startIndex -= sizeCircularBuffer; }
 
-            for (auto y = 1; y < bufferSize+1; ++y)
+            for (auto y = 1; y < nBands; ++y)
             {
-                auto level = juce::jmap(std::max(energy2dB(spectrogramOut(y)+1e-20f),-80.f), -80.f, 0.f, 0.0f, 1.0f);
-                spectrogramImage.setPixelAt(framePlot, y, juce::Colour::fromHSV (level, 1.0f, level, 1.0f));
+                auto level = juce::jmap(std::max(energy2dB(spectrogramOut(y) + 1e-20f), -60.f), -60.f, 0.f, 0.0f, 1.0f);
+                spectrogramImage.setPixelAt(framePlot, nBands - 1 - y, juce::Colour::fromHSV(level, 1.0f, level, 1.0f));
             }
             framePlot++;
             if (framePlot >= nSpectrogramFrames) { framePlot = 0; }
         }
         readBufferIndex.store(startIndex);
+        repaint();
     }
 
-    void paint(juce::Graphics& g) override
+    void paint(juce::Graphics &g) override
     {
-        g.fillAll (juce::Colours::black);
+        g.fillAll(juce::Colours::black);
 
-        g.setOpacity (1.0f);
-        g.drawImage (spectrogramImage, getLocalBounds().toFloat());
+        g.setOpacity(1.0f);
+        g.drawImage(spectrogramImage, getLocalBounds().toFloat());
     }
+
   private:
     // bufferSize is around 10ms and half the number of samples in the FFT with 50% overlap
     int getBufferSize(float sampleRate) const { return SpectrogramConfiguration::getValidFFTSize(static_cast<int>(2 * sampleRate * 0.01f)) / 2; }
 
+    int getNBands(int bufferSize) const { return 4 * bufferSize + 1; }
+    
     // circular buffer size is max of 100ms and 8x the expected buffer size
     int getcircularBufferSize(int expectedBufferSize, float sampleRate) const { return std::max(static_cast<int>(sampleRate * 0.1f), 8 * expectedBufferSize); }
 
     int bufferSize;
+    int nBands;
     Eigen::ArrayXf circularBuffer;
     std::atomic<int> writeBufferIndex;
     std::atomic<int> readBufferIndex;
