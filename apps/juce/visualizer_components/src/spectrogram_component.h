@@ -1,8 +1,12 @@
 #pragma once
 #include "algorithm_library/spectrogram.h"
+#include "utilities/fastonebigheader.h"
 #include <juce_audio_utils/juce_audio_utils.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_core/juce_core.h>
+
+
+
 class SpectrogramComponent : public juce::Component, juce::Timer
 {
   public:
@@ -96,7 +100,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
 
             for (auto y = 1; y < bufferSize+1; ++y)
             {
-                auto level = juce::jmap(10*std::log10f(std::max(spectrogramOut(y)+1e-20f,-80.f)), -80.f, 0.f, 0.0f, 1.0f);
+                auto level = juce::jmap(std::max(energy2dB(spectrogramOut(y)+1e-20f),-80.f), -80.f, 0.f, 0.0f, 1.0f);
                 spectrogramImage.setPixelAt(framePlot, y, juce::Colour::fromHSV (level, 1.0f, level, 1.0f));
             }
             framePlot++;

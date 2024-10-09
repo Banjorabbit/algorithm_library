@@ -47,7 +47,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 )
 
 # We need to include this path in our search path
-set(INCLUDE_PATHS "${PROJECT_SOURCE_DIR}/../../../include")
+set(INCLUDE_PATHS "${PROJECT_SOURCE_DIR}/../../../src" "${PROJECT_SOURCE_DIR}/../../../include")
 if (NOT MSVC) # GTK AND WEBGTK must be included on Linux
   find_package(PkgConfig REQUIRED)
   pkg_check_modules(GTK REQUIRED gtk+-3.0)
