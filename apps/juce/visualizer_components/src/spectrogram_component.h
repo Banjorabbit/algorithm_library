@@ -1,5 +1,6 @@
 #pragma once
 #include "algorithm_library/spectrogram.h"
+#include "algorithm_library/mel_scale.h"
 #include "utilities/fastonebigheader.h"
 #include <juce_audio_utils/juce_audio_utils.h>
 #include <juce_core/juce_core.h>
@@ -9,15 +10,17 @@ class SpectrogramComponent : public juce::Component, juce::Timer
 {
   public:
     SpectrogramComponent(float sampleRate)
-        : bufferSize(getBufferSize(sampleRate)), nBands(getNBands(bufferSize)),
+        : bufferSize(getBufferSize(sampleRate)), nBands(getNBands(bufferSize)), nMels(getNMels(nBands)),
           spectrogram({.bufferSize = bufferSize, .nBands = nBands, .algorithmType = SpectrogramConfiguration::Coefficients::HANN}),
-          spectrogramImage(juce::Image::RGB, nSpectrogramFrames, nBands, true)
+          melScale({.nMels = nMels, .nBands = nBands, .sampleRate = sampleRate}),
+          spectrogramImage(juce::Image::RGB, nSpectrogramFrames, nMels, true)
     {
         circularBuffer = Eigen::ArrayXf::Zero(getcircularBufferSize(static_cast<int>(.01 * sampleRate), sampleRate));
         writeBufferIndex.store(0);
         readBufferIndex.store(0);
         bufferIn = Eigen::ArrayXf::Zero(bufferSize);
         spectrogramOut = Eigen::ArrayXf::Zero(nBands);
+        spectrogramMel = Eigen::ArrayXf::Zero(nMels);
 
         startTimerHz(60);
         setSize(750, 500);
@@ -28,14 +31,25 @@ class SpectrogramComponent : public juce::Component, juce::Timer
         int bufferSizeNew = getBufferSize(sampleRate);
         if (bufferSizeNew != bufferSize)
         {
+            bufferSize = bufferSizeNew;
             auto c = spectrogram.getCoefficients();
             c.bufferSize = bufferSize;
-            c.nBands = bufferSize + 1;
+            c.nBands = getNBands(bufferSize);
             spectrogram.setCoefficients(c);
-            bufferSize = bufferSizeNew;
+            
             nBands = getNBands(bufferSize);
             bufferIn = Eigen::ArrayXf::Zero(bufferSize);
-            spectrogramOut = Eigen::ArrayXf::Zero(bufferSize + 1);
+            spectrogramOut = Eigen::ArrayXf::Zero(nBands);
+
+            auto cMel = melScale.getCoefficients();
+            nMels = getNMels(nBands);
+            cMel.nBands = nBands;
+            cMel.nMels = nMels;
+            cMel.sampleRate = sampleRate;
+            melScale.setCoefficients(cMel);
+            spectrogramMel = Eigen::ArrayXf::Zero(nMels);
+
+            spectrogramImage = juce::Image(juce::Image::RGB, nSpectrogramFrames, nMels, true);
         }
         int circularBufferSize = getcircularBufferSize(expectedBufferSize, sampleRate);
         if (circularBufferSize != circularBuffer.size())
@@ -95,16 +109,20 @@ class SpectrogramComponent : public juce::Component, juce::Timer
             bufferIn.tail(size2) = circularBuffer.head(size2);
 
             spectrogram.process(bufferIn, spectrogramOut);
+            melScale.process(spectrogramOut, spectrogramMel);
             startIndex = endIndex;
             if (startIndex >= circularBuffer.size()) { startIndex -= sizeCircularBuffer; }
 
-            for (auto y = 1; y < nBands; ++y)
+            for (auto y = 1; y < nMels; ++y)
             {
-                auto level = juce::jmap(std::max(energy2dB(spectrogramOut(y) + 1e-20f), -60.f), -60.f, 0.f, 0.0f, 1.0f);
-                spectrogramImage.setPixelAt(framePlot, nBands - 1 - y, juce::Colour::fromHSV(level, 1.0f, level, 1.0f));
+                auto level = juce::jmap(std::max(energy2dB(spectrogramMel(y) + 1e-20f), -60.f), -60.f, 0.f, 0.0f, 1.0f);
+                spectrogramImage.setPixelAt(framePlot, nMels - 1 - y, juce::Colour::fromHSV(level, 1.0f, level, 1.0f));
             }
             framePlot++;
-            if (framePlot >= nSpectrogramFrames) { framePlot = 0; }
+            if (framePlot >= nSpectrogramFrames) 
+            { 
+                framePlot = 0; 
+            }
         }
         readBufferIndex.store(startIndex);
         repaint();
@@ -124,17 +142,22 @@ class SpectrogramComponent : public juce::Component, juce::Timer
 
     int getNBands(int bufferSize) const { return 4 * bufferSize + 1; }
     
+    int getNMels(int nBands) const { return (nBands - 1) / 10; }
+
     // circular buffer size is max of 100ms and 8x the expected buffer size
     int getcircularBufferSize(int expectedBufferSize, float sampleRate) const { return std::max(static_cast<int>(sampleRate * 0.1f), 8 * expectedBufferSize); }
 
     int bufferSize;
     int nBands;
+    int nMels;
     Eigen::ArrayXf circularBuffer;
     std::atomic<int> writeBufferIndex;
     std::atomic<int> readBufferIndex;
     Spectrogram spectrogram;
+    MelScale melScale;
     Eigen::ArrayXf bufferIn;
     Eigen::ArrayXf spectrogramOut;
+    Eigen::ArrayXf spectrogramMel;
     juce::Image spectrogramImage;
     constexpr static int nSpectrogramFrames = 3000; // number of time frames in spectrogram image
     int framePlot = 0;
