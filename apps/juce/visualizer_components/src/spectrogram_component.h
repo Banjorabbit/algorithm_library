@@ -138,11 +138,11 @@ class SpectrogramComponent : public juce::Component, juce::Timer
 
   private:
     // bufferSize is around 10ms and half the number of samples in the FFT with 50% overlap
-    int getBufferSize(float sampleRate) const { return SpectrogramConfiguration::getValidFFTSize(static_cast<int>(2 * sampleRate * 0.01f)) / 2; }
+    static int getBufferSize(float sampleRate) { return SpectrogramConfiguration::getValidFFTSize(static_cast<int>(2 * sampleRate * 0.01f)) / 2; }
 
-    int getNBands(int bufferSize) const { return 4 * bufferSize + 1; }
+    static int getNBands(int bufferSize) { return 4 * bufferSize + 1; }
     
-    int getNMels(int nBands) const { return (nBands - 1) / 10; }
+    static int getNMels(int nBands) { return (nBands - 1) / 10; }
 
     // circular buffer size is max of 100ms and 8x the expected buffer size
     int getcircularBufferSize(int expectedBufferSize, float sampleRate) const { return std::max(static_cast<int>(sampleRate * 0.1f), 8 * expectedBufferSize); }
