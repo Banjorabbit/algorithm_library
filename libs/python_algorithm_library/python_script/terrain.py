@@ -62,7 +62,7 @@ class Terrain(object):
 
     def start(self):
         if (sys.flags.interactive != 1):
-            QtWidgets.QApplication.instance().exec_()
+            QtWidgets.QApplication.instance().exec()
 
     def update(self):
         verts, faces, colors = self.mesh(offset=self.offset)
