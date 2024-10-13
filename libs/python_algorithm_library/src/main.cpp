@@ -7,6 +7,7 @@
 #include "algorithm_library/dc_remover.h"
 #include "algorithm_library/fft.h"
 #include "algorithm_library/filter_min_max.h"
+#include "algorithm_library/filter_power_spectrum.h"
 #include "algorithm_library/filterbank.h"
 #include "algorithm_library/iir_filter.h"
 #include "algorithm_library/iir_filter_time_varying.h"
@@ -208,6 +209,7 @@ PYBIND11_MODULE(PythonAlgorithmLibrary, m)
     DEFINE_PYTHON_INTERFACE(StreamingMax);
     DEFINE_PYTHON_INTERFACE(FilterbankAnalysis);
     DEFINE_PYTHON_INTERFACE(FilterbankSynthesis);
+    DEFINE_PYTHON_INTERFACE(FilterPowerSpectrum);
     DEFINE_PYTHON_INTERFACE(Interpolation);
     DEFINE_PYTHON_INTERFACE(InterpolationConstant);
     DEFINE_PYTHON_INTERFACE(InterpolationSample);

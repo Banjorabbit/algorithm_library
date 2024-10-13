@@ -12,15 +12,12 @@ filterbankAnalysis.setCoefficients(cA)
 
 cS = filterbankSynthesis.getCoefficients()
 cS['nChannels'] = 1
-cS['gain'] = 2/3
 filterbankSynthesis.setCoefficients(cS)
 
 nFrames = 30
 x = np.zeros(nFrames * bufferSize)
 x[225] = 1
 
-filterbankAnalysis.setStandardFilterbank(bufferSize)
-filterbankSynthesis.setStandardFilterbank(bufferSize)
 print("Standard Filterbank: ")
 print(filterbankAnalysis)
 print(filterbankSynthesis)
@@ -32,8 +29,11 @@ for i in np.arange(nFrames):
     zStandard[i*bufferSize:(i+1)*bufferSize] = filterbankSynthesis.process(y)[:,0]
 
 
-filterbankAnalysis.setHighQualityFilterbank(bufferSize)
-filterbankSynthesis.setHighQualityFilterbank(bufferSize)
+cA['filterbankType'] = 'Wola'
+cS['filterbankType'] = 'Wola'
+
+filterbankAnalysis.setCoefficients(cA)
+filterbankSynthesis.setCoefficients(cS)
 print("High Quality Filterbank: ")
 print(filterbankAnalysis)
 print(filterbankSynthesis)
@@ -45,26 +45,11 @@ for i in np.arange(nFrames):
     zHQ[i*bufferSize:(i+1)*bufferSize] = filterbankSynthesis.process(y)[:,0]
 
 
-bufferSize = int(bufferSize/4)
-filterbankAnalysis.setLowDelayFilterbank(bufferSize)
-filterbankSynthesis.setLowDelayFilterbank(bufferSize)
-print("Low Delay Filterbank: ")
-print(filterbankAnalysis)
-print(filterbankSynthesis)
-
-zLD = np.zeros(nFrames * bufferSize*4)
-for i in np.arange(nFrames):
-    y = filterbankAnalysis.process(x[i*bufferSize:(i+1)*bufferSize])
-    y[25] = 0
-    zLD[i*bufferSize:(i+1)*bufferSize] = filterbankSynthesis.process(y)[:,0]
-
-
 plt.style.use('dark_background')
 plt.subplot(2,1,1)
 plt.plot(x)
 plt.plot(zStandard)
 plt.plot(zHQ)
-plt.plot(zLD)
 plt.xlim(0, 1500)
 plt.xlabel('samples')
 plt.title('Impulse reponse')
@@ -75,7 +60,6 @@ plt.subplot(2,1,2)
 plt.plot(freq,20*np.log(abs(np.fft.fft(x))))
 plt.plot(freq,20*np.log(np.maximum(abs(np.fft.fft(zStandard)),1e-8)))
 plt.plot(freq,20*np.log(np.maximum(abs(np.fft.fft(zHQ)),1e-8)))
-plt.plot(freq,20*np.log(np.maximum(abs(np.fft.fft(zLD)),1e-8)))
 plt.xlim(0, 0.2)
 plt.xlabel('Normalized frequency')
 plt.ylabel('power (dB)')

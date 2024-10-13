@@ -19,46 +19,59 @@ print(filterTVSos)
 
 # get frequency responses for each type of filter
 nBands = 2049
-filterTVPow = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
+filterPowerSpectrum = pal.FilterPowerSpectrum()
+cFPS = filterPowerSpectrum.getCoefficients()
+cFPS['nBands'] = nBands
+filterPowerSpectrum.setCoefficients(cFPS)
+
+filterTVPow = filterPowerSpectrum.process(filterTVSos)
 
 pTV["filterType"] = "HighPass"
 filterTV.setParameters(pTV)
-filterTVPow1 = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
+filterTVSos = filterTV.getSosFilter(cutoff, gain, resonance)
+filterTVPow1 = filterPowerSpectrum.process(filterTVSos)
 
 pTV["filterType"] = "BandPass"
 filterTV.setParameters(pTV)
-filterTVPow2 = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
+filterTVSos = filterTV.getSosFilter(cutoff, gain, resonance)
+filterTVPow2 = filterPowerSpectrum.process(filterTVSos)
 
 pTV["filterType"] = "BandStop"
 filterTV.setParameters(pTV)
-filterTVPow3 = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
+filterTVSos = filterTV.getSosFilter(cutoff, gain, resonance)
+filterTVPow3 = filterPowerSpectrum.process(filterTVSos)
 
 pTV["filterType"] = "Peaking"
 filterTV.setParameters(pTV)
-filterTVPow4 = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
+filterTVSos = filterTV.getSosFilter(cutoff, gain, resonance)
+filterTVPow4 = filterPowerSpectrum.process(filterTVSos)
 
 pTV["filterType"] = "LowShelf"
 filterTV.setParameters(pTV)
-filterTVPow5 = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
+filterTVSos = filterTV.getSosFilter(cutoff, gain, resonance)
+filterTVPow5 = filterPowerSpectrum.process(filterTVSos)
 
 pTV["filterType"] = "HighShelf"
 filterTV.setParameters(pTV)
-filterTVPow6 = filterTV.getPowerFrequencyResponse(nBands, cutoff, gain, resonance)
+filterTVSos = filterTV.getSosFilter(cutoff, gain, resonance)
+filterTVPow6 = filterPowerSpectrum.process(filterTVSos)
 
-plt.plot(10*np.log10(filterTVPow))
-plt.plot(10*np.log10(filterTVPow))
-plt.plot(10*np.log10(filterTVPow1))
-plt.plot(10*np.log10(filterTVPow2))
-plt.plot(10*np.log10(filterTVPow3))
-plt.plot(10*np.log10(filterTVPow4))
-plt.plot(10*np.log10(filterTVPow5))
-plt.plot(10*np.log10(filterTVPow6))
-plt.plot(10*np.log10(filterTVPow)+10*np.log10(filterTVPow1)+10*np.log10(filterTVPow2)+10*np.log10(filterTVPow3)+10*np.log10(filterTVPow4)+10*np.log10(filterTVPow5)+10*np.log10(filterTVPow6))
+filterTVPowSum = filterTVPow * filterTVPow1 * filterTVPow2 * filterTVPow3 * filterTVPow4 * filterTVPow5 * filterTVPow6
+
+# plot frequency responses of the IIRFilterCascadeTimeVarying class
+smv = 1e-10
+plt.plot(10*np.log10(filterTVPow+smv))
+plt.plot(10*np.log10(filterTVPow1+smv))
+plt.plot(10*np.log10(filterTVPow2+smv))
+plt.plot(10*np.log10(filterTVPow3+smv))
+plt.plot(10*np.log10(filterTVPow4+smv))
+plt.plot(10*np.log10(filterTVPow5+smv))
+plt.plot(10*np.log10(filterTVPow6+smv))
+plt.plot(10*np.log10(filterTVPowSum))
 plt.ylabel('Power (dB)')
 plt.grid()
 
-
-# plot frequency responses of the IIRFilterCascadeTimeVarying class and check the power frequency response matches the sum of the individual filters above
+# Combine filters into one cascaded filter and check the power frequency response matches the sum of the individual filters above
 filterCTV = pal.IIRFilterCascadeTimeVarying()
 cCTV = filterCTV.getCoefficients()
 cCTV['nSos'] = 7
@@ -76,26 +89,10 @@ filterCTV.setFilterTypes(filterType)
 filterType = filterCTV.getFilterTypes() 
 print("Filter type: ", filterType)
 
-filterCTVPow = filterCTV.getPowerFrequencyResponse(nBands, [cutoff,cutoff,cutoff,cutoff,cutoff,cutoff,cutoff], [gain,gain,gain,gain,gain,gain,gain], [resonance,resonance,resonance,resonance,resonance,resonance,resonance])
+sosCascade = filterCTV.getSosFilter([cutoff,cutoff,cutoff,cutoff,cutoff,cutoff,cutoff], [gain,gain,gain,gain,gain,gain,gain], [resonance,resonance,resonance,resonance,resonance,resonance,resonance])
+filterCTVPow = filterPowerSpectrum.process(sosCascade)
 plt.plot(10*np.log10(filterCTVPow))
 
-# Check conversion between sos and TDF is correct: convert cutoff, resonance and gain to sos representation -> convert back again and check power frequency response is the same.
-sosCascade = filterCTV.getSosFilter([cutoff,cutoff,cutoff,cutoff,cutoff,cutoff,cutoff], [gain,gain,gain,gain,gain,gain,gain], [resonance,resonance,resonance,resonance,resonance,resonance,resonance])
-print(sosCascade)
-cgr = filterCTV.setUserDefinedFilter(sosCascade)
-filter2CTVPow = filterCTV.getPowerFrequencyResponse(nBands, cgr[0,:], cgr[1,:], cgr[2,:])
-print("error2: ", np.sum((filter2CTVPow-filterCTVPow)**2) / np.sum((filterCTVPow)**2))
-plt.plot(10*np.log10(filter2CTVPow))
-
-# create TDF filter -> input sos -> check power frequency response is the same as for SVF 
-filterIIR = pal.IIRFilter()
-cIIR = filterIIR.getCoefficients()
-cIIR["nSos"] = 7
-filterIIR.setCoefficients(cIIR)
-print(filterIIR)
-filterIIR.setFilter(sosCascade)
-filter3CTVPow = filterIIR.getPowerFrequencyResponse(nBands)
-print("error3: ", np.sum((filter3CTVPow-filterCTVPow)**2) / np.sum((filterCTVPow)**2))
-plt.plot(10*np.log10(filter3CTVPow))
+print("error: ", np.sum((filterTVPowSum-filterCTVPow)**2) / np.sum((filterCTVPow)**2))
 
 plt.show()
