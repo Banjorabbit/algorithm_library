@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 c = pal.NoiseEstimation().getCoefficients()
 c['nChannels'] = 1
-vad = pal.ActivityDetectionFrequencyDomain(c)
+vad = pal.ActivityDetectionFused(c)
 ne = pal.NoiseEstimation(c)
 print(ne)
 
@@ -27,7 +27,7 @@ for i in np.arange(nFrames):
         x[:,i] = powerInput
         vact = vad.process(powerInput)
         z = ne.process(powerInput)
-    y[:,i] = z[0][:,0]
+    y[:,i] = z[:,0]
     activity[i] = vact
 
 plt.subplot(3,1,1)
