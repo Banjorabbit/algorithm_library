@@ -14,12 +14,10 @@ x[:,300:400] = x[:,300:400] * .1
 x[:,800:900] = x[:,800:900] * .1
 x = x * x # power
 y = np.zeros((c['nBands'], nFrames))
-activity = np.zeros((c['nBands'], nFrames))
 
 for i in np.arange(nFrames):
     z = ne.process(x[:,i])
-    y[:,i] = z[0][:,0]
-    activity[:,i] = z[1][:,0]
+    y[:,i] = z[:,0]
 
 plt.subplot(2,1,1)
 plt.imshow(10*np.log10(x),aspect='auto', vmin = -40, vmax = 0)
