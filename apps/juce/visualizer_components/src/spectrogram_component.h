@@ -13,7 +13,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
         : bufferSize(getBufferSize(sampleRate)), nBands(getNBands(bufferSize)), nMels(getNMels(nBands)),
           spectrogram({.bufferSize = bufferSize, .nBands = nBands, .algorithmType = SpectrogramConfiguration::Coefficients::HANN}),
           melScale({.nMels = nMels, .nBands = nBands, .sampleRate = sampleRate}),
-          spectrogramImage(juce::Image::RGB, nSpectrogramFrames, nMels, true)
+          spectrogramImage(juce::Image::RGB, nSpectrogramFrames, nMels, true, juce::SoftwareImageType())
     {
         circularBuffer = Eigen::ArrayXf::Zero(getcircularBufferSize(static_cast<int>(.01 * sampleRate), sampleRate));
         writeBufferIndex.store(0);
@@ -49,7 +49,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
             melScale.setCoefficients(cMel);
             spectrogramMel = Eigen::ArrayXf::Zero(nMels);
 
-            spectrogramImage = juce::Image(juce::Image::RGB, nSpectrogramFrames, nMels, true);
+            spectrogramImage = juce::Image(juce::Image::RGB, nSpectrogramFrames, nMels, true, juce::SoftwareImageType());
         }
         int circularBufferSize = getcircularBufferSize(expectedBufferSize, sampleRate);
         if (circularBufferSize != circularBuffer.size())
@@ -93,6 +93,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
     // read from circular buffer and calculate spectrogram. This method is called from message thread and is not time critical
     void timerCallback() override
     {
+
         int startIndex = readBufferIndex.load();
         int endIndex = writeBufferIndex.load();
         const int sizeCircularBuffer = static_cast<int>(circularBuffer.size());
@@ -130,9 +131,6 @@ class SpectrogramComponent : public juce::Component, juce::Timer
 
     void paint(juce::Graphics &g) override
     {
-        g.fillAll(juce::Colours::black);
-
-        g.setOpacity(1.0f);
         g.drawImage(spectrogramImage, getLocalBounds().toFloat());
     }
 
