@@ -12,7 +12,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
     SpectrogramComponent(float sampleRateNew)
         : sampleRate(sampleRateNew), bufferSize(getBufferSize(sampleRate)), nBands(getNBands(bufferSize)), nMels(getNMels(sampleRate)),
           scalePlot(16000.f / (bufferSize * bufferSize)),
-          spectrogram({.bufferSize = bufferSize, .nBands = nBands, .algorithmType = SpectrogramConfiguration::Coefficients::HANN}),
+          spectrogram({.bufferSize = bufferSize, .nBands = nBands, .algorithmType = SpectrogramConfiguration::Coefficients::NONLINEAR}),
           melScale({.nMels = nMels, .nBands = nBands, .sampleRate = sampleRate}),
           spectrogramImage(juce::Image::RGB, nSpectrogramFrames, nMels, true, juce::SoftwareImageType())
     {
@@ -48,8 +48,8 @@ class SpectrogramComponent : public juce::Component, juce::Timer
             cMel.sampleRate = sampleRate;
             melScale.setCoefficients(cMel);
 
-            bufferIn = Eigen::ArrayXf::Zero(bufferSize);
             spectrogramOut = Eigen::ArrayXf::Zero(nBands);
+            bufferIn = Eigen::ArrayXf::Zero(bufferSize);
             spectrogramMel = Eigen::ArrayXf::Zero(nMels);
 
             spectrogramImage = juce::Image(juce::Image::RGB, nSpectrogramFrames, nMels, true, juce::SoftwareImageType());
@@ -136,7 +136,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
 
   private:
     // bufferSize is around 10ms and half the number of samples in the FFT with 50% overlap
-    static int getBufferSize(float sampleRate) { return SpectrogramConfiguration::getValidFFTSize(static_cast<int>(2 * sampleRate * 0.01f)) / 2; }
+    static int getBufferSize(float sampleRate) { return SpectrogramConfiguration::getValidFFTSize(static_cast<int>(2 * sampleRate * 0.02f)) / 2; }
 
     static int getNBands(int bufferSize) { return 8 * bufferSize + 1; }
 
