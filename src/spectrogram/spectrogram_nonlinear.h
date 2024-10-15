@@ -22,14 +22,12 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
 
         filterbank0.setWindow(window);
 
-        window.segment(frameSize / 2, c.bufferSize / 2) = windowSmall.tail(c.bufferSize / 2);
-        window.tail((frameSize - c.bufferSize) / 2).setZero();
+        window.setZero();
+        window.segment(frameSize / 2 - c.bufferSize, 2 * c.bufferSize) = hann(2 * c.bufferSize);
         window = window * sqrtPower / std::sqrt(window.abs2().sum());
         filterbank1.setWindow(window);
 
-        window = hann(frameSize);
-        window.head((frameSize - c.bufferSize) / 2).setZero();
-        window.segment((frameSize - c.bufferSize) / 2, c.bufferSize / 2) = windowSmall.head(c.bufferSize / 2);
+        window.segment(frameSize / 2 - 4 * c.bufferSize, 8 * c.bufferSize) = hann(8 * c.bufferSize);
         window = window * sqrtPower / std::sqrt(window.abs2().sum());
         filterbank2.setWindow(window);
 
