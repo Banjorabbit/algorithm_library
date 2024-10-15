@@ -1,6 +1,6 @@
 #pragma once
-#include "algorithm_library/spectrogram.h"
 #include "algorithm_library/mel_scale.h"
+#include "algorithm_library/spectrogram.h"
 #include "utilities/fastonebigheader.h"
 #include <juce_audio_utils/juce_audio_utils.h>
 #include <juce_core/juce_core.h>
@@ -10,7 +10,8 @@ class SpectrogramComponent : public juce::Component, juce::Timer
 {
   public:
     SpectrogramComponent(float sampleRateNew)
-        : sampleRate(sampleRateNew), bufferSize(getBufferSize(sampleRate)), nBands(getNBands(bufferSize)), nMels(getNMels(sampleRate)), scalePlot(16000.f/(bufferSize * bufferSize)),
+        : sampleRate(sampleRateNew), bufferSize(getBufferSize(sampleRate)), nBands(getNBands(bufferSize)), nMels(getNMels(sampleRate)),
+          scalePlot(16000.f / (bufferSize * bufferSize)),
           spectrogram({.bufferSize = bufferSize, .nBands = nBands, .algorithmType = SpectrogramConfiguration::Coefficients::HANN}),
           melScale({.nMels = nMels, .nBands = nBands, .sampleRate = sampleRate}),
           spectrogramImage(juce::Image::RGB, nSpectrogramFrames, nMels, true, juce::SoftwareImageType())
@@ -34,13 +35,13 @@ class SpectrogramComponent : public juce::Component, juce::Timer
             bufferSize = getBufferSize(sampleRate);
             nBands = getNBands(bufferSize);
             nMels = getNMels(sampleRate);
-            scalePlot = 16000.f/(bufferSize * bufferSize);
+            scalePlot = 16000.f / (bufferSize * bufferSize);
 
             auto c = spectrogram.getCoefficients();
             c.bufferSize = bufferSize;
             c.nBands = nBands;
             spectrogram.setCoefficients(c);
-            
+
             auto cMel = melScale.getCoefficients();
             cMel.nBands = nBands;
             cMel.nMels = nMels;
@@ -55,6 +56,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
 
             repaint(); // remove old plot
         }
+
         int circularBufferSize = getcircularBufferSize(expectedBufferSize, sampleRate);
         if (circularBufferSize != circularBuffer.size())
         {
@@ -125,23 +127,19 @@ class SpectrogramComponent : public juce::Component, juce::Timer
             }
             repaint(framePlot * getLocalBounds().getWidth() / nSpectrogramFrames, 0, 1, getLocalBounds().getHeight());
             framePlot++;
-            if (framePlot >= nSpectrogramFrames) 
-            { framePlot = 0; }
+            if (framePlot >= nSpectrogramFrames) { framePlot = 0; }
         }
         readBufferIndex.store(startIndex);
     }
 
-    void paint(juce::Graphics &g) override
-    {
-        g.drawImage(spectrogramImage, getLocalBounds().toFloat());
-    }
+    void paint(juce::Graphics &g) override { g.drawImage(spectrogramImage, getLocalBounds().toFloat()); }
 
   private:
     // bufferSize is around 10ms and half the number of samples in the FFT with 50% overlap
     static int getBufferSize(float sampleRate) { return SpectrogramConfiguration::getValidFFTSize(static_cast<int>(2 * sampleRate * 0.01f)) / 2; }
 
     static int getNBands(int bufferSize) { return 8 * bufferSize + 1; }
-    
+
     static int getNMels(float sampleRate) { return static_cast<int>(.1f * 2595 * std::log10(1 + (sampleRate / 2) / 700)); }
 
     // circular buffer size is max of 100ms and 8x the expected buffer size
