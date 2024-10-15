@@ -186,7 +186,7 @@
 #define DEFINE_ALGORITHM_CONSTRUCTOR(PublicAlgorithm, InternalAlgorithm, ConfigurationName)                                                                                   \
     using InternalAlgorithm##SingleBufferImpl = Implementation<InternalAlgorithm, ConfigurationName>;                                                                         \
     template <>                                                                                                                                                               \
-    Algorithm<ConfigurationName>::Algorithm(const Coefficients &c)                                                                                                            \
+    void Algorithm<ConfigurationName>::setImplementation(const Coefficients &c)                                                                                               \
     {                                                                                                                                                                         \
         pimpl = std::make_unique<InternalAlgorithm##SingleBufferImpl>(c);                                                                                                     \
     }                                                                                                                                                                         \
@@ -195,7 +195,7 @@
 
 #define DEFINE_ALGORITHM_BUFFER_CONSTRUCTOR(PublicAlgorithm, InternalAlgorithm, ConfigurationName)                                                                            \
     template <>                                                                                                                                                               \
-    Algorithm<ConfigurationName>::Algorithm(const Coefficients &c)                                                                                                            \
+    void Algorithm<ConfigurationName>::setImplementation(const Coefficients &c)                                                                                               \
     {                                                                                                                                                                         \
         pimpl = std::make_unique<BufferImplementation<InternalAlgorithm, ConfigurationName>>(c);                                                                              \
     }                                                                                                                                                                         \

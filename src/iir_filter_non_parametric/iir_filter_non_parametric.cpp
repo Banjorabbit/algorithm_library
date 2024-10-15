@@ -4,7 +4,7 @@ using IIRFilterTDFNonParametricSingleBufferImpl = Implementation<IIRFilterTDFNon
 using IIRFilterSVFNonParametricSingleBufferImpl = Implementation<IIRFilterSVFNonParametric, IIRFilterNonParametricConfiguration>;
 
 template <>
-Algorithm<IIRFilterNonParametricConfiguration>::Algorithm(const Coefficients &c)
+void Algorithm<IIRFilterNonParametricConfiguration>::setImplementation(const Coefficients &c)
 {
     if (c.filterImplementation == c.TDF) { pimpl = std::make_unique<IIRFilterTDFNonParametricSingleBufferImpl>(c); }
     else { pimpl = std::make_unique<IIRFilterSVFNonParametricSingleBufferImpl>(c); }

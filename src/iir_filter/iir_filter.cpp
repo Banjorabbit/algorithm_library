@@ -1,7 +1,7 @@
 #include "iir_filter/iir_filter_2nd_order.h"
 
 template <>
-Algorithm<IIRFilterConfiguration>::Algorithm(const Coefficients &c)
+void Algorithm<IIRFilterConfiguration>::setImplementation(const Coefficients &c)
 {
     if (c.nSos == 1) { pimpl = std::make_unique<Implementation<IIRFilter2ndOrder, IIRFilterConfiguration>>(c); }
     else { pimpl = std::make_unique<Implementation<IIRFilterCascaded, IIRFilterConfiguration>>(c); }

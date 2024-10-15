@@ -5,7 +5,7 @@ using FilterbankImpl = Implementation<SpectrogramFilterbank, SpectrogramConfigur
 using NonlinearImpl = Implementation<SpectrogramNonlinear, SpectrogramConfiguration>;
 
 template <>
-Algorithm<SpectrogramConfiguration>::Algorithm(const Coefficients &c)
+void Algorithm<SpectrogramConfiguration>::setImplementation(const Coefficients &c)
 {
     if (c.algorithmType == c.NONLINEAR) { pimpl = std::make_unique<NonlinearImpl>(c); }
     else { pimpl = std::make_unique<FilterbankImpl>(c); }

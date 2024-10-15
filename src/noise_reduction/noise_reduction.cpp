@@ -5,7 +5,7 @@ using AprioriImpl = Implementation<NoiseReductionAPriori, NoiseReductionConfigur
 using MLImpl = Implementation<NoiseReductionML, NoiseReductionConfiguration>;
 
 template <>
-Algorithm<NoiseReductionConfiguration>::Algorithm(const Coefficients &c)
+void Algorithm<NoiseReductionConfiguration>::setImplementation(const Coefficients &c)
 {
     if (c.algorithmType == c.APRIORI) { pimpl = std::make_unique<AprioriImpl>(c); }
     else { pimpl = std::make_unique<MLImpl>(c); }

@@ -31,7 +31,7 @@ class Algorithm
     using Setup = TSetup<Configuration>;
 
     Algorithm() : Algorithm(Coefficients()) {} // default constructor
-    Algorithm(const Coefficients &c);          // define this in derived source file.
+    Algorithm(const Coefficients &c) { setImplementation(c); }
 
     void process(Input input, Output output) { pimpl->process(input, output); }
     Coefficients getCoefficients() const { return pimpl->getCoefficients(); }
@@ -39,9 +39,19 @@ class Algorithm
     Setup getSetup() const { return pimpl->getSetup(); }
     void reset() { pimpl->reset(); }
 
-    void setCoefficients(const Coefficients &c) { pimpl->setCoefficients(c); }
+    void setImplementation(const Coefficients &c); // define this in derived source file
+    void setCoefficients(const Coefficients &c)
+    {
+        auto p = getParameters();
+        setImplementation(c);
+        setParameters(p);
+    }
     void setParameters(const Parameters &p) { pimpl->setParameters(p); }
-    void setSetup(const Setup &s) { pimpl->setSetup(s); }
+    void setSetup(const Setup &s)
+    {
+        setImplementation(s.coefficients);
+        setParameters(s.parameters);
+    }
 
     nlohmann::json getDebugJson() const { return pimpl->getDebugJson(); }
     void setDebugJson(const nlohmann::json &s) { pimpl->setDebugJson(s); }
