@@ -10,12 +10,12 @@ class SpectrogramComponent : public juce::Component, juce::Timer
 {
   public:
     SpectrogramComponent(float sampleRate)
-        : bufferSize(getBufferSize(sampleRate)), nBands(getNBands(bufferSize)), nMels(getNMels(nBands)),
+        : bufferSize(getBufferSize(sampleRate)), nBands(getNBands(bufferSize)), nMels(getNMels(sampleRate)),
           spectrogram({.bufferSize = bufferSize, .nBands = nBands, .algorithmType = SpectrogramConfiguration::Coefficients::HANN}),
           melScale({.nMels = nMels, .nBands = nBands, .sampleRate = sampleRate}),
           spectrogramImage(juce::Image::RGB, nSpectrogramFrames, nMels, true, juce::SoftwareImageType())
     {
-        circularBuffer = Eigen::ArrayXf::Zero(getcircularBufferSize(static_cast<int>(.01 * sampleRate), sampleRate));
+        circularBuffer = Eigen::ArrayXf::Zero(getcircularBufferSize(bufferSize, sampleRate));
         writeBufferIndex.store(0);
         readBufferIndex.store(0);
         bufferIn = Eigen::ArrayXf::Zero(bufferSize);
@@ -42,7 +42,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
             spectrogramOut = Eigen::ArrayXf::Zero(nBands);
 
             auto cMel = melScale.getCoefficients();
-            nMels = getNMels(nBands);
+            nMels = getNMels(sampleRate);
             cMel.nBands = nBands;
             cMel.nMels = nMels;
             cMel.sampleRate = sampleRate;
@@ -138,7 +138,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
 
     static int getNBands(int bufferSize) { return 4 * bufferSize + 1; }
     
-    static int getNMels(int nBands) { return (nBands - 1) / 10; }
+    static int getNMels(float sampleRate) { return static_cast<int>(.1f * 2595 * std::log10(1 + (sampleRate / 2) / 700)); }
 
     // circular buffer size is max of 100ms and 8x the expected buffer size
     int getcircularBufferSize(int expectedBufferSize, float sampleRate) const { return std::max(static_cast<int>(sampleRate * 0.1f), 8 * expectedBufferSize); }
