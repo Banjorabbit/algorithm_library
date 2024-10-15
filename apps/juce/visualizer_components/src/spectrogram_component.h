@@ -119,11 +119,9 @@ class SpectrogramComponent : public juce::Component, juce::Timer
                 auto level = juce::jmap(std::max(energy2dB(spectrogramMel(y) + 1e-20f), -60.f), -60.f, 0.f, 0.0f, 1.0f);
                 spectrogramImage.setPixelAt(framePlot, nMels - 1 - y, juce::Colour::fromHSV(level, 1.0f, level, 1.0f));
             }
+            
             framePlot++;
-            if (framePlot >= nSpectrogramFrames) 
-            { 
-                framePlot = 0; 
-            }
+            if (framePlot >= nSpectrogramFrames) { framePlot = 0; }
         }
         readBufferIndex.store(startIndex);
         repaint();

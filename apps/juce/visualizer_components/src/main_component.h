@@ -11,9 +11,10 @@ class MainComponent final : public juce::AudioAppComponent
 
         addAndMakeVisible(spectrogram);
         addAndMakeVisible(audioSetupComp);
+        
         setSize(750, 500);
 
-        setAudioChannels(0, 2);
+        setAudioChannels(1, 2);
     }
 
     ~MainComponent() override { shutdownAudio(); }
@@ -21,11 +22,11 @@ class MainComponent final : public juce::AudioAppComponent
     //==============================================================================
     void paint(juce::Graphics &g) override
     {
-        g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+        //g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 
-        g.setFont(juce::FontOptions(16.0f));
-        g.setColour(juce::Colours::white);
-        g.drawText("Hello World!", getLocalBounds(), juce::Justification::centred, true);
+        //g.setFont(juce::FontOptions(16.0f));
+        //g.setColour(juce::Colours::white);
+        //g.drawText("Hello World!", getLocalBounds(), juce::Justification::centred, true);
     }
 
     void resized() override 
