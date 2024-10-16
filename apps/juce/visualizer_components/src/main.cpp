@@ -1,23 +1,23 @@
 
+#include "main_component.h"
+#include <juce_audio_basics/juce_audio_basics.h>
 #include <juce_core/juce_core.h>
 #include <juce_gui_basics/juce_gui_basics.h>
-#include <juce_audio_basics/juce_audio_basics.h>
-#include "main_component.h"
 
 //==============================================================================
-class VisualizerComponentsApplication  : public juce::JUCEApplication
+class VisualizerComponentsApplication : public juce::JUCEApplication
 {
-public:
+  public:
     VisualizerComponentsApplication() {}
 
-    const juce::String getApplicationName() override    { return "VisualizerComponentsApplication"; }
+    const juce::String getApplicationName() override { return "VisualizerComponentsApplication"; }
     const juce::String getApplicationVersion() override { return "0.0.1"; }
-    bool moreThanOneInstanceAllowed() override          { return true; }
+    bool moreThanOneInstanceAllowed() override { return true; }
 
-    void initialise (const juce::String& commandLine) override
+    void initialise(const juce::String &commandLine) override
     {
         juce::ignoreUnused(commandLine);
-        mainWindow.reset(new MainWindow (getApplicationName()));
+        mainWindow.reset(new MainWindow(getApplicationName()));
     }
 
     void shutdown() override
@@ -27,40 +27,35 @@ public:
 
     void systemRequestedQuit() override { quit(); }
 
-    void anotherInstanceStarted (const juce::String&) override { }
+    void anotherInstanceStarted(const juce::String &) override {}
 
-    class MainWindow    : public juce::DocumentWindow
+    class MainWindow : public juce::DocumentWindow
     {
-    public:
-        MainWindow (juce::String name)  : DocumentWindow (name,
-                                                          juce::Desktop::getInstance().getDefaultLookAndFeel()
-                                                          .findColour (ResizableWindow::backgroundColourId),
-                                                          juce::DocumentWindow::allButtons)
+      public:
+        MainWindow(juce::String name)
+            : DocumentWindow(name, juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(ResizableWindow::backgroundColourId), juce::DocumentWindow::allButtons)
         {
             setUsingNativeTitleBar(true);
             setContentOwned(new MainComponent(), true);
 
-           #if JUCE_IOS || JUCE_ANDROID
-            setFullScreen (true);
-           #else
+#if JUCE_IOS || JUCE_ANDROID
+            setFullScreen(true);
+#else
             setResizable(true, true);
             centreWithSize(getWidth(), getHeight());
-           #endif
+#endif
 
-            setVisible (true);
+            setVisible(true);
         }
 
-        void closeButtonPressed() override
-        {
-            juce::JUCEApplication::getInstance()->systemRequestedQuit();
-        }
+        void closeButtonPressed() override { juce::JUCEApplication::getInstance()->systemRequestedQuit(); }
 
-    private:
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
+      private:
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainWindow)
     };
 
-private:
+  private:
     std::unique_ptr<MainWindow> mainWindow;
 };
 
-START_JUCE_APPLICATION (VisualizerComponentsApplication)
+START_JUCE_APPLICATION(VisualizerComponentsApplication)
