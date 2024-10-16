@@ -38,7 +38,7 @@ juce_add_gui_app (${PROJECT_NAME}
           PLUGIN_MANUFACTURER_CODE "KK"
           PRODUCT_NAME "Visualizer Components"
           BUNDLE_ID "kris_kode"
-          NEEDS_CURL FALSE
+          NEEDS_CURL TRUE
           NEEDS_WEB_BROWSER FALSE
 )
 
