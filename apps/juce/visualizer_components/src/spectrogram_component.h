@@ -143,7 +143,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
     static int getNMels(float sampleRate) { return static_cast<int>(.1f * 2595 * std::log10(1 + (sampleRate / 2) / 700)); }
 
     // circular buffer size is max of 100ms and 8x the expected buffer size
-    static int getcircularBufferSize(int expectedBufferSize, float sampleRate) const { return std::max(static_cast<int>(sampleRate * 0.1f), 8 * expectedBufferSize); }
+    static int getcircularBufferSize(int expectedBufferSize, float sampleRate) { return std::max(static_cast<int>(sampleRate * 0.1f), 8 * expectedBufferSize); }
 
     float sampleRate;
     int bufferSize;
