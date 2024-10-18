@@ -14,7 +14,7 @@ class AudioStreamComponent final : public juce::Component, public AudioPlayerEnc
 public:
     AudioStreamComponent(SpectrogramSource* dspSource = nullptr)
         : TimeSliceThread("Audio File Reader Thread"),
-          audioPlayer(audioDeviceManager, formatManager, *this), sourceExternal(dspSource)
+          sourceExternal(dspSource), audioPlayer(audioDeviceManager, formatManager, *this)
     {
         loopState.addListener(this);
 
@@ -51,7 +51,7 @@ public:
         audioPlayer.setBounds(getLocalBounds());
     }
 
-    bool loadURL(const juce::URL& fileToPlay)
+    bool loadURL(const juce::URL& fileToPlay) override
     {
         stop();
 
@@ -84,7 +84,7 @@ public:
         return true;
     }
 
-     void togglePlay()
+     void togglePlay() override
     {
         if(playState.getValue())
             stop();
@@ -92,7 +92,7 @@ public:
             play();
     }
 
-    void stop()
+    void stop() override
     {
         playState = false;
 

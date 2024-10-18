@@ -11,7 +11,7 @@ class MainComponent final : public juce::Component, SpectrogramSource
   public:
     //==============================================================================
     MainComponent()
-        : audioPlayer(this), spectrogram(48000.f) //, audioSetupComp(deviceManager, 0, 2, 0, 2, false, false, false, false),
+        : spectrogram(48000.f), audioPlayer(this) //, audioSetupComp(deviceManager, 0, 2, 0, 2, false, false, false, false),
     {
         addAndMakeVisible(spectrogram);
         addAndMakeVisible(audioPlayer);
