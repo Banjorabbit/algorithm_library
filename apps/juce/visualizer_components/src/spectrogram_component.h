@@ -23,7 +23,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
         spectrogramOut = Eigen::ArrayXf::Zero(nBands);
         spectrogramMel = Eigen::ArrayXf::Zero(nMels);
 
-        startTimerHz(60);
+        //startTimerHz(60);
         setSize(750, 500);
     }
 
@@ -94,6 +94,7 @@ class SpectrogramComponent : public juce::Component, juce::Timer
         writeBufferIndex.store(0);
         readBufferIndex.store(0);
         spectrogram.reset();
+        framePlot = 0;
     }
 
     // read from circular buffer and calculate spectrogram. This method is called from message thread and is not time critical
@@ -133,6 +134,9 @@ class SpectrogramComponent : public juce::Component, juce::Timer
     }
 
     void paint(juce::Graphics &g) override { g.drawImage(spectrogramImage, getLocalBounds().toFloat()); }
+
+    void stopPlot() { stopTimer(); }
+    void startPlot() { startTimerHz(60); }
 
   private:
     // bufferSize is around 10ms and half the number of samples in the FFT with 50% overlap
