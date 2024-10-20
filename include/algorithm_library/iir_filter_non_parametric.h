@@ -17,7 +17,7 @@ struct IIRFilterNonParametricConfiguration
         float sampleRate = 16000.f;
         enum FilterImplementations { TDF, SVF };
         FilterImplementations filterImplementation = TDF;
-        DEFINE_TUNABLE_ENUM(FilterImplementations, {{TDF, "TDF"}, {SVF, "SVF}"}})
+        DEFINE_TUNABLE_ENUM(FilterImplementations, {{TDF, "Transposed Direct-Form II"}, {SVF, "State Variable Filter}"}})
         DEFINE_TUNABLE_COEFFICIENTS(nChannels, nSos, sampleRate, filterImplementation)
     };
 
