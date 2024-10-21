@@ -113,6 +113,8 @@ using Real2D = Out<Eigen::ArrayXXf>;
 using Complex2D = Out<Eigen::ArrayXXcf>;
 using Bool2D = Out<Eigen::Array<bool, Eigen::Dynamic, Eigen::Dynamic>>;
 
+using VectorReal2D = std::vector<Out<Eigen::ArrayXf>>;
+
 using RealX6 = Out<Eigen::Array<float, Eigen::Dynamic, 6>>;
 using Real6X = Out<Eigen::Array<float, 6, Eigen::Dynamic>>;
 
