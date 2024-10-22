@@ -27,7 +27,7 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
         window = window * sqrtPower / std::sqrt(window.abs2().sum());
         filterbank1.setWindow(window);
 
-        window.segment(frameSize / 2 - 4 * c.bufferSize, 8 * c.bufferSize) = hann(8 * c.bufferSize);
+        window.segment(frameSize / 2 - 2 * c.bufferSize, 4 * c.bufferSize) = hann(4 * c.bufferSize);
         window = window * sqrtPower / std::sqrt(window.abs2().sum());
         filterbank2.setWindow(window);
 
