@@ -11,6 +11,7 @@
 #include "filter_min_max/filter_min_max_lemire.h"
 #include "filter_power_spectrum/calculate_filter_power_spectrum.h"
 #include "filterbank/filterbank_wola.h"
+#include "filterbank_set/filterbank_set_wola.h"
 #include "gain_calculation/gain_calculation_apriori.h"
 #include "iir_filter/iir_filter_2nd_order.h"
 #include "iir_filter_non_parametric/iir_filter_design_non_parametric.h"
@@ -56,6 +57,7 @@ DEFINE_BENCHMARK_ALGORITHM(StateVariableFilter)
 DEFINE_BENCHMARK_ALGORITHM(StateVariableFilterCascade)
 DEFINE_BENCHMARK_ALGORITHM(IIRFilterTDFNonParametric)
 DEFINE_BENCHMARK_ALGORITHM(BeamformerMVDR)
+DEFINE_BENCHMARK_ALGORITHM(FilterbankSetAnalysis)
 DEFINE_BENCHMARK_ALGORITHM(BeamformerPath)
 DEFINE_BENCHMARK_ALGORITHM(IIRFilterCascaded)
 DEFINE_BENCHMARK_ALGORITHM(NoiseEstimationActivityDetection)
