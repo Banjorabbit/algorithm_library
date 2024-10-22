@@ -29,6 +29,8 @@ using Boolean = const bool &;
 using Float = const float &;
 using Void = void *;
 
+using VectorComplex2D = const std::vector<Eigen::ArrayXXcf> &;
+
 using Real4X = In<Eigen::Array4Xf>;
 using Real4 = In<Eigen::Array4f>;
 using RealX2 = In<Eigen::ArrayX2f>;
