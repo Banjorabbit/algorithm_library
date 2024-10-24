@@ -108,7 +108,6 @@ class FilterbankSynthesisWOLA : public AlgorithmImplementation<FilterbankSynthes
         overlap = frameSize - C.bufferSize;
         nFolds = static_cast<int>(std::ceil(static_cast<float>(frameSize) / fftSize));
         maxSize = fftSize * nFolds;
-        window.resize(frameSize);
         fftBuffer.resize(maxSize);
         timeBuffer.resize(frameSize, C.nChannels);
 
