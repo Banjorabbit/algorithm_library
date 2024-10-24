@@ -33,16 +33,15 @@ struct FilterbankConfiguration
     class ExceptionFilterbank : public std::runtime_error
     {
       public:
-        ExceptionFilterbank(const Coefficients &c)
-            : std::runtime_error(std::string("\nThis configuration is currently not supported:") + "\nbuffer size = " + std::to_string(c.bufferSize) +
-                                 "\nnBands = " + std::to_string(c.nBands) + "\nfilterbankType = " + std::string(convertFilterbankTypeToJson(c)) + "\n")
+        ExceptionFilterbank(const std::string &s, const Coefficients &c)
+            : std::runtime_error(std::string("\nException thrown in ") + s + "\nThis configuration is not supported:\n" + convertCoefficientsToJson(c).dump(4) + "\n")
         {}
     };
 
-    static nlohmann::json convertFilterbankTypeToJson(const Coefficients &c)
+    static nlohmann::json convertCoefficientsToJson(const Coefficients &c)
     {
-        nlohmann::json j = c;
-        return j["filterbankType"];
+        nlohmann::json j(c); // convert c to json
+        return j;
     }
 };
 

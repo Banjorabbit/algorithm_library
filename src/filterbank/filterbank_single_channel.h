@@ -16,6 +16,7 @@ class FilterbankAnalysisSingleChannel : public AlgorithmImplementation<Filterban
     FilterbankAnalysisSingleChannel(Coefficients c = {.nChannels = 1, .bufferSize = 128, .nBands = 257, .filterbankType = Coefficients::HANN})
         : BaseAlgorithm{c}, fft({FFTConfiguration::convertNBandsToFFTSize(c.nBands)})
     {
+        if (c.nChannels != 1) { throw Configuration::ExceptionFilterbank("FilterbankAnalysisSingleChannel", c); }
         fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands);
         window = FilterbankShared::getAnalysisWindow(c);
         frameSize = static_cast<int>(window.size());
@@ -94,14 +95,15 @@ class FilterbankSynthesisSingleChannel : public AlgorithmImplementation<Filterba
 {
   public:
     FilterbankSynthesisSingleChannel(Coefficients c = {.nChannels = 1, .bufferSize = 128, .nBands = 257, .filterbankType = Coefficients::HANN})
+        : BaseAlgorithm{c}, fft({FFTConfiguration::convertNBandsToFFTSize(c.nBands)})
     {
+        if (c.nChannels != 1) { throw Configuration::ExceptionFilterbank("FilterbankSynthesisSingleChannel", c); }
         fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands);
         window = FilterbankShared::getSynthesisWindow(c);
         frameSize = static_cast<int>(window.size());
         overlap = frameSize - C.bufferSize;
         nFolds = static_cast<int>(std::ceil(static_cast<float>(frameSize) / fftSize));
         maxSize = fftSize * nFolds;
-        window.resize(frameSize);
         fftBuffer.resize(maxSize);
         timeBuffer.resize(frameSize);
 
@@ -127,10 +129,11 @@ class FilterbankSynthesisSingleChannel : public AlgorithmImplementation<Filterba
                 fftBuffer.segment(j * fftSize, fftSize) = fftBuffer.head(fftSize);
             }
             timeBuffer += fftBuffer.tail(frameSize) * window;
+
+            yTime.col(0).segment(iFrame * C.bufferSize, C.bufferSize) = timeBuffer.head(C.bufferSize);
+            timeBuffer.head(overlap) = timeBuffer.tail(overlap);
+            timeBuffer.tail(C.bufferSize) = 0.f;
         }
-        yTime = timeBuffer.head(C.bufferSize);
-        timeBuffer.head(overlap) = timeBuffer.tail(overlap);
-        timeBuffer.tail(C.bufferSize) = 0.f;
     }
 
     bool isCoefficientsValid() const final { return FilterbankShared::isCoefficientsValid(C); }
