@@ -13,7 +13,7 @@ class SpectralCompressorWOLA : public AlgorithmImplementation<SpectralCompressor
     SpectralCompressorWOLA(Coefficients c = Coefficients())
         : BaseAlgorithm{c}, filterbank(convertToFilterbankCoefficients(c)), filterbankInverse(convertToFilterbankInverseCoefficients(c))
     {
-        Eigen::ArrayXf window = FilterbankWOLA::getAnalysisWindow(convertToFilterbankCoefficients(c));
+        Eigen::ArrayXf window = FilterbankShared::getAnalysisWindow(convertToFilterbankCoefficients(c));
         sumWindow = lin2dB(window.sum() / 2.f);                      // scaled so sine wave with amplitude 1 gives threshold level
         energyWindow = lin2dB(std::sqrt(window.abs2().sum()) * 8.f); // energyWindow scaled to give approximately similar threshold level to sumWindow
 

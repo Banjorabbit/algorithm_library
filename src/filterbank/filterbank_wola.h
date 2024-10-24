@@ -6,7 +6,7 @@
 
 // ------------------------------------- get filterbank configurations (defined in filterbank.cpp) -------------------------------------
 
-namespace FilterbankWOLA
+namespace FilterbankShared
 {
 bool isCoefficientsValid(const FilterbankConfiguration::Coefficients &c);
 
@@ -15,7 +15,7 @@ Eigen::ArrayXf getAnalysisWindow(const FilterbankConfiguration::Coefficients &c)
 Eigen::ArrayXf getSynthesisWindow(const FilterbankConfiguration::Coefficients &c);
 
 float getDelaySamples(I::Real window);
-}; // namespace FilterbankWOLA
+}; // namespace FilterbankShared
 
 // --------------------------------------------------- FilterbankAnalysis ----------------------------------------------------------------
 
@@ -25,7 +25,7 @@ class FilterbankAnalysisWOLA : public AlgorithmImplementation<FilterbankAnalysis
     FilterbankAnalysisWOLA(Coefficients c = Coefficients()) : BaseAlgorithm{c}, fft({FFTConfiguration::convertNBandsToFFTSize(c.nBands)})
     {
         fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands);
-        window = FilterbankWOLA::getAnalysisWindow(c);
+        window = FilterbankShared::getAnalysisWindow(c);
         frameSize = static_cast<int>(window.size());
         overlap = frameSize - C.bufferSize;
         nFolds = static_cast<int>(std::ceil(static_cast<float>(frameSize) / fftSize));
@@ -43,7 +43,7 @@ class FilterbankAnalysisWOLA : public AlgorithmImplementation<FilterbankAnalysis
     int getNBands() const { return fftSize / 2 + 1; }
     int getFrameSize() const { return frameSize; }
 
-    float getDelaySamples() const { return FilterbankWOLA::getDelaySamples(window); }
+    float getDelaySamples() const { return FilterbankShared::getDelaySamples(window); }
 
     // set window if length equals frameSize
     void setWindow(I::Real win)
@@ -71,7 +71,7 @@ class FilterbankAnalysisWOLA : public AlgorithmImplementation<FilterbankAnalysis
         }
     }
 
-    bool isCoefficientsValid() const final { return FilterbankWOLA::isCoefficientsValid(C); }
+    bool isCoefficientsValid() const final { return FilterbankShared::isCoefficientsValid(C); }
 
     size_t getDynamicSizeVariables() const final
     {
@@ -103,7 +103,7 @@ class FilterbankSynthesisWOLA : public AlgorithmImplementation<FilterbankSynthes
     FilterbankSynthesisWOLA(Coefficients c = Coefficients()) : BaseAlgorithm{c}, fft({FFTConfiguration::convertNBandsToFFTSize(c.nBands)})
     {
         fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands);
-        window = FilterbankWOLA::getSynthesisWindow(c);
+        window = FilterbankShared::getSynthesisWindow(c);
         frameSize = static_cast<int>(window.size());
         overlap = frameSize - C.bufferSize;
         nFolds = static_cast<int>(std::ceil(static_cast<float>(frameSize) / fftSize));
@@ -121,7 +121,7 @@ class FilterbankSynthesisWOLA : public AlgorithmImplementation<FilterbankSynthes
     int getFFTSize() const { return fftSize; }
     int getNBands() const { return fftSize / 2 + 1; }
 
-    float getDelaySamples() const { return FilterbankWOLA::getDelaySamples(window); }
+    float getDelaySamples() const { return FilterbankShared::getDelaySamples(window); }
 
   private:
     inline void processAlgorithm(Input xFreq, Output yTime)
@@ -140,7 +140,7 @@ class FilterbankSynthesisWOLA : public AlgorithmImplementation<FilterbankSynthes
         timeBuffer.bottomRows(C.bufferSize) = 0.f;
     }
 
-    bool isCoefficientsValid() const final { return FilterbankWOLA::isCoefficientsValid(C); }
+    bool isCoefficientsValid() const final { return FilterbankShared::isCoefficientsValid(C); }
 
     size_t getDynamicSizeVariables() const final
     {

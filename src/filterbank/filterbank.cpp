@@ -1,13 +1,43 @@
+#include "filterbank/filterbank_single_channel.h"
 #include "filterbank/filterbank_wola.h"
 
-DEFINE_ALGORITHM_CONSTRUCTOR(FilterbankAnalysis, FilterbankAnalysisWOLA, FilterbankAnalysisConfiguration)
-DEFINE_ALGORITHM_CONSTRUCTOR(FilterbankSynthesis, FilterbankSynthesisWOLA, FilterbankSynthesisConfiguration)
+template <>
+void Algorithm<FilterbankAnalysisConfiguration>::setImplementation(const Coefficients &c)
+{
+    if (c.nChannels == 1) { pimpl = std::make_unique<Implementation<FilterbankAnalysisSingleChannel, FilterbankAnalysisConfiguration>>(c); }
+    else { pimpl = std::make_unique<Implementation<FilterbankAnalysisWOLA, FilterbankAnalysisConfiguration>>(c); }
+}
 
-float FilterbankAnalysis::getDelaySamples() const { return static_cast<FilterbankAnalysisWOLASingleBufferImpl *>(pimpl.get())->algo.getDelaySamples(); }
+FilterbankAnalysis::FilterbankAnalysis(const Coefficients &c) : Algorithm<FilterbankAnalysisConfiguration>(c) {}
 
-float FilterbankSynthesis::getDelaySamples() const { return static_cast<FilterbankSynthesisWOLASingleBufferImpl *>(pimpl.get())->algo.getDelaySamples(); }
+template <>
+void Algorithm<FilterbankSynthesisConfiguration>::setImplementation(const Coefficients &c)
+{
+    if (c.nChannels == 1) { pimpl = std::make_unique<Implementation<FilterbankSynthesisSingleChannel, FilterbankSynthesisConfiguration>>(c); }
+    else { pimpl = std::make_unique<Implementation<FilterbankSynthesisWOLA, FilterbankSynthesisConfiguration>>(c); }
+}
 
-namespace FilterbankWOLA
+FilterbankSynthesis::FilterbankSynthesis(const Coefficients &c) : Algorithm<FilterbankSynthesisConfiguration>(c) {}
+
+float FilterbankAnalysis::getDelaySamples() const
+{
+    if (getCoefficients().nChannels == 1)
+    {
+        return static_cast<Implementation<FilterbankAnalysisSingleChannel, FilterbankAnalysisConfiguration> *>(pimpl.get())->algo.getDelaySamples();
+    }
+    else { return static_cast<Implementation<FilterbankAnalysisWOLA, FilterbankAnalysisConfiguration> *>(pimpl.get())->algo.getDelaySamples(); }
+}
+
+float FilterbankSynthesis::getDelaySamples() const
+{
+    if (getCoefficients().nChannels == 1)
+    {
+        return static_cast<Implementation<FilterbankSynthesisSingleChannel, FilterbankSynthesisConfiguration> *>(pimpl.get())->algo.getDelaySamples();
+    }
+    else { return static_cast<Implementation<FilterbankSynthesisWOLA, FilterbankSynthesisConfiguration> *>(pimpl.get())->algo.getDelaySamples(); }
+}
+
+namespace FilterbankShared
 {
 
 bool isCoefficientsValid(const FilterbankConfiguration::Coefficients &c)
@@ -77,4 +107,4 @@ float getDelaySamples(I::Real window)
     Eigen::ArrayXf ramp = Eigen::ArrayXf::LinSpaced(window.size(), 0, static_cast<float>(window.size() - 1));
     return (window * ramp).sum() / (window.sum() + 1e-12f);
 }
-}; // namespace FilterbankWOLA
+}; // namespace FilterbankShared
