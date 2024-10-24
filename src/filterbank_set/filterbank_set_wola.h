@@ -147,7 +147,7 @@ class FilterbankSetSynthesisWOLA : public AlgorithmImplementation<FilterbankSetS
     size_t getDynamicSizeVariables() const final
     {
         size_t size = sizeof(int) * C.nFilterbanks; // dynamic size of bufferSizes
-        for (auto i = 0; i < bufferOut.size(); i++)
+        for (auto i = 0; i < static_cast<int>(bufferOut.size()); i++)
         {
             size += bufferOut[i].getDynamicMemorySize();
         }

@@ -40,7 +40,7 @@ struct FilterbankSetAnalysisConfiguration
         for (auto i = 0; i < c.nFilterbanks; i++)
         {
             int bufferSize = c.bufferSize * (1 << i);
-            int nFrames = input.size() / bufferSize;
+            int nFrames = static_cast<int>(input.size()) / bufferSize;
             int fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands) * (1 << i);
             int nBands = FFTConfiguration::convertFFTSizeToNBands(fftSize);
             output[i] = Eigen::ArrayXXcf::Zero(nBands, nFrames);
