@@ -309,7 +309,7 @@ bool algorithmInterfaceTest(bool testMallocFlag = true)
     return successFlag;
 }
 
-template<typename Talgo>
+template <typename Talgo>
 bool processAnySizeTest(BufferMode bufferMode, int bufferAnySize)
 {
     Talgo algo;
@@ -346,7 +346,8 @@ bool processAnySizeTest(BufferMode bufferMode, int bufferAnySize)
         durationAvg += time / 100;
         durationMax = std::max(durationMax, time);
     }
-    fmt::print("Execution time of processAnySize with bufferMode = {} and bufferSize = {} is (min - avg. - max): {:.3f} us - {:.3f} us - {:.3f} us.\n", static_cast<int>(bufferMode), bufferAnySize, durationMin, durationAvg, durationMax);
+    fmt::print("Execution time of processAnySize with bufferMode = {} and bufferSize = {} is (min - avg. - max): {:.3f} us - {:.3f} us - {:.3f} us.\n",
+               static_cast<int>(bufferMode), bufferAnySize, durationMin, durationAvg, durationMax);
     if (!algo.validOutputAnySize(output, bufferAnySize))
     {
         fmt::print("processAnySizeTest failed: output is not valid.\n");
@@ -378,18 +379,22 @@ bool algorithmBufferInterfaceTest()
     fmt::print("parameters: {}\n", jp.dump(4));
 
     auto successFlag = versionAlgorithmBufferTest<Talgo>();
-    
+
     int bufferSize = algo.getCoefficients().bufferSize;
 
     BufferMode bufferMode = BufferMode::SYNCHRONOUS_BUFFER;
     successFlag &= processAnySizeTest<Talgo>(bufferMode, bufferSize);
-    successFlag &= processAnySizeTest<Talgo>(bufferMode, static_cast<int>(0.25 * bufferSize));
+    successFlag &= processAnySizeTest<Talgo>(bufferMode, static_cast<int>(0.3 * bufferSize));
+#ifdef NDEBUG // This test is very slow in debug mode, and processing time is not important when debugging so turn if off
     successFlag &= processAnySizeTest<Talgo>(bufferMode, 10 * bufferSize);
-    
+#endif
+
     bufferMode = BufferMode::ASYNCHRONOUS_BUFFER;
-    successFlag &= processAnySizeTest<Talgo>(bufferMode, static_cast<int>(0.25 * bufferSize));
+    successFlag &= processAnySizeTest<Talgo>(bufferMode, static_cast<int>(0.3 * bufferSize));
+#ifdef NDEBUG // This test is very slow in debug mode, and processing time is not important when debugging so turn if off
     successFlag &= processAnySizeTest<Talgo>(bufferMode, 10 * bufferSize);
-    
+#endif
+
     if (!successFlag) { fmt::print("algorithmBufferInterfaceTest failed.\n"); }
     fmt::print("----------------------------------------------------------------------------------------------------------------------------------\n");
     return successFlag;
