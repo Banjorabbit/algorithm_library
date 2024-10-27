@@ -1,3 +1,5 @@
 #include "filterbank_set_wola.h"
 
 DEFINE_ALGORITHM_CONSTRUCTOR(FilterbankSetAnalysis, FilterbankSetAnalysisWOLA, FilterbankSetAnalysisConfiguration)
+
+DEFINE_ALGORITHM_CONSTRUCTOR(FilterbankSetSynthesis, FilterbankSetSynthesisWOLA, FilterbankSetSynthesisConfiguration)
