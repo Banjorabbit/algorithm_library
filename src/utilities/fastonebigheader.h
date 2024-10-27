@@ -95,6 +95,9 @@
 // Underflow of exponential is common practice in numerical routines,
 // so handle it here.
 
+// power of 2 for positive integer exponent
+static inline int positivePow2(int e) { return (1 << e); }
+
 static inline float fastpow2(float p)
 {
     float offset = (p < 0) ? 1.0f : 0.0f;
