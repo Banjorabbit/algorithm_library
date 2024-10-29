@@ -96,7 +96,7 @@
 // so handle it here.
 
 // power of 2 for positive integer exponent
-static inline int positivePow2(int e) { return (1 << e); }
+static constexpr inline int positivePow2(int e) { return (1 << e); }
 
 static inline float fastpow2(float p)
 {
