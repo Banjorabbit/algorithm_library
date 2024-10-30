@@ -75,7 +75,10 @@ class Upscale2DLinear : public AlgorithmImplementation<Upscale2DConfiguration, U
         }
 
         // linear interpolation across first col
-        output.middleCols(0, C.factorHorizontal) = (output.col(0).matrix() * interpolateHorizontal.transpose()).array();
+        for (auto iHor = 1; iHor < C.factorHorizontal; iHor++)
+        {
+            output.col(iHor) = output.col(0) * interpolateHorizontal(iHor);
+        }
         for (auto iCol = 1; iCol < colsm1; iCol++)
         {
             for (auto iHor = 1; iHor < C.factorHorizontal; iHor++)

@@ -6,11 +6,7 @@ using namespace Eigen;
 
 // --------------------------------------------- TEST CASES ---------------------------------------------
 
-TEST(Upscale2DLinear, Interface)
-{
-    bool testMallocFlag = false;
-    EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<Upscale2DLinear>(testMallocFlag));
-}
+TEST(Upscale2DLinear, Interface) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<Upscale2DLinear>()); }
 
 // print output of upscaling. This test requires manual inspection to verify output
 TEST(Upscale2DLinear, printOutput)
