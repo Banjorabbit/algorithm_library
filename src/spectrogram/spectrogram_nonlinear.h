@@ -9,10 +9,18 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
 {
   public:
     SpectrogramNonlinear(Coefficients c = Coefficients())
-        : BaseAlgorithm{c},
-          filterbank0({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
-          filterbank1({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
-          filterbank2({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED})
+        : BaseAlgorithm{c}, filterbank0({.nChannels = 1,
+                                         .bufferSize = c.bufferSize,
+                                         .nBands = FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * c.overlapFactor),
+                                         .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
+          filterbank1({.nChannels = 1,
+                       .bufferSize = c.bufferSize,
+                       .nBands = FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * c.overlapFactor),
+                       .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
+          filterbank2({.nChannels = 1,
+                       .bufferSize = c.bufferSize,
+                       .nBands = FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * c.overlapFactor),
+                       .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED})
     {
         // set windows
         int frameSize = filterbank0.getFrameSize();
@@ -31,7 +39,7 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
         window = window * sqrtPower / std::sqrt(window.abs2().sum());
         filterbank2.setWindow(window);
 
-        filterbankOut.resize(c.nBands);
+        filterbankOut.resize(FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * c.overlapFactor));
         frame.resize(c.bufferSize);
     }
 

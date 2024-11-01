@@ -8,7 +8,10 @@
 class SpectrogramFilterbank : public AlgorithmImplementation<SpectrogramConfiguration, SpectrogramFilterbank>
 {
   public:
-    SpectrogramFilterbank(Coefficients c = Coefficients()) : BaseAlgorithm{c}, filterbank(convertToFilterbankCoefficients(c)) { filterbankOut.resize(c.nBands); }
+    SpectrogramFilterbank(Coefficients c = Coefficients()) : BaseAlgorithm{c}, filterbank(convertToFilterbankCoefficients(c))
+    {
+        filterbankOut.resize(FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * c.overlapFactor));
+    }
 
     FilterbankAnalysisWOLA filterbank;
     DEFINE_MEMBER_ALGORITHMS(filterbank)
@@ -30,12 +33,11 @@ class SpectrogramFilterbank : public AlgorithmImplementation<SpectrogramConfigur
         FilterbankAnalysisWOLA::Coefficients cFilterbank;
         cFilterbank.bufferSize = c.bufferSize;
         cFilterbank.nChannels = 1;
-        cFilterbank.nBands = c.nBands;
+        cFilterbank.nBands = FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * c.overlapFactor);
         switch (c.algorithmType)
         {
         default: // Hann is the default case
         case Coefficients::HANN: cFilterbank.filterbankType = cFilterbank.HANN; break;
-        case Coefficients::SQRT_HANN: cFilterbank.filterbankType = cFilterbank.SQRT_HANN; break;
         case Coefficients::WOLA: cFilterbank.filterbankType = cFilterbank.WOLA; break;
         }
         return cFilterbank;

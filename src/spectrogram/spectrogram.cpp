@@ -7,7 +7,7 @@ using NonlinearImpl = Implementation<SpectrogramNonlinear, SpectrogramConfigurat
 template <>
 void Algorithm<SpectrogramConfiguration>::setImplementation(const Coefficients &c)
 {
-    if (c.algorithmType == c.NONLINEAR) { pimpl = std::make_unique<NonlinearImpl>(c); }
+    if ((c.algorithmType == c.ADAPTIVE_HANN) || (c.algorithmType == c.ADAPTIVE_WOLA)) { pimpl = std::make_unique<NonlinearImpl>(c); }
     else { pimpl = std::make_unique<FilterbankImpl>(c); }
 }
 
