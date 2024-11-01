@@ -57,7 +57,7 @@ struct FilterbankSetAnalysisConfiguration
     static bool validOutput(Output output, const Coefficients &c)
     {
         if (static_cast<int>(output.size()) != c.nFilterbanks) { return false; }
-        int nFrames = output[0].cols();
+        int nFrames = static_cast<int>(output[0].cols());
         for (auto i = 0; i < c.nFilterbanks; i++)
         {
             int fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands) / (1 << i);
@@ -102,7 +102,7 @@ struct FilterbankSetSynthesisConfiguration
 
     static std::vector<Eigen::ArrayXXcf> initInput(const Coefficients &c)
     {
-        int sizeOut = 10 * c.bufferSize;
+        int sizeOut = 10 * c.bufferSize; // arbitrary number of time samples.
         std::vector<Eigen::ArrayXXcf> input(c.nFilterbanks);
         for (auto i = 0; i < c.nFilterbanks; i++)
         {
@@ -117,7 +117,7 @@ struct FilterbankSetSynthesisConfiguration
 
     static Eigen::ArrayXXf initOutput(Input input, const Coefficients &c)
     {
-        int nSamples = input[0].cols() * c.bufferSize;
+        int nSamples = static_cast<int>(input[0].cols()) * c.bufferSize;
         return Eigen::ArrayXXf::Zero(nSamples, c.nFilterbanks);
     }
 
