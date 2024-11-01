@@ -25,7 +25,7 @@ class FilterbankSetAnalysisWOLA : public AlgorithmImplementation<FilterbankSetAn
   private:
     void processAlgorithm(Input input, Output output)
     {
-        int nFrames = input.rows() / C.bufferSize;
+        int nFrames = static_cast<int>(input.rows()) / C.bufferSize;
         assert(static_cast<float>(nFrames) == static_cast<float>(input.rows()) / C.bufferSize); // ensure length of input is an integer multiple of C.bufferSize
 
         for (auto iFrame = 0; iFrame < nFrames; iFrame++)
