@@ -60,6 +60,13 @@ target_link_libraries(${PROJECT_NAME} PRIVATE AlgorithmLibrary benchmark::benchm
 # All users of this library will need at least C++14
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_14)
 
+# copy pp2model.onnx model to target dir
+add_custom_command(
+  TARGET ${PROJECT_NAME} 
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/../../libs/onnx/pp2model.onnx" $<TARGET_FILE_DIR:${PROJECT_NAME}> 
+)
+
 # copy onnxruntime to target dir
 if (MSVC)
 add_custom_command(
