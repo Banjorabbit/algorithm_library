@@ -124,7 +124,7 @@ struct FilterbankSetSynthesisConfiguration
     static bool validInput(Input input, const Coefficients &c)
     {
         if (static_cast<int>(input.size()) != c.nFilterbanks) { return false; }
-        int nFrames = input[0].cols();
+        auto nFrames = static_cast<int>(input[0].cols());
         for (auto i = 0; i < c.nFilterbanks; i++)
         {
             int fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands) / (1 << i);

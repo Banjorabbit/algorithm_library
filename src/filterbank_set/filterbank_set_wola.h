@@ -153,7 +153,7 @@ class FilterbankSetSynthesisWOLA : public AlgorithmImplementation<FilterbankSetS
   private:
     void processAlgorithm(Input input, Output output)
     {
-        int nFrames = input[0].cols();
+        auto nFrames = static_cast<int>(input[0].cols());
         assert(output.rows() == nFrames * C.bufferSize);
         assert(output.cols() == C.nFilterbanks);
 
