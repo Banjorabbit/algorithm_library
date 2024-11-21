@@ -1,6 +1,5 @@
 #pragma once
 #include "algorithm_library/filterbank_set.h"
-#include "delay/circular_buffer.h"
 #include "filterbank/filterbank_simple.h"
 #include "framework/framework.h"
 #include "utilities/fastonebigheader.h"
