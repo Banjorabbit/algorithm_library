@@ -8,11 +8,8 @@
 class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfiguration, SpectrogramNonlinear>
 {
   public:
-    SpectrogramNonlinear(Coefficients c = Coefficients())
-        : BaseAlgorithm{c},
-          filterbank0({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
-          filterbank1({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
-          filterbank2({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED})
+    SpectrogramNonlinear(Coefficients c = {.bufferSize = 128, .nBands = 513, .algorithmType = Coefficients::ADAPTIVE_HANN})
+        : BaseAlgorithm{c}, filterbank0({initializeFilterbanks(c)}), filterbank1({initializeFilterbanks(c)}), filterbank2({initializeFilterbanks(c)})
     {
         // set windows
         int frameSize = filterbank0.getFrameSize();
@@ -26,9 +23,9 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
         window = window * sqrtPower / std::sqrt(window.abs2().sum());
         filterbank1.setWindow(window);
 
-        int frameSizeMean = (frameSize + 2 * c.bufferSize) / 2; // mean between large and small frame size
+        int frameSize2 = std::max(FFTConfiguration::getValidFFTSize(frameSize / 2), 2 * c.bufferSize); // half of large frame size
         window.setZero();
-        window.segment(frameSize / 2 - frameSizeMean / 2, frameSizeMean) = hann(frameSizeMean);
+        window.segment(frameSize / 2 - frameSize2 / 2, frameSize2) = hann(frameSize2);
         window = window * sqrtPower / std::sqrt(window.abs2().sum());
         filterbank2.setWindow(window);
 
@@ -42,6 +39,23 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
     DEFINE_MEMBER_ALGORITHMS(filterbank0, filterbank1, filterbank2)
 
   private:
+    FilterbankAnalysisWOLA::Coefficients initializeFilterbanks(const Coefficients &c)
+    {
+        auto cFilterbank = FilterbankAnalysisWOLA::Coefficients();
+        cFilterbank.nChannels = 1;
+        cFilterbank.bufferSize = c.bufferSize;
+        cFilterbank.nBands = c.nBands;
+        if (c.algorithmType == Coefficients::ADAPTIVE_HANN)
+        {
+            cFilterbank.filterbankType = FilterbankAnalysisWOLA::Coefficients::HANN; // sets correct window size, but values are overwritten in constructor
+        }
+        else if (c.algorithmType == Coefficients::ADAPTIVE_WOLA)
+        {
+            cFilterbank.filterbankType = FilterbankAnalysisWOLA::Coefficients::WOLA; // sets correct window size, but values are overwritten in constructor
+        }
+        return cFilterbank;
+    }
+
     void inline processAlgorithm(Input input, Output output)
     {
         for (auto nFrame = 0; nFrame < Configuration::getNFrames(static_cast<int>(input.size()), C.bufferSize); nFrame++)
