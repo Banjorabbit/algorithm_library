@@ -9,37 +9,30 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
 {
   public:
     SpectrogramNonlinear(Coefficients c = Coefficients())
-        : BaseAlgorithm{c}, filterbank0({.nChannels = 1,
-                                         .bufferSize = c.bufferSize,
-                                         .nBands = FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * c.overlapFactor),
-                                         .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
-          filterbank1({.nChannels = 1,
-                       .bufferSize = c.bufferSize,
-                       .nBands = FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * c.overlapFactor),
-                       .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
-          filterbank2({.nChannels = 1,
-                       .bufferSize = c.bufferSize,
-                       .nBands = FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * c.overlapFactor),
-                       .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED})
+        : BaseAlgorithm{c},
+          filterbank0({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
+          filterbank1({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED}),
+          filterbank2({.nChannels = 1, .bufferSize = c.bufferSize, .nBands = c.nBands, .filterbankType = FilterbankAnalysisWOLA::Coefficients::USER_DEFINED})
     {
         // set windows
         int frameSize = filterbank0.getFrameSize();
         Eigen::ArrayXf window = hann(frameSize);
         float sqrtPower = std::sqrt(window.abs2().sum());
-        Eigen::ArrayXf windowSmall = hann(c.bufferSize);
-
         filterbank0.setWindow(window);
 
         window.setZero();
-        window.segment(frameSize / 2 - c.bufferSize, 2 * c.bufferSize) = hann(2 * c.bufferSize);
+        Eigen::ArrayXf windowSmall = hann(2 * c.bufferSize);
+        window.segment(frameSize / 2 - c.bufferSize, 2 * c.bufferSize) = windowSmall;
         window = window * sqrtPower / std::sqrt(window.abs2().sum());
         filterbank1.setWindow(window);
 
-        window.segment(frameSize / 2 - 2 * c.bufferSize, 4 * c.bufferSize) = hann(4 * c.bufferSize);
+        int frameSizeMean = (frameSize + 2 * c.bufferSize) / 2; // mean between large and small frame size
+        window.setZero();
+        window.segment(frameSize / 2 - frameSizeMean / 2, frameSizeMean) = hann(frameSizeMean);
         window = window * sqrtPower / std::sqrt(window.abs2().sum());
         filterbank2.setWindow(window);
 
-        filterbankOut.resize(FFTConfiguration::convertFFTSizeToNBands(c.bufferSize * c.overlapFactor));
+        filterbankOut.resize(c.nBands);
         frame.resize(c.bufferSize);
     }
 

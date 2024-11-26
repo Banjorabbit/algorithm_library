@@ -11,10 +11,12 @@ class FilterbankSetAnalysisWOLA : public AlgorithmImplementation<FilterbankSetAn
     {
         nBuffers.resize(C.nFilterbanks);
         bufferSizes.resize(C.nFilterbanks);
-        for (auto i = 0; i < C.nFilterbanks; i++)
+        nBuffers[0] = 1;
+        bufferSizes[0] = C.bufferSize;
+        for (auto i = 1; i < C.nFilterbanks; i++)
         {
-            nBuffers[i] = positivePow2(i);
-            bufferSizes[i] = C.bufferSize / nBuffers[i];
+            nBuffers[i] = nBuffers[i - 1] * 2;
+            bufferSizes[i] = bufferSizes[i - 1] / 2;
         }
     }
 
@@ -118,11 +120,15 @@ class FilterbankSetAnalysisWOLA : public AlgorithmImplementation<FilterbankSetAn
     std::vector<FilterbankAnalysisSimple::Coefficients> initializeFilterbanks()
     {
         std::vector<FilterbankAnalysisSimple::Coefficients> cFB(C.nFilterbanks);
-        for (auto i = 0; i < C.nFilterbanks; i++)
+        cFB[0].bufferSize = C.bufferSize;
+        cFB[0].filterbankType = cFB[0].HANN;
+        cFB[0].nBands = C.nBands;
+        cFB[0].nChannels = 1;
+        for (auto i = 1; i < C.nFilterbanks; i++)
         {
-            cFB[i].bufferSize = C.bufferSize / positivePow2(i);
+            cFB[i].bufferSize = cFB[i - 1].bufferSize / 2;
             cFB[i].filterbankType = cFB[i].HANN;
-            cFB[i].nBands = FFTConfiguration::convertFFTSizeToNBands(4 * cFB[i].bufferSize);
+            cFB[i].nBands = (cFB[i - 1].nBands - 1) / 2 + 1;
             cFB[i].nChannels = 1;
         }
         return cFB;
@@ -140,10 +146,12 @@ class FilterbankSetSynthesisWOLA : public AlgorithmImplementation<FilterbankSetS
     {
         nBuffers.resize(C.nFilterbanks);
         bufferSizes.resize(C.nFilterbanks);
-        for (auto i = 0; i < C.nFilterbanks; i++)
+        nBuffers[0] = 1;
+        bufferSizes[0] = C.bufferSize;
+        for (auto i = 1; i < C.nFilterbanks; i++)
         {
-            nBuffers[i] = positivePow2(i);
-            bufferSizes[i] = C.bufferSize / nBuffers[i];
+            nBuffers[i] = nBuffers[i - 1] * 2;
+            bufferSizes[i] = bufferSizes[i - 1] / 2;
         }
     }
 
@@ -173,11 +181,15 @@ class FilterbankSetSynthesisWOLA : public AlgorithmImplementation<FilterbankSetS
     std::vector<FilterbankSynthesisSimple::Coefficients> initializeFilterbanks()
     {
         std::vector<FilterbankSynthesisSimple::Coefficients> cFB(C.nFilterbanks);
-        for (auto i = 0; i < C.nFilterbanks; i++)
+        cFB[0].bufferSize = C.bufferSize;
+        cFB[0].filterbankType = cFB[0].HANN;
+        cFB[0].nBands = C.nBands;
+        cFB[0].nChannels = 1;
+        for (auto i = 1; i < C.nFilterbanks; i++)
         {
-            cFB[i].bufferSize = C.bufferSize / positivePow2(i);
+            cFB[i].bufferSize = cFB[i - 1].bufferSize / 2;
             cFB[i].filterbankType = cFB[i].HANN;
-            cFB[i].nBands = FFTConfiguration::convertFFTSizeToNBands(4 * cFB[i].bufferSize);
+            cFB[i].nBands = (cFB[i - 1].nBands - 1) / 2 + 1;
             cFB[i].nChannels = 1;
         }
         return cFB;
@@ -185,7 +197,7 @@ class FilterbankSetSynthesisWOLA : public AlgorithmImplementation<FilterbankSetS
 
     size_t getDynamicSizeVariables() const final
     {
-        size_t size = 2 * sizeof(int) * C.nFilterbanks; // dynamic size of bufferSizes
+        size_t size = 2 * sizeof(int) * C.nFilterbanks; // dynamic size of bufferSizes and nBuffers
         return size;
     }
 
