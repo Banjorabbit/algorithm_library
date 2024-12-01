@@ -10,9 +10,9 @@ namespace InterfaceTests // this namespace contains interface tests and should b
 {
 
 template <typename Talgo>
-bool isConfigurationValidTest()
+bool isConfigurationValidTest(const typename Talgo::Coefficients &c = typename Talgo::Coefficients())
 {
-    Talgo algo;
+    Talgo algo(c);
     if (!algo.isConfigurationValid())
     {
         fmt::print("isConfigurationValidTest failed.\n");
@@ -22,9 +22,9 @@ bool isConfigurationValidTest()
 }
 
 template <typename Talgo>
-bool resetTest()
+bool resetTest(const typename Talgo::Coefficients &c = typename Talgo::Coefficients())
 {
-    Talgo algo;
+    Talgo algo(c);
     auto size = algo.getDynamicSize();
     algo.reset();
     auto sizeOut = algo.getDynamicSize();
@@ -37,9 +37,9 @@ bool resetTest()
 }
 
 template <typename Talgo>
-bool getSetTest()
+bool getSetTest(const typename Talgo::Coefficients &c = typename Talgo::Coefficients())
 {
-    Talgo algo;
+    Talgo algo(c);
     auto size = algo.getDynamicSize();
 
     auto p = algo.getParameters();
@@ -53,7 +53,6 @@ bool getSetTest()
         return false;
     }
 
-    auto c = algo.getCoefficients();
     algo.setCoefficients(c);
     auto cTree = algo.getCoefficientsTree();
     algo.setCoefficientsTree(cTree);
@@ -188,9 +187,9 @@ bool assertInterfaceTest()
 
 // test that process algorithm doesn't allocate memory in DEBUG mode
 template <typename Talgo>
-bool mallocDEBUGTest()
+bool mallocDEBUGTest(const typename Talgo::Coefficients &c = typename Talgo::Coefficients())
 {
-    Talgo algo;
+    Talgo algo(c);
     auto input = algo.initInput();
     auto output = algo.initOutput(input);
     Eigen::internal::set_is_malloc_allowed(false);
@@ -200,9 +199,9 @@ bool mallocDEBUGTest()
 }
 
 template <typename Talgo>
-bool processTest()
+bool processTest(const typename Talgo::Coefficients &c = typename Talgo::Coefficients())
 {
-    Talgo algo;
+    Talgo algo(c);
     auto input = algo.initInput();
     auto output = algo.initOutput(input);
     if (!algo.validInput(input))
@@ -247,21 +246,21 @@ template <typename Talgo>
 bool parametersTest()
 {
     Talgo algo;
-    auto c = algo.getParametersTree();
-    nlohmann::json j(c); // convert c to json
+    auto pTree = algo.getParametersTree();
+    nlohmann::json j(pTree); // convert p to json
     fmt::print("parameters: {}\n", j.dump(4));
-    c = j; // convert json to c
+    pTree = j; // convert json to p
     return true;
 }
 
 template <typename Talgo>
-bool coefficientsTest()
+bool coefficientsTest(const typename Talgo::Coefficients &c = typename Talgo::Coefficients())
 {
-    Talgo algo;
-    auto c = algo.getCoefficientsTree();
-    nlohmann::json j(c); // convert c to json
+    Talgo algo(c);
+    auto cTree = algo.getCoefficientsTree();
+    nlohmann::json j(cTree); // convert c to json
     fmt::print("coefficients: {}\n", j.dump(4));
-    c = j; // convert json to c
+    cTree = j; // convert json to c
     return true;
 }
 
@@ -274,20 +273,20 @@ bool versionAlgorithmTest()
 }
 
 template <typename Talgo>
-bool algorithmInterfaceTest(bool testMallocFlag = true)
+bool algorithmInterfaceTest(const typename Talgo::Coefficients &c, bool testMallocFlag = true)
 {
     fmt::print("----------------------------------------------------------------------------------------------------------------------------------\n");
-    auto successFlag = coefficientsTest<Talgo>();
+    auto successFlag = coefficientsTest<Talgo>(c);
     successFlag &= parametersTest<Talgo>();
     successFlag &= versionAlgorithmTest<Talgo>();
-    successFlag &= isConfigurationValidTest<Talgo>();
-    successFlag &= processTest<Talgo>();
-    if (testMallocFlag) { successFlag &= mallocDEBUGTest<Talgo>(); }
-    successFlag &= resetTest<Talgo>();
-    successFlag &= getSetTest<Talgo>();
+    successFlag &= isConfigurationValidTest<Talgo>(c);
+    successFlag &= processTest<Talgo>(c);
+    if (testMallocFlag) { successFlag &= mallocDEBUGTest<Talgo>(c); }
+    successFlag &= resetTest<Talgo>(c);
+    successFlag &= getSetTest<Talgo>(c);
     successFlag &= assertInterfaceTest<Talgo>();
 
-    Talgo algo;
+    Talgo algo(c);
     auto size = algo.getStaticSize();
     fmt::print("Static memory size: {}\n", size);
     if (size <= 0)
@@ -307,6 +306,14 @@ bool algorithmInterfaceTest(bool testMallocFlag = true)
     if (!successFlag) { fmt::print("algorithmInterfaceTest failed.\n"); }
     fmt::print("----------------------------------------------------------------------------------------------------------------------------------\n");
     return successFlag;
+}
+
+template <typename Talgo>
+bool algorithmInterfaceTest(bool testMallocFlag = true)
+{
+    Talgo algo;
+    typename Talgo::Coefficients c = algo.getCoefficients();
+    return algorithmInterfaceTest<Talgo>(c, testMallocFlag);
 }
 
 template <typename Talgo>
