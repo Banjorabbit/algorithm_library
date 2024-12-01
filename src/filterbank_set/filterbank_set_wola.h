@@ -1,13 +1,13 @@
 #pragma once
 #include "algorithm_library/filterbank_set.h"
-#include "filterbank/filterbank_simple.h"
+#include "filterbank/filterbank_single_channel.h"
 #include "framework/framework.h"
 #include "utilities/fastonebigheader.h"
 
 class FilterbankSetAnalysisWOLA : public AlgorithmImplementation<FilterbankSetAnalysisConfiguration, FilterbankSetAnalysisWOLA>
 {
   public:
-    FilterbankSetAnalysisWOLA(Coefficients c = Coefficients()) : BaseAlgorithm{c}, filterbanks(initializeFilterbanks())
+    FilterbankSetAnalysisWOLA(Coefficients c = Coefficients()) : BaseAlgorithm{c}, filterbanks(initializeFilterbanks(c))
     {
         nBuffers.resize(C.nFilterbanks);
         bufferSizes.resize(C.nFilterbanks);
@@ -20,24 +20,17 @@ class FilterbankSetAnalysisWOLA : public AlgorithmImplementation<FilterbankSetAn
         }
     }
 
-    VectorAlgo<FilterbankAnalysisSimple> filterbanks;
+    VectorAlgo<FilterbankAnalysisSingleChannel> filterbanks;
     DEFINE_MEMBER_ALGORITHMS(filterbanks)
 
   private:
     void processAlgorithm(Input input, Output output)
     {
-        int nFrames = static_cast<int>(input.rows()) / C.bufferSize;
-        assert(static_cast<float>(nFrames) == static_cast<float>(input.rows()) / C.bufferSize); // ensure length of input is an integer multiple of C.bufferSize
-
-        for (auto iFrame = 0; iFrame < nFrames; iFrame++)
+        for (auto iFB = 0; iFB < C.nFilterbanks; iFB++)
         {
-            for (auto iFB = 0; iFB < C.nFilterbanks; iFB++)
+            for (auto iSubFrame = 0; iSubFrame < nBuffers[iFB]; iSubFrame++)
             {
-                for (auto iSubFrame = 0; iSubFrame < nBuffers[iFB]; iSubFrame++)
-                {
-                    filterbanks[iFB].process(input.segment(iFrame * C.bufferSize + iSubFrame * bufferSizes[iFB], bufferSizes[iFB]),
-                                             output[iFB].col(iFrame * nBuffers[iFB] + iSubFrame));
-                }
+                filterbanks[iFB].process(input.segment(iSubFrame * bufferSizes[iFB], bufferSizes[iFB]), output[iFB].col(iSubFrame));
             }
         }
 
@@ -117,19 +110,16 @@ class FilterbankSetAnalysisWOLA : public AlgorithmImplementation<FilterbankSetAn
 
     size_t getDynamicSizeVariables() const final { return 2 * sizeof(int) * C.nFilterbanks; }
 
-    std::vector<FilterbankAnalysisSimple::Coefficients> initializeFilterbanks()
+    std::vector<FilterbankAnalysisSingleChannel::Coefficients> initializeFilterbanks(const Coefficients &c)
     {
-        std::vector<FilterbankAnalysisSimple::Coefficients> cFB(C.nFilterbanks);
-        cFB[0].bufferSize = C.bufferSize;
-        cFB[0].filterbankType = cFB[0].HANN;
-        cFB[0].nBands = C.nBands;
-        cFB[0].nChannels = 1;
-        for (auto i = 1; i < C.nFilterbanks; i++)
+        std::vector<FilterbankAnalysisSingleChannel::Coefficients> cFB(c.nFilterbanks);
+        for (auto i = 0; i < c.nFilterbanks; i++)
         {
-            cFB[i].bufferSize = cFB[i - 1].bufferSize / 2;
-            cFB[i].filterbankType = cFB[i].HANN;
-            cFB[i].nBands = (cFB[i - 1].nBands - 1) / 2 + 1;
+            cFB[i].bufferSize = c.bufferSize / positivePow2(i);
+            cFB[i].nBands = (c.nBands - 1) / positivePow2(i) + 1;
             cFB[i].nChannels = 1;
+            cFB[i].filterbankType =
+                c.filterbankType == Coefficients::WOLA ? FilterbankAnalysisSingleChannel::Coefficients::WOLA : FilterbankAnalysisSingleChannel::Coefficients::HANN;
         }
         return cFB;
     }
@@ -142,7 +132,7 @@ class FilterbankSetAnalysisWOLA : public AlgorithmImplementation<FilterbankSetAn
 class FilterbankSetSynthesisWOLA : public AlgorithmImplementation<FilterbankSetSynthesisConfiguration, FilterbankSetSynthesisWOLA>
 {
   public:
-    FilterbankSetSynthesisWOLA(Coefficients c = Coefficients()) : BaseAlgorithm{c}, inverseFilterbanks(initializeFilterbanks())
+    FilterbankSetSynthesisWOLA(Coefficients c = Coefficients()) : BaseAlgorithm{c}, inverseFilterbanks(initializeFilterbanks(c))
     {
         nBuffers.resize(C.nFilterbanks);
         bufferSizes.resize(C.nFilterbanks);
@@ -155,42 +145,34 @@ class FilterbankSetSynthesisWOLA : public AlgorithmImplementation<FilterbankSetS
         }
     }
 
-    VectorAlgo<FilterbankSynthesisSimple> inverseFilterbanks;
+    VectorAlgo<FilterbankSynthesisSingleChannel> inverseFilterbanks;
     DEFINE_MEMBER_ALGORITHMS(inverseFilterbanks)
 
   private:
     void processAlgorithm(Input input, Output output)
     {
-        auto nFrames = static_cast<int>(input[0].cols());
-        assert(output.rows() == nFrames * C.bufferSize);
+        assert(output.rows() == C.bufferSize);
         assert(output.cols() == C.nFilterbanks);
 
-        for (auto iFrame = 0; iFrame < nFrames; iFrame++)
+        for (auto iFB = 0; iFB < C.nFilterbanks; iFB++)
         {
-            for (auto iFB = 0; iFB < C.nFilterbanks; iFB++)
+            for (auto iSubFrame = 0; iSubFrame < nBuffers[iFB]; iSubFrame++)
             {
-                for (auto iSubFrame = 0; iSubFrame < nBuffers[iFB]; iSubFrame++)
-                {
-                    inverseFilterbanks[iFB].process(input[iFB].col(iFrame * nBuffers[iFB] + iSubFrame),
-                                                    output.col(iFB).segment(iFrame * C.bufferSize + iSubFrame * bufferSizes[iFB], bufferSizes[iFB]));
-                }
+                inverseFilterbanks[iFB].process(input[iFB].col(iSubFrame), output.col(iFB).segment(iSubFrame * bufferSizes[iFB], bufferSizes[iFB]));
             }
         }
     }
 
-    std::vector<FilterbankSynthesisSimple::Coefficients> initializeFilterbanks()
+    std::vector<FilterbankSynthesisSingleChannel::Coefficients> initializeFilterbanks(const Coefficients &c)
     {
-        std::vector<FilterbankSynthesisSimple::Coefficients> cFB(C.nFilterbanks);
-        cFB[0].bufferSize = C.bufferSize;
-        cFB[0].filterbankType = cFB[0].HANN;
-        cFB[0].nBands = C.nBands;
-        cFB[0].nChannels = 1;
-        for (auto i = 1; i < C.nFilterbanks; i++)
+        std::vector<FilterbankAnalysisSingleChannel::Coefficients> cFB(c.nFilterbanks);
+        for (auto i = 0; i < c.nFilterbanks; i++)
         {
-            cFB[i].bufferSize = cFB[i - 1].bufferSize / 2;
-            cFB[i].filterbankType = cFB[i].HANN;
-            cFB[i].nBands = (cFB[i - 1].nBands - 1) / 2 + 1;
+            cFB[i].bufferSize = c.bufferSize / positivePow2(i);
+            cFB[i].nBands = (c.nBands - 1) / positivePow2(i) + 1;
             cFB[i].nChannels = 1;
+            cFB[i].filterbankType =
+                c.filterbankType == Coefficients::WOLA ? FilterbankAnalysisSingleChannel::Coefficients::WOLA : FilterbankAnalysisSingleChannel::Coefficients::HANN;
         }
         return cFB;
     }

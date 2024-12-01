@@ -8,7 +8,7 @@
 class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfiguration, SpectrogramNonlinear>
 {
   public:
-    SpectrogramNonlinear(Coefficients c = {.bufferSize = 128, .nBands = 513, .algorithmType = Coefficients::ADAPTIVE_HANN})
+    SpectrogramNonlinear(Coefficients c = {.bufferSize = 128, .nBands = 513, .algorithmType = Coefficients::ADAPTIVE_HANN_8})
         : BaseAlgorithm{c}, filterbank0({initializeFilterbanks(c)}), filterbank1({initializeFilterbanks(c)}), filterbank2({initializeFilterbanks(c)})
     {
         // set windows
@@ -45,11 +45,11 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
         cFilterbank.nChannels = 1;
         cFilterbank.bufferSize = c.bufferSize;
         cFilterbank.nBands = c.nBands;
-        if (c.algorithmType == Coefficients::ADAPTIVE_HANN)
+        if (c.algorithmType == Coefficients::ADAPTIVE_HANN_8)
         {
             cFilterbank.filterbankType = FilterbankAnalysisWOLA::Coefficients::HANN; // sets correct window size, but values are overwritten in constructor
         }
-        else if (c.algorithmType == Coefficients::ADAPTIVE_WOLA)
+        else if (c.algorithmType == Coefficients::ADAPTIVE_WOLA_8)
         {
             cFilterbank.filterbankType = FilterbankAnalysisWOLA::Coefficients::WOLA; // sets correct window size, but values are overwritten in constructor
         }

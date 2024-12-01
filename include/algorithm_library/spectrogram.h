@@ -13,16 +13,16 @@ struct SpectrogramConfiguration
 
     struct Coefficients
     {
-        int bufferSize = 128; // input buffer size
-        int nBands = 129;     // number of frequency bands in output
+        int bufferSize = 1024; // input buffer size
+        int nBands = 1025;     // number of frequency bands in output
         enum SpectrogramAlgorithmType {
-            HANN,          // HANN = Hann window with length of FFT size = 2 * (nBands - 1)
-            WOLA,          // WOLA = sinc modulated Kaiser window with length of 2 * FFTSize = 4 * (nBands - 1)
-            ADAPTIVE_HANN, // ADAPTIVE = Hann window of adaptive length with min length of 2 * bufferSize and max length of FFT size = 2 * (nBands - 1)
-            ADAPTIVE_WOLA // ADAPTIVE_WOLA = sinc modulated Kaiser window of adaptive length with min length of 2 * bufferSize and max length of 2 * FFTSize = 4 * (nBands - 1)
+            HANN,            // Hann window with length of FFT size = 2 * (nBands - 1)
+            WOLA,            // Sinc modulated Kaiser window with length of 2 * FFTSize = 4 * (nBands - 1)
+            ADAPTIVE_HANN_8, // Hann window of adaptive length with max length of FFT size = 2 * (nBands - 1) and a min length of FFT size / 8
+            ADAPTIVE_WOLA_8  // WOLA window of adaptive length with a max length of 2 * FFTSize = 4 * (nBands - 1) and a min length of 2 * FFT size / 8
         };
         SpectrogramAlgorithmType algorithmType = HANN; // choose algorithm to use for calculating spectrogram
-        DEFINE_TUNABLE_ENUM(SpectrogramAlgorithmType, {{HANN, "Hann"}, {WOLA, "Wola"}, {ADAPTIVE_HANN, "Adaptive"}, {ADAPTIVE_WOLA, "Adaptive Wola"}})
+        DEFINE_TUNABLE_ENUM(SpectrogramAlgorithmType, {{HANN, "Hann"}, {WOLA, "Wola"}, {ADAPTIVE_HANN_8, "Adaptive x8"}, {ADAPTIVE_WOLA_8, "Adaptive Wola x8"}})
         DEFINE_TUNABLE_COEFFICIENTS(bufferSize, nBands, algorithmType)
     };
 
