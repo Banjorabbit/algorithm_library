@@ -58,7 +58,7 @@ class VectorAlgo
     std::vector<Coefficients> getCoefficients() const
     {
         std::vector<Coefficients> cVec(vec.size());
-        for (auto i = 0; i < vec.size(); i++)
+        for (auto i = 0; i < static_cast<int>(vec.size()); i++)
         {
             cVec[i] = vec[i].getCoefficients();
         }
@@ -127,7 +127,7 @@ class VectorAlgo
     template <typename Tcoefficients>
     void setCoefficients(const Tcoefficients &c)
     {
-        if (c.size() != size()) { resize(c.size); }
+        if (c.size() != size()) { resize(c.size()); }
         for (size_t i = 0; i < size(); i++)
         {
             vec[i].setCoefficients(c[i]);
