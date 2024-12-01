@@ -3,11 +3,7 @@
 #include "algorithm_library/filterbank.h"
 #include "interface/interface.h"
 
-// A set of analysis filter banks.
-//
-// It currently only supports:
-// 1 channel input
-// offline processing where the entire input is available
+// A set of analysis filter banks supporting 1 channel input
 //
 // The filterbanks are processed in parallel with FFT size halving between each filterbank and output complex spectrograms are stored in a vector.
 //
@@ -23,8 +19,10 @@ struct FilterbankSetAnalysisConfiguration
         int bufferSize = 1024; // buffer size in the first filterbank
         int nBands = 2049;     // number of frequency bands in the first filterbank
         int nFilterbanks = 4;  // each filterbank halves the buffer size
-
-        DEFINE_TUNABLE_COEFFICIENTS(bufferSize, nBands, nFilterbanks)
+        enum FilterbankTypes { HANN, WOLA };
+        FilterbankTypes filterbankType = HANN;
+        DEFINE_TUNABLE_ENUM(FilterbankTypes, {{HANN, "Hann"}, {WOLA, "Wola"}})
+        DEFINE_TUNABLE_COEFFICIENTS(bufferSize, nBands, nFilterbanks, filterbankType)
     };
 
     struct Parameters
@@ -32,39 +30,32 @@ struct FilterbankSetAnalysisConfiguration
         DEFINE_NO_TUNABLE_PARAMETERS
     };
 
-    static Eigen::ArrayXf initInput(const Coefficients &c) { return Eigen::ArrayXf::Random(10 * c.bufferSize); } // arbitrary number of time samples.
+    static Eigen::ArrayXf initInput(const Coefficients &c) { return Eigen::ArrayXf::Random(c.bufferSize); } // time domain signal
 
     static std::vector<Eigen::ArrayXXcf> initOutput(Input input, const Coefficients &c)
     {
         std::vector<Eigen::ArrayXXcf> output(c.nFilterbanks);
         for (auto i = 0; i < c.nFilterbanks; i++)
         {
-            int bufferSize = c.bufferSize / (1 << i);
-            int nFrames = static_cast<int>(input.size()) / bufferSize;
-            int fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands) / (1 << i);
-            int nBands = FFTConfiguration::convertFFTSizeToNBands(fftSize);
+            int nFrames = 1 << i;
+            int nBands = (c.nBands - 1) / nFrames + 1;
             output[i] = Eigen::ArrayXXcf::Zero(nBands, nFrames);
         }
         return output;
     }
 
-    static bool validInput(Input input, const Coefficients &c)
-    {
-        float nFrames = static_cast<float>(input.rows()) / c.bufferSize;
-        return (input.rows() > 0) && (nFrames == std::round(nFrames)) && (input.cols() == 1) && input.allFinite();
-    }
+    static bool validInput(Input input, const Coefficients &c) { return (input.rows() == c.bufferSize) && (input.cols() == 1) && input.allFinite(); }
 
     static bool validOutput(Output output, const Coefficients &c)
     {
         if (static_cast<int>(output.size()) != c.nFilterbanks) { return false; }
-        int nFrames = static_cast<int>(output[0].cols());
         for (auto i = 0; i < c.nFilterbanks; i++)
         {
-            int fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands) / (1 << i);
+            int nFrames = 1 << i;
+            int fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands) / nFrames;
             if (!FFTConfiguration::isFFTSizeValid(fftSize)) { return false; }
             int nBands = FFTConfiguration::convertFFTSizeToNBands(fftSize);
             if ((output[i].rows() != nBands) || (output[i].cols() != nFrames) || (!output[i].allFinite())) { return false; }
-            nFrames *= 2;
         }
         return true;
     }
@@ -91,8 +82,11 @@ struct FilterbankSetSynthesisConfiguration
         int bufferSize = 1024; // buffer size in the first filterbank
         int nBands = 2049;     // number of frequency bands in the first filterbank
         int nFilterbanks = 4;  // each filterbank doubles the buffer size
+        enum FilterbankTypes { HANN, WOLA };
+        FilterbankTypes filterbankType = HANN;
+        DEFINE_TUNABLE_ENUM(FilterbankTypes, {{HANN, "Hann"}, {WOLA, "Wola"}})
 
-        DEFINE_TUNABLE_COEFFICIENTS(bufferSize, nBands, nFilterbanks)
+        DEFINE_TUNABLE_COEFFICIENTS(bufferSize, nBands, nFilterbanks, filterbankType)
     };
 
     struct Parameters
@@ -102,45 +96,34 @@ struct FilterbankSetSynthesisConfiguration
 
     static std::vector<Eigen::ArrayXXcf> initInput(const Coefficients &c)
     {
-        int sizeOut = 10 * c.bufferSize; // arbitrary number of time samples.
         std::vector<Eigen::ArrayXXcf> input(c.nFilterbanks);
         for (auto i = 0; i < c.nFilterbanks; i++)
         {
-            int bufferSize = c.bufferSize / (1 << i);
-            int nFrames = sizeOut / bufferSize;
-            int fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands) / (1 << i);
+            int nFrames = 1 << i;
+            int fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands) / nFrames;
             int nBands = FFTConfiguration::convertFFTSizeToNBands(fftSize);
             input[i] = Eigen::ArrayXXcf::Random(nBands, nFrames);
         }
         return input;
     }
 
-    static Eigen::ArrayXXf initOutput(Input input, const Coefficients &c)
-    {
-        int nSamples = static_cast<int>(input[0].cols()) * c.bufferSize;
-        return Eigen::ArrayXXf::Zero(nSamples, c.nFilterbanks);
-    }
+    static Eigen::ArrayXXf initOutput(Input input, const Coefficients &c) { return Eigen::ArrayXXf::Zero(c.bufferSize, c.nFilterbanks); }
 
     static bool validInput(Input input, const Coefficients &c)
     {
         if (static_cast<int>(input.size()) != c.nFilterbanks) { return false; }
-        auto nFrames = static_cast<int>(input[0].cols());
         for (auto i = 0; i < c.nFilterbanks; i++)
         {
-            int fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands) / (1 << i);
+            int nFrames = 1 << i;
+            int fftSize = FFTConfiguration::convertNBandsToFFTSize(c.nBands) / nFrames;
             if (!FFTConfiguration::isFFTSizeValid(fftSize)) { return false; }
             int nBands = FFTConfiguration::convertFFTSizeToNBands(fftSize);
             if ((input[i].rows() != nBands) || (input[i].cols() != nFrames) || (!input[i].allFinite())) { return false; }
-            nFrames *= 2;
         }
         return true;
     }
 
-    static bool validOutput(Output output, const Coefficients &c)
-    {
-        float nFrames = static_cast<float>(output.rows()) / c.bufferSize;
-        return (output.rows() > 0) && (nFrames == std::round(nFrames)) && (output.cols() == c.nFilterbanks) && output.allFinite();
-    }
+    static bool validOutput(Output output, const Coefficients &c) { return (output.rows() == c.bufferSize) && (output.cols() == c.nFilterbanks) && output.allFinite(); }
 };
 
 // Synthesis filterbank

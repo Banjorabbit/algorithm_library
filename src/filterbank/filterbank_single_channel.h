@@ -7,7 +7,6 @@
 
 // --------------------------------------------------- FilterbankAnalysisSingleChannel ---------------------------------------------------------
 // FilterbankAnalysisSingleChannel is a class that implements the analysis part of a single-channel DFT filterbank.
-// The input can be longer than bufferSize and the filterbank will process the input in chunks of bufferSize.
 // The output will have the size nBands x nFrames, where nFrames = input.size() / bufferSize.
 
 class FilterbankAnalysisSingleChannel : public AlgorithmImplementation<FilterbankAnalysisConfiguration, FilterbankAnalysisSingleChannel>
@@ -51,18 +50,14 @@ class FilterbankAnalysisSingleChannel : public AlgorithmImplementation<Filterban
   private:
     inline void processAlgorithm(Input xTime, Output yFreq)
     {
-        const int nFrames = static_cast<int>(xTime.rows()) / C.bufferSize;
-        for (auto iFrame = 0; iFrame < nFrames; iFrame++)
+        timeBuffer.head(overlap) = timeBuffer.tail(overlap);
+        timeBuffer.tail(C.bufferSize) = xTime.col(0).head(C.bufferSize);
+        fftBuffer.head(frameSize) = timeBuffer * window;
+        for (auto j = 1; j < nFolds; j++)
         {
-            timeBuffer.head(overlap) = timeBuffer.tail(overlap);
-            timeBuffer.tail(C.bufferSize) = xTime.col(0).segment(iFrame * C.bufferSize, C.bufferSize);
-            fftBuffer.head(frameSize) = timeBuffer * window;
-            for (auto j = 1; j < nFolds; j++)
-            {
-                fftBuffer.head(fftSize) += fftBuffer.segment(j * fftSize, fftSize);
-            }
-            fft.process(fftBuffer.head(fftSize), yFreq.col(iFrame));
+            fftBuffer.head(fftSize) += fftBuffer.segment(j * fftSize, fftSize);
         }
+        fft.process(fftBuffer.head(fftSize), yFreq);
     }
 
     bool isCoefficientsValid() const final { return FilterbankShared::isCoefficientsValid(C); }

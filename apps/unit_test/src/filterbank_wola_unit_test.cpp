@@ -1,4 +1,5 @@
 #include "filterbank/filterbank_wola.h"
+#include "filterbank/filterbank_single_channel.h"
 #include "unit_test.h"
 #include "gtest/gtest.h"
 using namespace Eigen;
@@ -8,6 +9,10 @@ using namespace Eigen;
 TEST(Filterbank, InterfaceAnalysis) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<FilterbankAnalysisWOLA>()); }
 
 TEST(Filterbank, InterfaceSynthesis) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<FilterbankSynthesisWOLA>()); }
+
+TEST(Filterbank, InterfaceSingleChannelAnalysis) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<FilterbankAnalysisSingleChannel>()); }
+
+TEST(Filterbank, InterfaceSingleChannelSynthesis) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<FilterbankSynthesisSingleChannel>()); }
 
 // Description: Send random signal through HighQuality filterbank and reconstruct it.
 // pass/fail: check reconstruction error is below threshold.
