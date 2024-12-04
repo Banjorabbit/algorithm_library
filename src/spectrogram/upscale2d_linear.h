@@ -15,7 +15,8 @@ struct Upscale2DConfiguration
     {
         int factorHorizontal = 4;
         int factorVertical = 4;
-        DEFINE_TUNABLE_COEFFICIENTS(factorHorizontal, factorVertical)
+        bool leftBoundaryExcluded = false;
+        DEFINE_TUNABLE_COEFFICIENTS(factorHorizontal, factorVertical, leftBoundaryExcluded)
     };
 
     struct Parameters
@@ -30,7 +31,10 @@ struct Upscale2DConfiguration
 
     static Eigen::ArrayXXf initOutput(Input input, const Coefficients &c)
     {
-        return Eigen::ArrayXXf::Zero(c.factorVertical * (input.rows() - 1) + 1, c.factorHorizontal * (input.cols() - 1) + 1);
+        int nRows = c.factorVertical * (input.rows() - 1) + 1;
+        int nCols = c.factorHorizontal * (input.cols() - 1) + 1;
+        nCols -= c.leftBoundaryExcluded ? 1 : 0;
+        return Eigen::ArrayXXf::Zero(nRows, nCols);
     }
 
     static bool validInput(Input input, const Coefficients &c) { return input.allFinite() && (input.rows() > 0) && (input.cols() > 0); }
@@ -60,39 +64,61 @@ class Upscale2DLinear : public AlgorithmImplementation<Upscale2DConfiguration, U
         const int colsm1 = cols - 1;
         const int rows = input.rows();
         const int rowsm1 = rows - 1;
-        for (auto iCol = 0; iCol < cols; iCol++)
+
+        int startCol = 0; // start from column 0
+        if (C.leftBoundaryExcluded == true)
+        {
+            startCol = 1; // exclude column 0
+
+            // In this case we write the upscaled vertical output for the first input column into the first column.
+            // linear interpolation across rows
+            for (auto iRow = 0; iRow < rowsm1; iRow++)
+            {
+                float diff0 = input(iRow, 0) - input(iRow + 1, 0);
+                for (auto i = 0; i < C.factorVertical; i++)
+                {
+                    output(i + iRow * C.factorVertical, 0) = diff0 * interpolateVertical(i) + input(iRow + 1, 0);
+                }
+            }
+            output(rowsm1 * C.factorVertical, 0) = input(rowsm1, 0);
+        }
+
+        for (auto iCol = startCol; iCol < cols; iCol++)
         {
             // linear interpolation across rows
             for (auto iRow = 0; iRow < rowsm1; iRow++)
             {
                 for (auto i = 0; i < C.factorVertical; i++)
                 {
-                    output(i + iRow * C.factorVertical, iCol * C.factorHorizontal) =
+                    output(i + iRow * C.factorVertical, iCol * C.factorHorizontal - startCol) =
                         (input(iRow, iCol) - input(iRow + 1, iCol)) * interpolateVertical(i) + input(iRow + 1, iCol);
                 }
             }
-            output(rowsm1 * C.factorVertical, iCol * C.factorHorizontal) = input(rowsm1, iCol);
+            output(rowsm1 * C.factorVertical, iCol * C.factorHorizontal - startCol) = input(rowsm1, iCol);
         }
 
         // linear interpolation across first col
-        for (auto iHor = 1; iHor < C.factorHorizontal; iHor++)
+        for (auto iHor = 1 + startCol; iHor < C.factorHorizontal; iHor++)
         {
-            output.col(iHor) = output.col(0) * interpolateHorizontal(iHor);
+            output.col(iHor - startCol) = output.col(0) * interpolateHorizontal(iHor);
         }
+        if (C.leftBoundaryExcluded == true) { output.col(0) *= interpolateHorizontal(1); }
+
         for (auto iCol = 1; iCol < colsm1; iCol++)
         {
             for (auto iHor = 1; iHor < C.factorHorizontal; iHor++)
             {
                 // linear interpolation across cols
-                output.col(iCol * C.factorHorizontal + iHor) = output.col(iCol * C.factorHorizontal) * interpolateHorizontal(iHor);
+                output.col(iCol * C.factorHorizontal + iHor - startCol) = output.col(iCol * C.factorHorizontal - startCol) * interpolateHorizontal(iHor);
                 // backwards linear interpolation across cols
-                output.col(iCol * C.factorHorizontal - iHor) += output.col(iCol * C.factorHorizontal + iHor);
+                output.col(iCol * C.factorHorizontal - iHor - startCol) += output.col(iCol * C.factorHorizontal + iHor - startCol);
             }
         }
         // backwards linear interpolation across last col
         for (auto iHor = 1; iHor < C.factorHorizontal; iHor++)
         {
-            output.col((colsm1 - 1) * C.factorHorizontal + iHor) += output.col(colsm1 * C.factorHorizontal) * interpolateHorizontal(C.factorHorizontal - iHor);
+            output.col((colsm1 - 1) * C.factorHorizontal + iHor - startCol) +=
+                output.col(colsm1 * C.factorHorizontal - startCol) * interpolateHorizontal(C.factorHorizontal - iHor);
         }
     }
 
