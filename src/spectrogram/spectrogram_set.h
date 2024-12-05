@@ -16,6 +16,12 @@ class SpectrogramSet : public AlgorithmImplementation<SpectrogramConfiguration, 
         assert((c.algorithmType == Coefficients::ADAPTIVE_HANN_8) || (c.algorithmType == Coefficients::ADAPTIVE_WOLA_8));
         Eigen::ArrayXf inputFrame(c.bufferSize);
         filterbankOut = filterbankSet.initOutput(inputFrame);
+        spectrogramRaw.resize(filterbankOut.size());
+        for (auto i = 0; i < static_cast<int>(filterbankOut.size()); i++)
+        {
+            spectrogramRaw[i] = Eigen::ArrayXXf::Zero(filterbankOut[i].rows(), filterbankOut[i].cols() + 1); // +1 to keep the last previous frame
+        }
+        spectrogramUpscaled = Eigen::ArrayXXf::Zero(c.nBands, nOutputFrames);
 
         auto cUpscale = upscale.getCoefficients();
         cUpscale.resize(nFilterbanks);
@@ -23,6 +29,7 @@ class SpectrogramSet : public AlgorithmImplementation<SpectrogramConfiguration, 
         {
             cUpscale[i].factorHorizontal = positivePow2(nFilterbanks - 1 - i);
             cUpscale[i].factorVertical = positivePow2(i);
+            cUpscale[i].leftBoundaryExcluded = true;
         }
         upscale.setCoefficients(cUpscale);
     }
@@ -37,7 +44,7 @@ class SpectrogramSet : public AlgorithmImplementation<SpectrogramConfiguration, 
         FilterbankSetAnalysisWOLA::Coefficients cFilterbank;
         cFilterbank.bufferSize = c.bufferSize;
         cFilterbank.nBands = c.nBands;
-        cFilterbank.nFilterbanks = nFilterbanks; // hardcoded to 4, which corresponds to a division of 2^(4-1) = 8
+        cFilterbank.nFilterbanks = nFilterbanks;
         cFilterbank.filterbankType =
             (c.algorithmType == Coefficients::ADAPTIVE_WOLA_8) ? FilterbankSetAnalysisWOLA::Coefficients::WOLA : FilterbankSetAnalysisWOLA::Coefficients::HANN;
         return cFilterbank;
@@ -45,17 +52,17 @@ class SpectrogramSet : public AlgorithmImplementation<SpectrogramConfiguration, 
 
     void inline processAlgorithm(Input input, Output output)
     {
-        std::vector<Eigen::ArrayXXcf> filterbankOut = filterbankSet.initOutput(input);
         filterbankSet.process(input, filterbankOut);
 
-        Eigen::ArrayXXf filterbankPower = filterbankOut[0].abs2();
-        upscale[0].process(filterbankPower, output);
+        spectrogramRaw[0].col(0) = spectrogramRaw[0].col(1); // copy prevous frame
+        spectrogramRaw[0].col(1) = filterbankOut[0].abs2();
+        upscale[0].process(spectrogramRaw[0], output);
         for (auto iFB = 1; iFB < static_cast<int>(filterbankOut.size()); iFB++)
         {
-            filterbankPower = filterbankOut[iFB].abs2();
-            Eigen::ArrayXXf powerUpscaled = upscale[iFB].initOutput(filterbankPower);
-            upscale[iFB].process(filterbankPower, powerUpscaled);
-            output = output.min(powerUpscaled);
+            spectrogramRaw[iFB].col(0) = spectrogramRaw[iFB].col(filterbankOut[iFB].cols()); // copy prevous frame
+            spectrogramRaw[iFB].rightCols(filterbankOut[iFB].cols()) = filterbankOut[iFB].abs2();
+            upscale[iFB].process(spectrogramRaw[iFB], spectrogramUpscaled);
+            output = output.min(spectrogramUpscaled);
         }
     }
 
@@ -65,12 +72,17 @@ class SpectrogramSet : public AlgorithmImplementation<SpectrogramConfiguration, 
         for (auto i = 0; i < static_cast<int>(filterbankOut.size()); i++)
         {
             size += filterbankOut[i].getDynamicMemorySize();
+            size += spectrogramRaw[i].getDynamicMemorySize();
         }
+        size += spectrogramUpscaled.getDynamicMemorySize();
         return size;
     }
 
-    static constexpr int nFilterbanks = 4;
+    static constexpr int nFilterbanks = 4;                               // 4 filterbanks that each halves the frame size resulting in 2^(4-1) = 8 output frames
+    static constexpr int nOutputFrames = positivePow2(nFilterbanks - 1); // 8 output frames corresponding to the 4 filterbanks
     std::vector<Eigen::ArrayXXcf> filterbankOut;
+    std::vector<Eigen::ArrayXXf> spectrogramRaw;
+    Eigen::ArrayXXf spectrogramUpscaled;
 
     friend BaseAlgorithm;
 };

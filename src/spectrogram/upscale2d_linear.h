@@ -102,7 +102,7 @@ class Upscale2DLinear : public AlgorithmImplementation<Upscale2DConfiguration, U
         {
             output.col(iHor - startCol) = output.col(0) * interpolateHorizontal(iHor);
         }
-        if (C.leftBoundaryExcluded == true) { output.col(0) *= interpolateHorizontal(1); }
+        if ((C.leftBoundaryExcluded == true) && (C.factorHorizontal > 1)) { output.col(0) *= interpolateHorizontal(1); }
 
         for (auto iCol = 1; iCol < colsm1; iCol++)
         {

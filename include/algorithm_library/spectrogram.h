@@ -2,7 +2,6 @@
 #include "interface/interface.h"
 
 // spectrogram. Default windows is Hann window, and there is a method for setting a user defined window.
-// There is also a static method for getting the number of output frames given the input size.
 //
 // author: Kristian Timm Andersen
 
@@ -31,19 +30,24 @@ struct SpectrogramConfiguration
         DEFINE_NO_TUNABLE_PARAMETERS
     };
 
-    static inline int getNFrames(int nSamples, int bufferSize) { return nSamples / bufferSize; } // number of frames (columns) in output
-    static int getValidFFTSize(int fftSize);                                                     // return valid FFT size larger or equal to fftSize
+    static int getValidFFTSize(int fftSize); // return valid FFT size larger or equal to fftSize
 
-    static Eigen::ArrayXf initInput(const Coefficients &c) { return Eigen::ArrayXf::Random(10 * c.bufferSize); } // time samples. Number of samples is arbitrary
+    static Eigen::ArrayXf initInput(const Coefficients &c) { return Eigen::ArrayXf::Random(c.bufferSize); } // time samples
 
     static Eigen::ArrayXXf initOutput(Input input, const Coefficients &c) // power spectrogram
     {
-        return Eigen::ArrayXXf::Zero(c.nBands, getNFrames(static_cast<int>(input.rows()), c.bufferSize));
+        if ((c.algorithmType == Coefficients::ADAPTIVE_HANN_8) || (c.algorithmType == Coefficients::ADAPTIVE_WOLA_8)) { return Eigen::ArrayXXf::Zero(c.nBands, 8); }
+        return Eigen::ArrayXXf::Zero(c.nBands, 1);
     }
 
-    static bool validInput(Input input, const Coefficients &c) { return (input.rows() > 0) && input.allFinite(); }
+    static bool validInput(Input input, const Coefficients &c) { return (input.rows() == c.bufferSize) && input.allFinite(); }
 
-    static bool validOutput(Output output, const Coefficients &c) { return (output.rows() == c.nBands) && (output.cols() > 0) && output.allFinite(); }
+    static bool validOutput(Output output, const Coefficients &c)
+    {
+        int nCols = 1;
+        if ((c.algorithmType == Coefficients::ADAPTIVE_HANN_8) || (c.algorithmType == Coefficients::ADAPTIVE_WOLA_8)) { nCols = 8; }
+        return (output.rows() == c.nBands) && output.allFinite() && (output >= 0).all() && (output.cols() == nCols);
+    }
 };
 
 class Spectrogram : public Algorithm<SpectrogramConfiguration>

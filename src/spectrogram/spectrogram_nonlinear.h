@@ -30,7 +30,6 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
         filterbank2.setWindow(window);
 
         filterbankOut.resize(c.nBands);
-        frame.resize(c.bufferSize);
     }
 
     FilterbankAnalysisWOLA filterbank0;
@@ -58,30 +57,23 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
 
     void inline processAlgorithm(Input input, Output output)
     {
-        for (auto nFrame = 0; nFrame < Configuration::getNFrames(static_cast<int>(input.size()), C.bufferSize); nFrame++)
-        {
-            frame = input.segment(nFrame * C.bufferSize, C.bufferSize);
+        filterbank0.process(input, filterbankOut);
+        output = filterbankOut.abs2();
 
-            filterbank0.process(frame, filterbankOut);
-            output.col(nFrame) = filterbankOut.abs2();
+        filterbank1.process(input, filterbankOut);
+        output = output.min(filterbankOut.abs2());
 
-            filterbank1.process(frame, filterbankOut);
-            output.col(nFrame) = output.col(nFrame).min(filterbankOut.abs2());
-
-            filterbank2.process(frame, filterbankOut);
-            output.col(nFrame) = output.col(nFrame).min(filterbankOut.abs2());
-        }
+        filterbank2.process(input, filterbankOut);
+        output = output.min(filterbankOut.abs2());
     }
 
     size_t getDynamicSizeVariables() const final
     {
         size_t size = filterbankOut.getDynamicMemorySize();
-        size += frame.getDynamicMemorySize();
         return size;
     }
 
     Eigen::ArrayXcf filterbankOut;
-    Eigen::ArrayXf frame;
 
     friend BaseAlgorithm;
 };
