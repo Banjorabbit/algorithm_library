@@ -55,6 +55,8 @@ class FilterbankAnalysisWOLA : public AlgorithmImplementation<FilterbankAnalysis
         }
     }
 
+    Eigen::ArrayXf getWindow() const { return window; }
+
   private:
     inline void processAlgorithm(Input xTime, Output yFreq)
     {
