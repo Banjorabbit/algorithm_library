@@ -8,26 +8,41 @@
 class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfiguration, SpectrogramNonlinear>
 {
   public:
-    SpectrogramNonlinear(Coefficients c = {.bufferSize = 128, .nBands = 513, .algorithmType = Coefficients::ADAPTIVE_HANN_8})
-        : BaseAlgorithm{c}, filterbank0({initializeFilterbanks(c)}), filterbank1({initializeFilterbanks(c)}), filterbank2({initializeFilterbanks(c)})
+    SpectrogramNonlinear(Coefficients c = {.bufferSize = 1024, .nBands = 1025, .algorithmType = Coefficients::ADAPTIVE_HANN_8})
+        : BaseAlgorithm{c}, filterbank0({initializeFilterbanks(c)}), filterbank1({initializeFilterbanks(c)}), filterbank2({initializeFilterbanks(c)}),
+          filterbank3({initializeFilterbanks(c)})
     {
+        assert((c.algorithmType == Coefficients::ADAPTIVE_HANN_8) || (c.algorithmType == Coefficients::ADAPTIVE_WOLA_8));
+
+        bufferSizeSmall = C.bufferSize / 8; // algorithm is hardcoded to process in buffersize of this size
         // set windows
         int frameSize = filterbank0.getFrameSize();
-        Eigen::ArrayXf window = hann(frameSize);
+        Eigen::ArrayXf window = filterbank0.getWindow();
         float sqrtPower = std::sqrt(window.abs2().sum());
-        filterbank0.setWindow(window);
 
-        window.setZero();
-        Eigen::ArrayXf windowSmall = hann(2 * c.bufferSize);
-        window.segment(frameSize / 2 - c.bufferSize, 2 * c.bufferSize) = windowSmall;
-        window = window * sqrtPower / std::sqrt(window.abs2().sum());
-        filterbank1.setWindow(window);
+        // half the frame size and set window to every 2nd value of full window
+        int frameSizeSmall = FFTConfiguration::getValidFFTSize(frameSize / 2);
+        Eigen::ArrayXf windowSmall = Eigen::ArrayXf::Zero(frameSize);
+        windowSmall.segment((frameSize - frameSizeSmall) / 2, frameSizeSmall) =
+            Eigen::ArrayXf::Map(window.data(), frameSizeSmall, Eigen::InnerStride<>(frameSize / frameSizeSmall));
+        windowSmall *= sqrtPower / std::sqrt(windowSmall.abs2().sum());
+        filterbank1.setWindow(windowSmall);
 
-        int frameSize2 = std::max(FFTConfiguration::getValidFFTSize(frameSize / 2), 2 * c.bufferSize); // half of large frame size
-        window.setZero();
-        window.segment(frameSize / 2 - frameSize2 / 2, frameSize2) = hann(frameSize2);
-        window = window * sqrtPower / std::sqrt(window.abs2().sum());
-        filterbank2.setWindow(window);
+        // half the frame size and set window to every 4th value of full window
+        frameSizeSmall = FFTConfiguration::getValidFFTSize(frameSize / 4);
+        windowSmall = Eigen::ArrayXf::Zero(frameSize);
+        windowSmall.segment((frameSize - frameSizeSmall) / 2, frameSizeSmall) =
+            Eigen::ArrayXf::Map(window.data(), frameSizeSmall, Eigen::InnerStride<>(frameSize / frameSizeSmall));
+        windowSmall *= sqrtPower / std::sqrt(windowSmall.abs2().sum());
+        filterbank2.setWindow(windowSmall);
+
+        // half the frame size and set window to every 8th value of full window
+        frameSizeSmall = FFTConfiguration::getValidFFTSize(frameSize / 8);
+        windowSmall = Eigen::ArrayXf::Zero(frameSize);
+        windowSmall.segment((frameSize - frameSizeSmall) / 2, frameSizeSmall) =
+            Eigen::ArrayXf::Map(window.data(), frameSizeSmall, Eigen::InnerStride<>(frameSize / frameSizeSmall));
+        windowSmall *= sqrtPower / std::sqrt(windowSmall.abs2().sum());
+        filterbank3.setWindow(windowSmall);
 
         filterbankOut.resize(c.nBands);
     }
@@ -35,14 +50,15 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
     FilterbankAnalysisWOLA filterbank0;
     FilterbankAnalysisWOLA filterbank1;
     FilterbankAnalysisWOLA filterbank2;
-    DEFINE_MEMBER_ALGORITHMS(filterbank0, filterbank1, filterbank2)
+    FilterbankAnalysisWOLA filterbank3;
+    DEFINE_MEMBER_ALGORITHMS(filterbank0, filterbank1, filterbank2, filterbank3)
 
   private:
     FilterbankAnalysisWOLA::Coefficients initializeFilterbanks(const Coefficients &c)
     {
         auto cFilterbank = FilterbankAnalysisWOLA::Coefficients();
         cFilterbank.nChannels = 1;
-        cFilterbank.bufferSize = c.bufferSize;
+        cFilterbank.bufferSize = c.bufferSize / 8;
         cFilterbank.nBands = c.nBands;
         if (c.algorithmType == Coefficients::ADAPTIVE_HANN_8)
         {
@@ -57,14 +73,20 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
 
     void inline processAlgorithm(Input input, Output output)
     {
-        filterbank0.process(input, filterbankOut);
-        output = filterbankOut.abs2();
+        for (auto frame = 0; frame < 8; frame++)
+        {
+            filterbank0.process(input.segment(frame * bufferSizeSmall, bufferSizeSmall), filterbankOut);
+            output.col(frame) = filterbankOut.abs2();
 
-        filterbank1.process(input, filterbankOut);
-        output = output.min(filterbankOut.abs2());
+            filterbank1.process(input.segment(frame * bufferSizeSmall, bufferSizeSmall), filterbankOut);
+            output.col(frame) = output.col(frame).min(filterbankOut.abs2());
 
-        filterbank2.process(input, filterbankOut);
-        output = output.min(filterbankOut.abs2());
+            filterbank2.process(input.segment(frame * bufferSizeSmall, bufferSizeSmall), filterbankOut);
+            output.col(frame) = output.col(frame).min(filterbankOut.abs2());
+
+            filterbank3.process(input.segment(frame * bufferSizeSmall, bufferSizeSmall), filterbankOut);
+            output.col(frame) = output.col(frame).min(filterbankOut.abs2());
+        }
     }
 
     size_t getDynamicSizeVariables() const final
@@ -74,6 +96,7 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
     }
 
     Eigen::ArrayXcf filterbankOut;
+    int bufferSizeSmall;
 
     friend BaseAlgorithm;
 };
