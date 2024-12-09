@@ -1,5 +1,5 @@
 #include "algorithm_library/spectrogram.h"
-#include "filterbank/filterbank_wola.h"
+#include "filterbank/filterbank_single_channel.h"
 #include "framework/framework.h"
 
 // Spectrogram implemented as a nonlinear combination of several standard spectrograms. The criteria used for selecting the best time/frequency bin is the minimum power.
@@ -47,10 +47,10 @@ class SpectrogramNonlinear : public AlgorithmImplementation<SpectrogramConfigura
         filterbankOut.resize(c.nBands);
     }
 
-    FilterbankAnalysisWOLA filterbank0;
-    FilterbankAnalysisWOLA filterbank1;
-    FilterbankAnalysisWOLA filterbank2;
-    FilterbankAnalysisWOLA filterbank3;
+    FilterbankAnalysisSingleChannel filterbank0;
+    FilterbankAnalysisSingleChannel filterbank1;
+    FilterbankAnalysisSingleChannel filterbank2;
+    FilterbankAnalysisSingleChannel filterbank3;
     DEFINE_MEMBER_ALGORITHMS(filterbank0, filterbank1, filterbank2, filterbank3)
 
   private:
