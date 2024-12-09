@@ -14,12 +14,21 @@ class SpectrogramSet : public AlgorithmImplementation<SpectrogramConfiguration, 
         : BaseAlgorithm{c}, filterbankSet(initializeFilterbankSet(c))
     {
         assert((c.algorithmType == Coefficients::ADAPTIVE_HANN_8) || (c.algorithmType == Coefficients::ADAPTIVE_WOLA_8));
+
+        float windowPower = filterbankSet.filterbanks[0].getWindow().abs2().sum();
+        for (auto iFilterbank = 1; iFilterbank < nFilterbanks; iFilterbank++)
+        {
+            Eigen::ArrayXf window = filterbankSet.filterbanks[iFilterbank].getWindow();
+            window *= std::sqrt(windowPower / window.abs2().sum());
+            filterbankSet.filterbanks[iFilterbank].setWindow(window);
+        }
+
         Eigen::ArrayXf inputFrame(c.bufferSize);
         filterbankOut = filterbankSet.initOutput(inputFrame);
         spectrogramRaw.resize(filterbankOut.size());
         for (auto i = 0; i < static_cast<int>(filterbankOut.size()); i++)
         {
-            spectrogramRaw[i] = Eigen::ArrayXXf::Zero(filterbankOut[i].rows(), filterbankOut[i].cols() + 1); // +1 to keep the last previous frame
+            spectrogramRaw[i] = Eigen::ArrayXXf::Zero(filterbankOut[i].rows(), (1 << (i + 1))); // +1 to keep the last previous frame
         }
         spectrogramUpscaled = Eigen::ArrayXXf::Zero(c.nBands, nOutputFrames);
 
@@ -59,9 +68,9 @@ class SpectrogramSet : public AlgorithmImplementation<SpectrogramConfiguration, 
         upscale[0].process(spectrogramRaw[0], output);
         for (auto iFB = 1; iFB < static_cast<int>(filterbankOut.size()); iFB++)
         {
-            spectrogramRaw[iFB].col(0) = spectrogramRaw[iFB].col(filterbankOut[iFB].cols()); // copy prevous frame
+            spectrogramRaw[iFB].leftCols(1 << iFB) = spectrogramRaw[iFB].rightCols(1 << iFB); // copy prevous frames
             spectrogramRaw[iFB].rightCols(filterbankOut[iFB].cols()) = filterbankOut[iFB].abs2();
-            upscale[iFB].process(spectrogramRaw[iFB], spectrogramUpscaled);
+            upscale[iFB].process(spectrogramRaw[iFB].leftCols(filterbankOut[iFB].cols() + 1), spectrogramUpscaled);
             output = output.min(spectrogramUpscaled);
         }
     }
