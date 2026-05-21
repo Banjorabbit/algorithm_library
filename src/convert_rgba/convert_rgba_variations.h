@@ -37,14 +37,14 @@ class ConvertRGBAOcean : public AlgorithmImplementation<ConvertRGBAConfiguration
             value = (value - 0.125f) * 4.f;
             output[0] = static_cast<uint8_t>(value * 21.f + 39.f);   // R
             output[1] = static_cast<uint8_t>(value * 92.f + 70.f);   // G
-            output[2] = static_cast<uint8_t>(-value * 56.f + 122.f); // B
+            output[2] = static_cast<uint8_t>(-value * 56.f + 178.f); // B
         }
         else if (value < 0.625f) // Teal to Green (0.375 - 0.625)
         {
             value = (value - 0.375f) * 4.f;
             output[0] = static_cast<uint8_t>(value * 100.f + 60.f);  // R
-            output[1] = static_cast<uint8_t>(value * 92.f + 70.f);   // G
-            output[2] = static_cast<uint8_t>(-value * 42.f + 178.f); // B
+            output[1] = static_cast<uint8_t>(value * 29.f + 162.f);  // G
+            output[2] = static_cast<uint8_t>(-value * 94.f + 122.f); // B
         }
         else if (value < 0.875f) // Green to Yellow (0.625 - 0.875)
         {
