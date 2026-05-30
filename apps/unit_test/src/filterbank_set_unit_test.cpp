@@ -1,4 +1,5 @@
 #include "filterbank_set/filterbank_set_wola.h"
+#include "filterbank_set/filterbank_set_zeropad.h"
 #include "fmt/ranges.h"
 #include "unit_test.h"
 #include "utilities/fastonebigheader.h"
@@ -11,6 +12,10 @@ using namespace Eigen;
 TEST(FilterbankSetAnalysis, Interface) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<FilterbankSetAnalysisWOLA>()); }
 
 TEST(FilterbankSetSynthesis, Interface) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<FilterbankSetSynthesisWOLA>()); }
+
+TEST(FilterbankSetAnalysis, InterfaceZeropad) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<FilterbankSetAnalysisZeropad>()); }
+
+TEST(FilterbankSetSynthesis, InterfaceZeropad) { EXPECT_TRUE(InterfaceTests::algorithmInterfaceTest<FilterbankSetSynthesisZeropad>()); }
 
 // Interface test with coefficients.filterbankType = WOLA
 TEST(FilterbankSetAnalysis, InterfaceWOLA)
